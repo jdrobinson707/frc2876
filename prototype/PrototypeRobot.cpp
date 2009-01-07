@@ -6,7 +6,7 @@
  * Autonomous and OperatorControl methods at the right time as controlled by the switches on
  * the driver station or the field controls.
  */
-class DefaultRobot : public SimpleRobot
+class DefaultRobot : public SimpleRobot // This is my comment
 {
 	RobotDrive *myRobot;			// robot drive system
 	DigitalInput *armUpperLimit;	// arm upper limit switch
