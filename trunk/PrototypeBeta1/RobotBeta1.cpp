@@ -3,21 +3,27 @@
 //Last Updated:  1/27/09
 //BHS ROBOTIX TEAM
 
+//basic libraries
 #include <stdio.h>
 #include <iostream.h>
-
+#include <Math.h>
+//basic robot libraries
 #include <WPILib.h>
 #include <Dashboard.h>
-#include <VisionAPI.h>
-#include <AxisCamera.h>
-#include <FrcError.h>
-#include <PCVideoServer.h>
 #include "DashboardDataFormat.h"
 #include "BaeUtilities.h"
+//Camera libraries
+#include "AxisCamera.h" 
+#include "BaeUtilities.h"
+#include "FrcError.h"
+#include "TrackAPI.h"
+#include <VisionAPI.h>
+#include <PCVideoServer.h>
+//self made libraries
+#include "Math2.h"
 #include "RobotBeta1.h"
 
 using namespace std;
-
 
 // Watchdog expiration in seconds
 #define WATCHDOG_EXPIRATION 5
@@ -145,6 +151,33 @@ void RobotBeta1::turn130Left(void) {
 			GetWatchdog().Feed();
 			cGyroAngle = gyro->GetAngle();
 	}
+}
+void RobotBeta1::turnDeg(double degrees) {
+	double radians = 0;
+	radians = degreesToRadians(degrees);
+    float cGyroAngle = 0.0;
+    const float maxAngle = radians;
+
+    while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
+            cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
+            itsDrive->Drive(-.25, -1);
+            Wait(0.006);
+            GetWatchdog().Feed();
+            cGyroAngle = gyro->GetAngle();
+    }
+}
+
+void RobotBeta1::turnRad(double radians) {
+    float cGyroAngle = 0.0;
+    const float maxAngle = radians;
+
+    while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
+            cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
+            itsDrive->Drive(-.25, -1);
+            Wait(0.006);
+            GetWatchdog().Feed();
+            cGyroAngle = gyro->GetAngle();
+    }
 }
 
 void RobotBeta1::resetGyro(void) {
