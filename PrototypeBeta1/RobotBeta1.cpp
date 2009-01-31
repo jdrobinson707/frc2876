@@ -1,13 +1,24 @@
-//Contributers:  Neil Patel, Maciej
+//Contributers:  Neil Patel, Maciej, Eddy Louis, Gerry Porthier
 //Started:  1/18/09
-//Last Updated:  1/23/09
+//Last Updated:  1/27/09
 //BHS ROBOTIX TEAM
 
-#include "WPILib.h"
-#include <Dashboard.h>
+#include <stdio.h>
 #include <iostream.h>
 
+#include <WPILib.h>
+#include <Dashboard.h>
+#include <VisionAPI.h>
+#include <AxisCamera.h>
+#include <FrcError.h>
+#include <PCVideoServer.h>
+#include "DashboardDataFormat.h"
+
 using namespace std;
+
+// #define DBG(fmt, args...) printf("%s:%d:%s:"fmt, __FILE__, __LINE__, __func__, args);
+//#define DBG(fmt, args...) printf(fmt);
+#define DBG printf
 
 class RobotBeta1 : public SimpleRobot {
 	//member variables
@@ -21,44 +32,62 @@ class RobotBeta1 : public SimpleRobot {
 			gyro(1),
 			sonar(3, 3)
 		{
-			printf("\n\nInitializing RobotBeta1...");
-			GetWatchdog().SetExpiration(1000);
+			printf("\n\nInitializing RobotBeta1...\n");
+			// GetWatchdog().SetExpiration(1000);
+
+			if (StartCameraTask() == -1) { 
+				DBG("Failed to spawn camera task; Error code %s\n", 
+							GetVisionErrorText(GetLastVisionError()) ); 
+			} else {
+				 pc = new PCVideoServer();
+			}
+
 			printf("Done\n\n");
 		}
 		
 		//public methods
 		void Autonomous(void);
 		void OperatorControl(void);
+		void RobotMain(void);
+		void UpdateDashboard(void);
+		
+		
 	private:
 		RobotDrive itsDrive;
 		Joystick joystickUSB1;
 		Joystick joystickUSB2;
 		Gyro gyro;
 		Ultrasonic sonar;
+		PCVideoServer *pc;
+		DashboardDataFormat dashboardDataFormat;
+		
 		void driveStrait(long maxTime);
 		void turn90Right();
 		void turn130Left(); 
 		void resetGyro();
+		void TestCamera();
+		
 };
 
 
 void RobotBeta1::Autonomous(void) {
 	printf("\nStarting Autonomous...Trial 15\n");
 	while(IsAutonomous()) {
-		
-		
+#if 0
 		printf("is enabled: %s\n", (sonar.IsEnabled() == true) ? "true" : "false");
 		printf("is valid: %s\n", (sonar.IsRangeValid() == true) ? "true" : "false");
 		printf("range in: %f\n", sonar.GetRangeInches());
-
+#endif
+#if 0
 		GetWatchdog().Feed();
 		driveStrait(500);
 		GetWatchdog().Feed();
 		turn130Left();
 		itsDrive.Drive(0, 0);
-
+#endif
 		GetWatchdog().Feed();
-		Wait(0.4); 
+		Wait(0.4);
+
 	}
 	printf("\nEnd Autonomous Mode\n");	
 }
@@ -67,15 +96,15 @@ void RobotBeta1::OperatorControl(void) {
 	int slowDownProccessing = 0;
 	printf("\nStart Operator Control...\n");
 	
-	gyro.Reset();
-	float angle = gyro.GetAngle(); // get heading
-	printf("1calibrate angle %f\n", angle);
+	resetGyro();
+	
+	TestCamera();
 	
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
 		GetWatchdog().Feed();
 		itsDrive.TankDrive(joystickUSB1,joystickUSB2);
-		if ((slowDownProccessing % 5) == 0) {
+		if ((slowDownProccessing++ % 25) == 0) {
 			printf("\r\t\tGyro Angle:\t%f", gyro.GetAngle());
 		}
 		Wait(0.006);
@@ -134,14 +163,59 @@ void RobotBeta1::turn130Left(void) {
 }
 
 void RobotBeta1::resetGyro(void) {
-	float angle = gyro.GetAngle();
-	while (((int)angle) != 0) {
+	DBG("Enter\n");
+	float angle;
+	do {
 		gyro.Reset();
-		GetWatchdog().Feed();
 		angle = gyro.GetAngle();
-		printf("3calibrate angle %f\n", angle);
+		printf("calibrate angle %f\r", angle);
+		GetWatchdog().Feed();
 		Wait(0.1);
-	}	
+		GetWatchdog().Feed();
+	} while (((int)angle) != 0);
+	DBG("\nExit\n");
 }
 
+void RobotBeta1::TestCamera(void) {
+	Image *image;
+	double timestamp;
+	DBG("Enter");
+	image = frcCreateImage(IMAQ_IMAGE_RGB);
+	if (image == NULL) {
+		DBG("failed to create image %s\n", GetVisionErrorText(GetLastVisionError()));
+	}
+	if (!GetImage(image, &timestamp)) { 
+		DBG("error: %s", GetVisionErrorText(GetLastVisionError()));
+	}
+}
+
+void RobotBeta1::RobotMain(void)
+{
+
+	Dashboard &dashboard = m_ds->GetDashboardPacker();
+	INT32 i=0;
+	while (true)
+	{
+		GetWatchdog().Feed();
+		//myRobot.ArcadeDrive(stick); // drive with arcade style (use right stick)
+		dashboard.Printf("It's been %f seconds, according to the FPGA.\n", GetClock());
+		dashboard.Printf("Iterations: %d\n", ++i);
+		UpdateDashboard();
+		Wait(0.02);
+	}
+}
+
+    void RobotBeta1::UpdateDashboard(void) {
+	static float num = 0.0;
+		dashboardDataFormat.m_AnalogChannels[0][0] = num;
+		dashboardDataFormat.m_AnalogChannels[0][1] = 5.0 - num;
+		dashboardDataFormat.m_DIOChannels[0]++;
+		dashboardDataFormat.m_DIOChannelsOutputEnable[0]--;
+		num += 0.01;
+		if (num > 5.0) num = 0.0;
+		dashboardDataFormat.PackAndSend();
+}
+
+
+ 
 START_ROBOT_CLASS(RobotBeta1);
