@@ -24,10 +24,17 @@ using namespace std;
 
 #define JOYSTICK_LEFT 1
 #define JOYSTICK_RIGHT 2
+
+// Which pwm inputs/outputs the driver motors are plugged into.
 #define DRIVE_MOTOR_LEFT 1
 #define DRIVE_MOTOR_RIGHT 2
+
+// First analog module is plugged into slot 1
+#define ANALOG_MODULE_SLOT 1
+
+// Gyro sensor has two outputs, angle and temp.
 #define GYRO_ANGLE_CHANNEL 1
-#define GYRO_TEMP_CHANNEL 1
+#define GYRO_TEMP_CHANNEL 2
 
 static int dbg_flag = 0;
 #define DBG if (dbg_flag)dprintf 
@@ -39,7 +46,7 @@ RobotBeta1::RobotBeta1(void)
 	itsDrive = new RobotDrive(DRIVE_MOTOR_LEFT, DRIVE_MOTOR_RIGHT);
 	joystickUSB1 = new Joystick(JOYSTICK_LEFT);
 	joystickUSB2 = new Joystick(JOYSTICK_RIGHT);
-	gyro = new Gyro(GYRO_ANGLE_CHANNEL);
+	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
 	
 	GetWatchdog().SetExpiration(WATCHDOG_EXPIRATION);
 
@@ -174,9 +181,11 @@ void RobotBeta1::UpdateDashboard(void)
 	//dashboardDataFormat->m_AnalogChannels[0][1] = 5.0 - num;
 	//dashboardDataFormat->m_DIOChannels[0]++;
 	//dashboardDataFormat->m_DIOChannelsOutputEnable[0]--;
+
+	dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_ANGLE_CHANNEL] = gyro->GetAngle();
+    dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_TEMP_CHANNEL] = 0
+    
 	dashboardDataFormat->PackAndSend();
 }
 
-
- 
 START_ROBOT_CLASS(RobotBeta1);

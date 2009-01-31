@@ -14,6 +14,7 @@ private:
 		Joystick *joystickUSB1;
 		Joystick *joystickUSB2;
 		Gyro *gyro;
+		
 		PCVideoServer *pc;
 		DashboardDataFormat *dashboardDataFormat;
 		
