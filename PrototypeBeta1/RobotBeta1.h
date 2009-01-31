@@ -21,6 +21,8 @@ private:
 		void driveStrait(long maxTime);
 		void turn90Right();
 		void turn130Left(); 
+        void turnDeg(double degrees);
+        void turnRad(double radians);
 		void resetGyro();
 		void TestCamera();
 		
