@@ -53,6 +53,7 @@ RobotBeta1::RobotBeta1(void)
 	joystickUSB1 = new Joystick(JOYSTICK_LEFT);
 	joystickUSB2 = new Joystick(JOYSTICK_RIGHT);
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
+	initializeColors();
 	
 	GetWatchdog().SetExpiration(WATCHDOG_EXPIRATION);
 
@@ -62,8 +63,31 @@ RobotBeta1::RobotBeta1(void)
 	} else {
 		pc = new PCVideoServer();
 	}
-
+	
 	DBG("Done\n");
+}
+
+void RobotBeta1::initializeColors() {
+	/* image data for tracking - override default parameters if needed */
+	/* recommend making PINK the first color because GREEN is more 
+	 * subsceptible to hue variations due to lighting type so may
+	 * result in false positives */
+	// PINK
+	sprintf (tt1.name, "PINK");
+	tt1.hue.minValue = 220;   
+	tt1.hue.maxValue = 255;  
+	tt1.saturation.minValue = 75;   
+	tt1.saturation.maxValue = 255;      
+	tt1.luminance.minValue = 85;  
+	tt1.luminance.maxValue = 255;
+	// GREEN
+	sprintf (tt2.name, "GREEN");
+	tt2.hue.minValue = 55;   
+	tt2.hue.maxValue = 125;  
+	tt2.saturation.minValue = 58;   
+	tt2.saturation.maxValue = 255;    
+	tt2.luminance.minValue = 92;  
+	tt2.luminance.maxValue = 255;	
 }
 
 void RobotBeta1::Autonomous(void) {
@@ -216,7 +240,7 @@ void RobotBeta1::UpdateDashboard(void)
 	//dashboardDataFormat->m_DIOChannelsOutputEnable[0]--;
 
 	dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_ANGLE_CHANNEL] = gyro->GetAngle();
-    dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_TEMP_CHANNEL] = 0
+    dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_TEMP_CHANNEL] = 0;
     
 	dashboardDataFormat->PackAndSend();
 }

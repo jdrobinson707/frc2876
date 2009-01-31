@@ -18,6 +18,9 @@ private:
 		PCVideoServer *pc;
 		DashboardDataFormat *dashboardDataFormat;
 		
+		TrackingThreshold tt1 /*PINK*/, tt2 /*GREEN*/;		// these are the 2 colors to track 		
+		ParticleAnalysisReport pa1, pa2;	//Particle Analysis Report
+		
 		void driveStrait(long maxTime);
 		void turn90Right();
 		void turn130Left(); 
@@ -25,7 +28,7 @@ private:
         void turnRad(double radians);
 		void resetGyro();
 		void TestCamera();
-		
+		void initializeColors();
 };
 
 #endif
