@@ -31,12 +31,14 @@ using namespace std;
 #define JOYSTICK_LEFT 1
 #define JOYSTICK_RIGHT 2
 
-// Which pwm inputs/outputs the driver motors are plugged into.
-#define DRIVE_MOTOR_LEFT 1
-#define DRIVE_MOTOR_RIGHT 2
+// Which pwm inputs/outputs the drive motors are plugged into.
+#define DRIVE_MOTOR_LEFT_PWM 1
+#define DRIVE_MOTOR_RIGHT_PWM 2
 
-// First analog module is plugged into slot 1
+// First analog module is plugged into slot 1 of cRIO
 #define ANALOG_MODULE_SLOT 1
+
+#define DIGITAL_MODULE_SLOT 4
 
 // Gyro sensor has two outputs, angle and temp.
 #define GYRO_ANGLE_CHANNEL 1
@@ -45,26 +47,38 @@ using namespace std;
 static int dbg_flag = 0;
 #define DBG if (dbg_flag)dprintf 
 
+
 RobotBeta1::RobotBeta1(void)
 {
 	DBG("Initializing RobotBeta1...\n");
 
-	itsDrive = new RobotDrive(DRIVE_MOTOR_LEFT, DRIVE_MOTOR_RIGHT);
-	joystickUSB1 = new Joystick(JOYSTICK_LEFT);
-	joystickUSB2 = new Joystick(JOYSTICK_RIGHT);
+	leftMotor = new Jaguar(DIGITAL_MODULE_SLOT, DRIVE_MOTOR_LEFT_PWM);
+	rightMotor = new Jaguar(DIGITAL_MODULE_SLOT, DRIVE_MOTOR_RIGHT_PWM);
+	robotDrive = new RobotDrive(leftMotor, rightMotor);
+	stickLeft = new Joystick(JOYSTICK_LEFT);
+	stickRight = new Joystick(JOYSTICK_RIGHT);
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
+	
 	initializeColors();
+	initializeButtons();
+	initializeCamera();
 	
 	GetWatchdog().SetExpiration(WATCHDOG_EXPIRATION);
-
-	if (StartCameraTask() == -1) { 
-		DBG("Failed to spawn camera task; Error code %s\n", 
-				GetVisionErrorText(GetLastVisionError()) ); 
-	} else {
-		pc = new PCVideoServer();
-	}
 	
 	DBG("Done\n");
+}
+
+RobotBeta1::~RobotBeta1(void)
+{
+	StopCameraTask();
+	pc->Stop();
+	delete pc;
+	delete gyro;
+	delete stickRight;
+	delete stickLeft;
+	delete robotDrive;
+	delete rightMotor;
+	delete leftMotor;
 }
 
 void RobotBeta1::initializeColors() {
@@ -90,6 +104,24 @@ void RobotBeta1::initializeColors() {
 	tt2.luminance.maxValue = 255;	
 }
 
+void RobotBeta1::initializeButtons(void)
+{
+	int i;
+	for (i = JOYSTICK_FIRST_BUTTON; i <= JOYSTICK_NUM_BUTTONS; i++) {
+		leftButtons[i] = rightButtons[i] = false;
+	}
+}
+
+void RobotBeta1::initializeCamera(void)
+{
+	if (StartCameraTask() == -1) { 
+		DBG("Failed to spawn camera task; Error code %s\n", 
+				GetVisionErrorText(GetLastVisionError()) ); 
+	} else {
+		pc = new PCVideoServer();
+	}
+}
+
 void RobotBeta1::Autonomous(void) {
 	DBG("Starting Autonomous...Trial 15\n");
 	while(IsAutonomous()) {
@@ -98,7 +130,7 @@ void RobotBeta1::Autonomous(void) {
 		driveStrait(500);
 		GetWatchdog().Feed();
 		turn130Left();
-		itsDrive.Drive(0, 0);
+		robotDrive.Drive(0, 0);
 #endif
 		GetWatchdog().Feed();
 		Wait(0.4);
@@ -113,12 +145,11 @@ void RobotBeta1::OperatorControl(void) {
 	
 	resetGyro();
 	
-	TestCamera();
-	
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
 		GetWatchdog().Feed();
-		itsDrive->TankDrive(joystickUSB1,joystickUSB2);
+		robotDrive->TankDrive(stickLeft,stickRight);
+		actOnButtons();
 		if ((slowDownProccessing++ % 25) == 0) {
 			DBG("\r\t\tGyro Angle:\t%f", gyro->GetAngle());
 		}
@@ -149,10 +180,10 @@ void RobotBeta1::driveStrait(long maxTime) {
 			cout << "\n\t\tTime:  "; cout << cTime; cout << "\t\t\tExit:  "; cout << maxTime; cout << "\n";
 		}
 		slowDownProccessing++; cTime++;
-		itsDrive->Drive(-.5, (angle * 0.03));// turn to correct heading 
+		robotDrive->Drive(-.5, (angle * 0.03));// turn to correct heading 
 		Wait(0.004); 
 	}
-	itsDrive->Drive(0.0, 0.0);
+	robotDrive->Drive(0.0, 0.0);
 }
 
 void RobotBeta1::turn90Right(void) {
@@ -161,7 +192,7 @@ void RobotBeta1::turn90Right(void) {
 
 	while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
 		cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-		itsDrive->Drive(-.25, -1);
+		robotDrive->Drive(-.25, -1);
 		Wait(0.006);
 		GetWatchdog().Feed();
 		cGyroAngle = gyro->GetAngle();
@@ -175,7 +206,7 @@ void RobotBeta1::turn130Left(void) {
 	
 	while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
 			cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-			itsDrive->Drive(-.5, -1);
+			robotDrive->Drive(-.5, -1);
 			Wait(0.006);
 			GetWatchdog().Feed();
 			cGyroAngle = gyro->GetAngle();
@@ -189,7 +220,7 @@ void RobotBeta1::turnDeg(double degrees) {
 
     while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
             cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-            itsDrive->Drive(-.25, -1);
+            robotDrive->Drive(-.25, -1);
             Wait(0.006);
             GetWatchdog().Feed();
             cGyroAngle = gyro->GetAngle();
@@ -202,7 +233,7 @@ void RobotBeta1::turnRad(double radians) {
 
     while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
             cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-            itsDrive->Drive(-.25, -1);
+            robotDrive->Drive(-.25, -1);
             Wait(0.006);
             GetWatchdog().Feed();
             cGyroAngle = gyro->GetAngle();
@@ -239,15 +270,37 @@ void RobotBeta1::TestCamera(void) {
 void RobotBeta1::UpdateDashboard(void) 
 {
 	GetWatchdog().Feed();
-	//dashboardDataFormat->m_AnalogChannels[0][0] = num;
-	//dashboardDataFormat->m_AnalogChannels[0][1] = 5.0 - num;
-	//dashboardDataFormat->m_DIOChannels[0]++;
-	//dashboardDataFormat->m_DIOChannelsOutputEnable[0]--;
 
-	dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_ANGLE_CHANNEL] = gyro->GetAngle();
-    dashboardDataFormat->m_AnalogChannels[ANALOG_MODULE_SLOT][GYRO_TEMP_CHANNEL] = 0;
-    
-	dashboardDataFormat->PackAndSend();
+	dashboardDataFormat->m_AnalogChannels[0][GYRO_ANGLE_CHANNEL] = gyro->GetAngle();
+    dashboardDataFormat->m_AnalogChannels[0][GYRO_TEMP_CHANNEL] = 0;
+    dashboardDataFormat->m_PWMChannels[0][DRIVE_MOTOR_LEFT_PWM] = leftMotor->GetRaw();
+    dashboardDataFormat->m_PWMChannels[0][DRIVE_MOTOR_RIGHT_PWM] = rightMotor->GetRaw();
+
+    dashboardDataFormat->PackAndSend();
+}
+
+//
+// Read buttons on a joystick to see if any have been pressed.
+// stick: left or right joystick
+// buttons: array of bools to store button press state
+// side: string that indicates left/right used for printing debug msgs
+//
+void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
+{
+	int i;
+	for (i = JOYSTICK_FIRST_BUTTON; i <= JOYSTICK_NUM_BUTTONS; i++) {
+		buttons[i] = stick->GetRawButton(i);
+		if (buttons[i] == true) {
+			DBG("%s stick button %d pressed", side, i);
+		}
+	}
+}
+
+void RobotBeta1::actOnButtons(void)
+{
+	readButtons(stickLeft, leftButtons, "left");
+	readButtons(stickRight, leftButtons, "right");
+	DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
 }
 
 START_ROBOT_CLASS(RobotBeta1);
