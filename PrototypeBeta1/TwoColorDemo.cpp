@@ -253,7 +253,7 @@ public:
 			//GetWatchdog().Feed();		// turn watchdog off while debugging	
 
 			// calculate gimbal position based on colors found 
-			if ( FindTwoColors(td1, td2, ABOVE, &par1, &par2) ){
+			if ( FindTwColors(td1, td2, ABOVE, &par1, &par2) ){
 				//PrintReport(&par2);
 				foundColor = true;
 				// reset pan		

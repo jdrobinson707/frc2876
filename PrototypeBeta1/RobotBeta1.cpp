@@ -126,6 +126,11 @@ void RobotBeta1::OperatorControl(void) {
 	}
 	DBG("\nEnd Operator Control\n");
 }
+
+void RobotBeta1::recieveAndReactToCameraData(void) {
+	
+}
+
 void RobotBeta1::driveStrait(long maxTime) {
 	int slowDownProccessing = 0;
 	long cTime = 0;
