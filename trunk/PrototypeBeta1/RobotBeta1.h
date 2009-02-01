@@ -29,6 +29,7 @@ private:
 		void resetGyro();
 		void TestCamera();
 		void initializeColors();
+		void recieveAndReactToCameraData();
 };
 
 #endif
