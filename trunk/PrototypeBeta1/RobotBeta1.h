@@ -26,7 +26,7 @@ private:
 		Gyro *gyro;
 		
 		PCVideoServer *pc;
-		DashboardDataFormat *dashboardDataFormat;
+		DashboardDataFormat *dashboard;
 		
 		TrackingThreshold tt1 /*PINK*/, tt2 /*GREEN*/;		// these are the 2 colors to track 		
 		ParticleAnalysisReport pa1, pa2;	//Particle Analysis Report

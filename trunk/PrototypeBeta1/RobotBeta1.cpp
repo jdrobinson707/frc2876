@@ -271,12 +271,25 @@ void RobotBeta1::UpdateDashboard(void)
 {
 	GetWatchdog().Feed();
 
-	dashboardDataFormat->m_AnalogChannels[0][GYRO_ANGLE_CHANNEL] = gyro->GetAngle();
-    dashboardDataFormat->m_AnalogChannels[0][GYRO_TEMP_CHANNEL] = 0;
-    dashboardDataFormat->m_PWMChannels[0][DRIVE_MOTOR_LEFT_PWM] = leftMotor->GetRaw();
-    dashboardDataFormat->m_PWMChannels[0][DRIVE_MOTOR_RIGHT_PWM] = rightMotor->GetRaw();
-
-    dashboardDataFormat->PackAndSend();
+	// TODO EddyL add dashboard data here.  How?
+	//
+	// Look at dashboard in labview.  
+	// Look at what sensors/motors we have hooked up to cRIO on robot.
+	// Look at the DashboardDataFormat class and see what member variables are.
+	// Make sure the member variable type in DashboardDataFormat  matches the
+	// sensor reading function return type.
+	
+	// Here's an example.  Ok, we don't have anything hooked up to solenoid.
+	// But if we did we would have to get a reading from sensor hooked up to solenoid 
+	// on cRIO.  
+	// Solenoid *s = new Solenoid(1);
+	// dashboard->m_SolenoidChannels = s->Get(); 
+	//
+	// End of TODO section
+	
+	
+	// Call this last to send data to dashboard.
+    dashboard->PackAndSend();
 }
 
 //
