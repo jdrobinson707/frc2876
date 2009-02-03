@@ -44,12 +44,13 @@ using namespace std;
 #define GYRO_ANGLE_CHANNEL 1
 #define GYRO_TEMP_CHANNEL 2
 
-static int dbg_flag = 0;
-#define DBG if (dbg_flag)dprintf 
+static int dbg_flag = 1;
+#define DBG if (dbg_flag)printf 
 
 
 RobotBeta1::RobotBeta1(void)
 {
+	SetDebugFlag(DEBUG_SCREEN_ONLY);
 	DBG("Initializing RobotBeta1...\n");
 
 	leftMotor = new Jaguar(DIGITAL_MODULE_SLOT, DRIVE_MOTOR_LEFT_PWM);
@@ -58,6 +59,8 @@ RobotBeta1::RobotBeta1(void)
 	stickLeft = new Joystick(JOYSTICK_LEFT);
 	stickRight = new Joystick(JOYSTICK_RIGHT);
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
+	leftShooter = new Jaguar(DIGITAL_MODULE_SLOT, 3);
+	rightShooter = new Jaguar(DIGITAL_MODULE_SLOT, 4);
 	
 	initializeColors();
 	initializeButtons();
@@ -153,7 +156,7 @@ void RobotBeta1::OperatorControl(void) {
 		if ((slowDownProccessing++ % 25) == 0) {
 			DBG("\r\t\tGyro Angle:\t%f", gyro->GetAngle());
 		}
-		Wait(0.006);
+		Wait(0.05);
 	}
 	DBG("\nEnd Operator Control\n");
 }
@@ -267,6 +270,7 @@ void RobotBeta1::TestCamera(void) {
 	}
 }
 
+
 void RobotBeta1::UpdateDashboard(void) 
 {
 	GetWatchdog().Feed();
@@ -287,6 +291,11 @@ void RobotBeta1::UpdateDashboard(void)
 	//
 	// End of TODO section
 	
+	dashboard->m_PWMChannels[0][0] = leftMotor->GetRaw();
+	dashboard->m_PWMChannels[0][1] = rightMotor->GetRaw();
+	dashboard->m_PWMChannels[0][2] = leftShooter->GetRaw();
+	dashboard->m_PWMChannels[0][3] = rightShooter->GetRaw();
+	
 	
 	// Call this last to send data to dashboard.
     dashboard->PackAndSend();
@@ -304,7 +313,7 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 	for (i = JOYSTICK_FIRST_BUTTON; i <= JOYSTICK_NUM_BUTTONS; i++) {
 		buttons[i] = stick->GetRawButton(i);
 		if (buttons[i] == true) {
-			DBG("%s stick button %d pressed", side, i);
+			DBG("%s stick button %d pressed\n", side, i);
 		}
 	}
 }
@@ -313,7 +322,8 @@ void RobotBeta1::actOnButtons(void)
 {
 	readButtons(stickLeft, leftButtons, "left");
 	readButtons(stickRight, leftButtons, "right");
-	DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
+	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
+	
 }
 
 START_ROBOT_CLASS(RobotBeta1);
