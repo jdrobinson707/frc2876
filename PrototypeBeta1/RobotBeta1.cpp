@@ -61,7 +61,7 @@ RobotBeta1::RobotBeta1(void)
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
 	leftShooter = new Jaguar(DIGITAL_MODULE_SLOT, 3);
 	rightShooter = new Jaguar(DIGITAL_MODULE_SLOT, 4);
-	
+	dashboard = new DashboardDataFormat();
 	initializeColors();
 	initializeButtons();
 	initializeCamera();
@@ -82,6 +82,7 @@ RobotBeta1::~RobotBeta1(void)
 	delete robotDrive;
 	delete rightMotor;
 	delete leftMotor;
+	delete dashboard;
 }
 
 void RobotBeta1::initializeColors() {
