@@ -19,9 +19,21 @@
 #include "TrackAPI.h"
 #include <VisionAPI.h>
 #include <PCVideoServer.h>
+//Libraries provided by other Demos
+#include "Target.h"
 //self made libraries
 #include "Math2.h"
 #include "RobotBeta1.h"
+
+/***************************************************************************/
+/*                     CHANGE THIS DURING THE COMPETITION                  */
+/*     #1*																   */
+			#define OUR_TEAM 	WE_ARE_RED_TEAM                          /**/
+/*     #2*/																 /**/
+/***************************************************************************/
+
+#define WE_ARE_RED_TEAM		BELOW  //if the color of the opposite team is pink above green then they are the red team
+#define WE_ARE_BLUE_TEAM	ABOVE  //^--and therefore our color is pink BELOW green and therefore we are the blue team
 
 using namespace std;
 
@@ -62,6 +74,7 @@ RobotBeta1::RobotBeta1(void)
 	leftShooter = new Jaguar(DIGITAL_MODULE_SLOT, 3);
 	rightShooter = new Jaguar(DIGITAL_MODULE_SLOT, 4);
 	dashboard = new DashboardDataFormat();
+	
 	initializeColors();
 	initializeButtons();
 	initializeCamera();
@@ -152,7 +165,7 @@ void RobotBeta1::OperatorControl(void) {
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
 		GetWatchdog().Feed();
-		robotDrive->TankDrive(stickLeft,stickRight);
+		robotDrive->TankDrive(stickLeft, stickRight);
 		actOnButtons();
 		if ((slowDownProccessing++ % 25) == 0) {
 			DBG("\r\t\tGyro Angle:\t%f", gyro->GetAngle());
@@ -163,7 +176,9 @@ void RobotBeta1::OperatorControl(void) {
 }
 
 void RobotBeta1::recieveAndReactToCameraData(void) {
-	
+	if (FindTwoColors(tt1, tt2, OUR_TEAM, &pa1, &pa2)) { //if the trailor's beam is found
+		
+	}
 }
 
 void RobotBeta1::driveStrait(long maxTime) {
