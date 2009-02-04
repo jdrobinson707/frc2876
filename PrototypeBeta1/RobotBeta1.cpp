@@ -351,11 +351,18 @@ void RobotBeta1::actOnButtons(void)
 	
 	readButtons(stickLeft, leftButtons, "left");
 	readButtons(stickRight, rightButtons, "right");
-	if (leftButtons[1] == true) {
+	if (leftButtons[1] == true && rightButtons[1] == true) {
+		shooter->Set(.75);
+	} else if (leftButtons[1] == true && rightButtons[1] == false) {
 		shooter->Set(1);
+	} else if (leftButtons[1] == false && rightButtons[1] == true) {
+		shooter->Set(.5);
 	} else {
-		shooter->Set(0);
+		shooter-> Set(0);
 	}
+	
+	
+
 	if (rightButtons[1] == true) {
 		shooter->Set(.5);
 	} else {
