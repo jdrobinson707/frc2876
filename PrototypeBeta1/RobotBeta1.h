@@ -31,7 +31,7 @@ private:
 		DashboardDataFormat *dashboard;
 		
 		TrackingThreshold tt1 /*PINK*/, tt2 /*GREEN*/;		// these are the 2 colors to track 		
-		ParticleAnalysisReport pa1, pa2;	//Particle Analysis Report
+		ParticleAnalysisReport pa1 /*PINK*/ , pa2 /*GREEN*/;	//Particle Analysis Report
 		
 		bool rightButtons[JOYSTICK_NUM_BUTTONS];
 		bool leftButtons[JOYSTICK_NUM_BUTTONS];	
