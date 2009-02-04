@@ -151,6 +151,7 @@ void RobotBeta1::Autonomous(void) {
 		turn130Left();
 		robotDrive.Drive(0, 0);
 #endif
+		UpdateDashboard();
 		GetWatchdog().Feed();
 		Wait(0.4);
 
@@ -159,7 +160,6 @@ void RobotBeta1::Autonomous(void) {
 }
 
 void RobotBeta1::OperatorControl(void) {
-	int slowDownProccessing = 0;
 	DBG("\nStart Operator Control...\n");
 	
 	resetGyro();
