@@ -27,6 +27,8 @@
 
 /***************************************************************************/
 /*                     CHANGE THIS DURING THE COMPETITION                  */
+// Ummmm... you cannot change code during competition.  A #define is a constant
+// You need to find another way to determine team color/alliance. -Maciej
 /*     #1*																   */
 			#define OUR_TEAM 	WE_ARE_RED_TEAM                          /**/
 /*     #2*/																 /**/
@@ -168,8 +170,9 @@ void RobotBeta1::OperatorControl(void) {
 		robotDrive->TankDrive(stickLeft, stickRight);
 		actOnButtons();
 		if ((slowDownProccessing++ % 25) == 0) {
-			DBG("\r\t\tGyro Angle:\t%f", gyro->GetAngle());
+			//DBG("\r\t\tGyro Angle:\t%f", gyro->GetAngle());
 		}
+		UpdateDashboard();
 		Wait(0.05);
 	}
 	DBG("\nEnd Operator Control\n");
@@ -177,7 +180,9 @@ void RobotBeta1::OperatorControl(void) {
 
 void RobotBeta1::recieveAndReactToCameraData(void) {
 	if (FindTwoColors(tt1, tt2, OUR_TEAM, &pa1, &pa2)) { //if the trailor's beam is found
-		
+		//STEP#1:	measure distance to trailer's beam
+		//STEP#2:	align
+		//STEP#3:	shoot
 	}
 }
 
@@ -311,7 +316,12 @@ void RobotBeta1::UpdateDashboard(void)
 	dashboard->m_PWMChannels[0][1] = rightMotor->GetRaw();
 	dashboard->m_PWMChannels[0][2] = leftShooter->GetRaw();
 	dashboard->m_PWMChannels[0][3] = rightShooter->GetRaw();
-	
+	dashboard->m_AnalogChannels[0][0] = gyro->GetAngle();
+	DBG("\r%d %d %d %d       ",
+		dashboard->m_PWMChannels[0][0],
+		dashboard->m_PWMChannels[0][1],
+		dashboard->m_PWMChannels[0][2],
+		dashboard->m_PWMChannels[0][3]);
 	
 	// Call this last to send data to dashboard.
     dashboard->PackAndSend();
@@ -334,10 +344,24 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 	}
 }
 
+void RobotBeta1::shoot(bool on)
+{
+	if (on == true) {
+		leftShooter->Set(.5);
+	} else {
+		leftShooter->Set(0);
+	}
+}
+
 void RobotBeta1::actOnButtons(void)
 {
 	readButtons(stickLeft, leftButtons, "left");
 	readButtons(stickRight, leftButtons, "right");
+	if (leftButtons[1] == true) {
+		shoot(true);
+	} else {
+		shoot(false);
+	}
 	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
 	
 }

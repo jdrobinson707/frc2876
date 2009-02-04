@@ -4,7 +4,15 @@
 DashboardDataFormat::DashboardDataFormat(void)
 	: m_ds (DriverStation::GetInstance())
 {
-	
+	memset(m_AnalogChannels[0], 0, sizeof(m_AnalogChannels[0]));
+	memset(m_AnalogChannels[1], 0, sizeof(m_AnalogChannels[1]));
+	memset(m_PWMChannels[0], 128, sizeof(m_PWMChannels[0]));
+	memset(m_PWMChannels[1], 128, sizeof(m_PWMChannels[1]));
+	memset(m_RelayFwd, 0, sizeof(m_RelayFwd));
+	memset(m_RelayRev, 0, sizeof(m_RelayRev));
+	memset(m_DIOChannels, 0, sizeof(m_DIOChannels));
+	memset(m_DIOChannelsOutputEnable, 0, sizeof(m_DIOChannelsOutputEnable));
+	m_SolenoidChannels = 0;
 }
 
 DashboardDataFormat::~DashboardDataFormat()
