@@ -169,9 +169,6 @@ void RobotBeta1::OperatorControl(void) {
 		GetWatchdog().Feed();
 		robotDrive->TankDrive(stickLeft, stickRight);
 		actOnButtons();
-		if ((slowDownProccessing++ % 25) == 0) {
-			//DBG("\r\t\tGyro Angle:\t%f", gyro->GetAngle());
-		}
 		UpdateDashboard();
 		Wait(0.05);
 	}
@@ -316,7 +313,7 @@ void RobotBeta1::UpdateDashboard(void)
 	dashboard->m_PWMChannels[0][1] = rightMotor->GetRaw();
 	dashboard->m_PWMChannels[0][2] = leftShooter->GetRaw();
 	dashboard->m_PWMChannels[0][3] = rightShooter->GetRaw();
-	dashboard->m_AnalogChannels[0][0] = gyro->GetAngle();
+
 	DBG("\r%d %d %d %d       ",
 		dashboard->m_PWMChannels[0][0],
 		dashboard->m_PWMChannels[0][1],
@@ -344,24 +341,12 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 	}
 }
 
-void RobotBeta1::shoot(bool on)
-{
-	if (on == true) {
-		leftShooter->Set(.5);
-	} else {
-		leftShooter->Set(0);
-	}
-}
 
 void RobotBeta1::actOnButtons(void)
 {
 	readButtons(stickLeft, leftButtons, "left");
 	readButtons(stickRight, leftButtons, "right");
-	if (leftButtons[1] == true) {
-		shoot(true);
-	} else {
-		shoot(false);
-	}
+
 	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
 	
 }
