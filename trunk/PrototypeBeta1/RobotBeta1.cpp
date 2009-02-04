@@ -356,6 +356,11 @@ void RobotBeta1::actOnButtons(void)
 	} else {
 		shooter->Set(0);
 	}
+	if (rightButtons[1] == true) {
+		shooter->Set(.5);
+	} else {
+		shooter->Set(0);
+	}
 		
 		
     
