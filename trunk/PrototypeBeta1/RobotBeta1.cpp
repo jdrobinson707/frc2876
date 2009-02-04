@@ -73,9 +73,10 @@ RobotBeta1::RobotBeta1(void)
 	stickLeft = new Joystick(JOYSTICK_LEFT);
 	stickRight = new Joystick(JOYSTICK_RIGHT);
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
-	leftShooter = new Jaguar(DIGITAL_MODULE_SLOT, 3);
-	rightShooter = new Jaguar(DIGITAL_MODULE_SLOT, 4);
+	shooter = new Jaguar(DIGITAL_MODULE_SLOT, 3);
+	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, 4);
 	dashboard = new DashboardDataFormat();
+	
 	
 	initializeColors();
 	initializeButtons();
@@ -98,6 +99,8 @@ RobotBeta1::~RobotBeta1(void)
 	delete rightMotor;
 	delete leftMotor;
 	delete dashboard;
+	delete shooter;
+	delete conveyor;
 }
 
 void RobotBeta1::initializeColors() {
@@ -311,8 +314,8 @@ void RobotBeta1::UpdateDashboard(void)
 	
 	dashboard->m_PWMChannels[0][0] = leftMotor->GetRaw();
 	dashboard->m_PWMChannels[0][1] = rightMotor->GetRaw();
-	dashboard->m_PWMChannels[0][2] = leftShooter->GetRaw();
-	dashboard->m_PWMChannels[0][3] = rightShooter->GetRaw();
+	dashboard->m_PWMChannels[0][2] = shooter->GetRaw();
+	dashboard->m_PWMChannels[0][3] = conveyor->GetRaw();
 
 	DBG("\r%d %d %d %d       ",
 		dashboard->m_PWMChannels[0][0],
@@ -337,6 +340,7 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 		buttons[i] = stick->GetRawButton(i);
 		if (buttons[i] == true) {
 			DBG("%s stick button %d pressed\n", side, i);
+			
 		}
 	}
 }
@@ -344,9 +348,17 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 
 void RobotBeta1::actOnButtons(void)
 {
+	
 	readButtons(stickLeft, leftButtons, "left");
-	readButtons(stickRight, leftButtons, "right");
-
+	readButtons(stickRight, rightButtons, "right");
+	if (leftButtons[1] == true) {
+		shooter->Set(1);
+	} else {
+		shooter->Set(0);
+	}
+		
+		
+    
 	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
 	
 }
