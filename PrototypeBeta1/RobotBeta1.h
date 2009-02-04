@@ -20,8 +20,8 @@ public:
 private:
 	    Jaguar *leftMotor;
 	    Jaguar *rightMotor;
-	    Jaguar *rightShooter;
-	    Jaguar *leftShooter;
+	    Jaguar *conveyor;
+	    Jaguar *shooter;
 		RobotDrive *robotDrive;
 		Joystick *stickLeft;
 		Joystick *stickRight;
