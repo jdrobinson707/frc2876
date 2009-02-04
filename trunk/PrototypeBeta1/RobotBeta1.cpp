@@ -136,16 +136,18 @@ void RobotBeta1::initializeButtons(void)
 
 void RobotBeta1::initializeCamera(void)
 {
-	if (StartCameraTask() == -1) { 
+	if (StartCameraTask(10, 0, k160x120, ROT_180) == -1) { 
 		DBG("Failed to spawn camera task; Error code %s\n", 
 				GetVisionErrorText(GetLastVisionError()) ); 
 	} else {
 		pc = new PCVideoServer();
-	}
+	} 	
 }
 
 void RobotBeta1::Autonomous(void) {
 	DBG("Starting Autonomous...Trial 15\n");
+	int slowDownProccessing = 0;
+	
 	while(IsAutonomous()) {
 #if 0
 		GetWatchdog().Feed();
@@ -155,6 +157,10 @@ void RobotBeta1::Autonomous(void) {
 		robotDrive.Drive(0, 0);
 #endif
 		UpdateDashboard();
+		if (slowDownProccessing % 1000) {
+			recieveAndReactToCameraData();
+		}
+		slowDownProccessing++;
 		GetWatchdog().Feed();
 		Wait(0.4);
 
@@ -177,10 +183,17 @@ void RobotBeta1::OperatorControl(void) {
 	}
 	DBG("\nEnd Operator Control\n");
 }
-
+/************************************************************
+NOTE:  FindTwoColors takes its own raw images so if
+	   the camera is upside down then FindTwoColors will
+	   see that pink is above even though it really is below
+************************************************************/
 void RobotBeta1::recieveAndReactToCameraData(void) {
-	if (FindTwoColors(tt1, tt2, OUR_TEAM, &pa1, &pa2)) { //if the trailor's beam is found
+	if (FindTwoColors(tt1, tt2, ABOVE, &pa1, &pa2)) { //if the trailor's beam is found
 		//STEP#1:	measure distance to trailer's beam
+		cout << "\nTop of Pink:  "; cout << pa1.boundingRect.height;
+			cout << "\tBottom of Green:  "; cout << pa2.boundingRect.height; 
+			cout << "\tTotalHeight:  "; cout << (pa1.boundingRect.height + pa2.boundingRect.height); cout << "\n";
 		//STEP#2:	align
 		//STEP#3:	shoot
 	}
@@ -339,7 +352,7 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 	for (i = JOYSTICK_FIRST_BUTTON; i <= JOYSTICK_NUM_BUTTONS; i++) {
 		buttons[i] = stick->GetRawButton(i);
 		if (buttons[i] == true) {
-			DBG("%s stick button %d pressed\n", side, i);
+			// DBG("%s stick button %d pressed\n", side, i);
 			
 		}
 	}
@@ -368,7 +381,7 @@ void RobotBeta1::actOnButtons(void)
 	} else {
 		shooter->Set(0);
 	}
-		
+	
 		
     
 	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
