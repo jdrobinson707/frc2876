@@ -48,6 +48,9 @@ using namespace std;
 // Which pwm inputs/outputs the drive motors are plugged into.
 #define DRIVE_MOTOR_LEFT_PWM 1
 #define DRIVE_MOTOR_RIGHT_PWM 2
+#define SHOOTER_MOTOR_PWM 3
+#define CONVEYOR_MOTOR_PWM 4
+
 
 // First analog module is plugged into slot 1 of cRIO
 #define ANALOG_MODULE_SLOT 1
@@ -73,10 +76,12 @@ RobotBeta1::RobotBeta1(void)
 	stickLeft = new Joystick(JOYSTICK_LEFT);
 	stickRight = new Joystick(JOYSTICK_RIGHT);
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
-	shooter = new Jaguar(DIGITAL_MODULE_SLOT, 3);
-	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, 4);
+	shooter = new Jaguar(DIGITAL_MODULE_SLOT, SHOOTER_MOTOR_PWM);
+	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, CONVEYOR_MOTOR_PWM);
 	dashboard = new DashboardDataFormat();
-	
+
+	tiltServo = new Servo(9);
+	panServo = new Servo(10);
 	
 	initializeColors();
 	initializeButtons();
@@ -371,19 +376,21 @@ void RobotBeta1::actOnButtons(void)
 	} else if (leftButtons[1] == false && rightButtons[1] == true) {
 		shooter->Set(.5);
 	} else {
-		shooter-> Set(0);
-	}
-	
-	
-
-	if (rightButtons[1] == true) {
-		shooter->Set(.5);
-	} else {
 		shooter->Set(0);
 	}
 	
-		
-    
+	static float lastrz = 0;
+	static float lastlz = 0;
+	float rz = stickRight->GetZ();
+	float lz = stickLeft->GetZ();
+	if (lastrz != rz || lastlz != lz) {
+		DBG("rightZ=%f leftZ=%f\n", rz, lz);
+		panServo->Set(rz);
+		lastrz = rz;
+		tiltServo->Set(lz);
+		lastlz = lz;
+	}
+	
 	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
 	
 }
