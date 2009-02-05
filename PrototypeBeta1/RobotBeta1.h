@@ -26,8 +26,6 @@ private:
 		Joystick *stickLeft;
 		Joystick *stickRight;
 		Gyro *gyro;
-		Servo *tiltServo;
-		Servo *panServo;
 		
 		PCVideoServer *pc;
 		DashboardDataFormat *dashboard;

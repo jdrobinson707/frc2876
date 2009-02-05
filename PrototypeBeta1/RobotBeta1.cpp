@@ -79,9 +79,6 @@ RobotBeta1::RobotBeta1(void)
 	shooter = new Jaguar(DIGITAL_MODULE_SLOT, SHOOTER_MOTOR_PWM);
 	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, CONVEYOR_MOTOR_PWM);
 	dashboard = new DashboardDataFormat();
-
-	tiltServo = new Servo(9);
-	panServo = new Servo(10);
 	
 	initializeColors();
 	initializeButtons();
@@ -378,19 +375,7 @@ void RobotBeta1::actOnButtons(void)
 	} else {
 		shooter->Set(0);
 	}
-	
-	static float lastrz = 0;
-	static float lastlz = 0;
-	float rz = stickRight->GetZ();
-	float lz = stickLeft->GetZ();
-	if (lastrz != rz || lastlz != lz) {
-		DBG("rightZ=%f leftZ=%f\n", rz, lz);
-		panServo->Set(rz);
-		lastrz = rz;
-		tiltServo->Set(lz);
-		lastlz = lz;
-	}
-	
+		
 	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
 	
 }
