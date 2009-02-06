@@ -225,16 +225,18 @@ NOTE:  FindTwoColors takes its own raw images so if
 void RobotBeta1::recieveAndReactToCameraData(void) {
 	if (FindTwoColors(tt1, tt2, ABOVE, &pa1, &pa2)) { //if the trailor's beam is found
 		//STEP#1:	measure distance to trailer's beam
-		cout << "\nTop of Pink:  "; cout << pa1.boundingRect.height;
-			cout << "\tBottom of Green:  "; cout << pa2.boundingRect.height; 
-			cout << "\tTotalHeight:  "; cout << (pa1.boundingRect.height + pa2.boundingRect.height); cout << "\n";
+		double dToTrailor = 0;
+		dToTrailor = distanceToTrailor((double)(pa1.boundingRect.height + pa2.boundingRect.height));
+		cout << "\nDistance To Trailor:  ";  cout << dToTrailor; cout << "\n";
 		//STEP#2:	align
 		//STEP#3:	shoot
 	}
 }
 
-void RobotBeta1::distanceToTrailor(int pxHeightOfColor) {
-	
+double RobotBeta1::distanceToTrailor(double pxHeightOfColor) {
+	double d = 0;
+	d = (344.0/(pxHeightOfColor));
+	return d;
 }
 
 void RobotBeta1::driveStrait(long maxTime) {
