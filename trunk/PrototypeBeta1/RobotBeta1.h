@@ -52,7 +52,7 @@ private:
 		void recieveAndReactToCameraData(void);
 		void readButtons(Joystick *stick, bool *buttons, char *side);
 		void actOnButtons(void);
-		
+		void distanceToTrailor(int pxH);
 };
 
 #endif
