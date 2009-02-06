@@ -29,6 +29,7 @@ private:
 		Servo *pan;
 		Servo *tilt;
 		
+		
 		PCVideoServer *pc;
 		DashboardDataFormat *dashboard;
 		
