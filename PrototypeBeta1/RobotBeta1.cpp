@@ -79,8 +79,9 @@ RobotBeta1::RobotBeta1(void)
 	shooter = new Jaguar(DIGITAL_MODULE_SLOT, SHOOTER_MOTOR_PWM);
 	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, CONVEYOR_MOTOR_PWM);
 	dashboard = new DashboardDataFormat();
-	pan = new Servo(DIGITAL_MODULE_SLOT, 9);
-	tilt = new Servo(DIGITAL_MODULE_SLOT, 10);
+	pan = new Servo(DIGITAL_MODULE_SLOT, 10);
+	tilt = new Servo(DIGITAL_MODULE_SLOT, 9);
+	
 	
 	initializeColors();
 	initializeButtons();
@@ -421,18 +422,24 @@ void RobotBeta1::actOnButtons(void)
 	
 	// Eddy.  Add servo control here. I(maciej) added code to print the 
 	// value of the z button to show you how to get it.
+    
 	static float lastRightZ = 0;
 	static float lastLeftZ = 0;
 	float leftZ, rightZ;
-	leftZ = stickRight->GetZ();
-	rightZ = stickLeft->GetZ();
+	leftZ = stickLeft->GetZ();
+	rightZ = stickRight->GetZ();
 	if (lastRightZ != rightZ || lastLeftZ != leftZ) {
 		DBG("rightZ=%f leftZ=%f\n", leftZ, rightZ);
 		lastLeftZ = leftZ;
 		lastRightZ = rightZ;
 		// Eddy: set servo pwm here.
+			 
+		pan->Set((leftZ + 1.0) / 2.0);
+		tilt->Set((rightZ + 1.0) / 2.0);
+			 	 
 	}
-	
 }
+	
+
 
 START_ROBOT_CLASS(RobotBeta1);
