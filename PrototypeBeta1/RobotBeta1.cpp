@@ -79,6 +79,8 @@ RobotBeta1::RobotBeta1(void)
 	shooter = new Jaguar(DIGITAL_MODULE_SLOT, SHOOTER_MOTOR_PWM);
 	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, CONVEYOR_MOTOR_PWM);
 	dashboard = new DashboardDataFormat();
+	pan = new Servo(DIGITAL_MODULE_SLOT, 9);
+	tilt = new Servo(DIGITAL_MODULE_SLOT, 10);
 	
 	initializeColors();
 	initializeButtons();
@@ -103,6 +105,8 @@ RobotBeta1::~RobotBeta1(void)
 	delete dashboard;
 	delete shooter;
 	delete conveyor;
+	delete pan;
+	delete tilt;
 }
 
 void RobotBeta1::initializeColors() {
@@ -359,12 +363,16 @@ void RobotBeta1::UpdateDashboard(void)
 	dashboard->m_PWMChannels[0][1] = rightMotor->GetRaw();
 	dashboard->m_PWMChannels[0][2] = shooter->GetRaw();
 	dashboard->m_PWMChannels[0][3] = conveyor->GetRaw();
+	dashboard->m_PWMChannels[0][8] = pan->GetRaw();
+	dashboard->m_PWMChannels[0][9] = tilt->GetRaw();
 
-	DBG("\r%d %d %d %d  range=%d     ",
+	DBG("\r%d %d %d %d %d %d range=%d     ",
 		dashboard->m_PWMChannels[0][0],
 		dashboard->m_PWMChannels[0][1],
 		dashboard->m_PWMChannels[0][2],
 		dashboard->m_PWMChannels[0][3],
+		dashboard->m_PWMChannels[0][8],
+		dashboard->m_PWMChannels[0][9],
 		fake_range);
 	
 	// Call this last to send data to dashboard.
@@ -404,8 +412,20 @@ void RobotBeta1::actOnButtons(void)
 	} else {
 		shooter->Set(0);
 	}
-		
-	// DBG("rightZ=%f leftZ=%f\n", stickRight->GetZ(), stickLeft->GetZ());
+	
+	// Eddy.  Add servo control here. I(maciej) added code to print the 
+	// value of the z button to show you how to get it.
+	static float lastRightZ = 0;
+	static float lastLeftZ = 0;
+	float leftZ, rightZ;
+	leftZ = stickRight->GetZ();
+	rightZ = stickLeft->GetZ();
+	if (lastRightZ != rightZ || lastLeftZ != leftZ) {
+		DBG("rightZ=%f leftZ=%f\n", leftZ, rightZ);
+		lastLeftZ = leftZ;
+		lastRightZ = rightZ;
+		// Eddy: set servo pwm here.
+	}
 	
 }
 
