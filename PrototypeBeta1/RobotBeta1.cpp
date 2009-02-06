@@ -146,9 +146,17 @@ void RobotBeta1::initializeCamera(void)
 	} 	
 }
 
+static int fake_range = 10;
+static int getRange()
+{
+	return fake_range;
+}
+
+
 void RobotBeta1::Autonomous(void) {
 	DBG("Starting Autonomous...Trial 15\n");
 	int slowDownProccessing = 0;
+	conveyor->Set(.1);
 	
 	while(IsAutonomous()) {
 #if 0
@@ -158,15 +166,33 @@ void RobotBeta1::Autonomous(void) {
 		turn130Left();
 		robotDrive.Drive(0, 0);
 #endif
+		 
+		   
+		if (getRange() == 5) {
+			shooter->Set(1);
+		} else if  (getRange() == 4) {
+			shooter->Set(.75);
+		}	else if (getRange() == 3) {
+			shooter->Set(.75);
+		}	else if (getRange() ==2) {
+			shooter->Set(.5);
+		} else {
+			shooter->Set(0);
+		}
 		UpdateDashboard();
 		if (slowDownProccessing % 1000) {
 			recieveAndReactToCameraData();
 		}
 		slowDownProccessing++;
 		GetWatchdog().Feed();
-		Wait(0.4);
-
-	}
+		Wait(1.0);
+		if (fake_range == 0) {
+			fake_range = 10;
+		} else {
+			fake_range = fake_range - 1;
+		}
+	} 
+	conveyor->Set(0);
 	DBG("\nEnd Autonomous Mode\n");	
 }
 
@@ -174,6 +200,7 @@ void RobotBeta1::OperatorControl(void) {
 	DBG("\nStart Operator Control...\n");
 	
 	resetGyro();
+	conveyor->Set(.1);
 	
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
@@ -183,6 +210,7 @@ void RobotBeta1::OperatorControl(void) {
 		UpdateDashboard();
 		Wait(0.05);
 	}
+	conveyor->Set(0);
 	DBG("\nEnd Operator Control\n");
 }
 /************************************************************
@@ -332,11 +360,12 @@ void RobotBeta1::UpdateDashboard(void)
 	dashboard->m_PWMChannels[0][2] = shooter->GetRaw();
 	dashboard->m_PWMChannels[0][3] = conveyor->GetRaw();
 
-	DBG("\r%d %d %d %d       ",
+	DBG("\r%d %d %d %d  range=%d     ",
 		dashboard->m_PWMChannels[0][0],
 		dashboard->m_PWMChannels[0][1],
 		dashboard->m_PWMChannels[0][2],
-		dashboard->m_PWMChannels[0][3]);
+		dashboard->m_PWMChannels[0][3],
+		fake_range);
 	
 	// Call this last to send data to dashboard.
     dashboard->PackAndSend();
