@@ -39,7 +39,7 @@ private:
 		bool rightButtons[JOYSTICK_NUM_BUTTONS];
 		bool leftButtons[JOYSTICK_NUM_BUTTONS];	
 
-		
+		void moveToTrailor(double distanceToTrailor);
 		void driveStrait(long maxTime);
 		void turn90Right(void);
 		void turn130Left(void); 
