@@ -143,7 +143,7 @@ void RobotBeta1::initializeButtons(void)
 
 void RobotBeta1::initializeCamera(void)
 {
-	if (StartCameraTask(10, 0, k160x120, ROT_180) == -1) { 
+	if (StartCameraTask(10, 0, k640x480, ROT_180) == -1) { 
 		DBG("Failed to spawn camera task; Error code %s\n", 
 				GetVisionErrorText(GetLastVisionError()) ); 
 	} else {
@@ -160,19 +160,18 @@ static int getRange()
 
 void RobotBeta1::Autonomous(void) {
 	DBG("Starting Autonomous...Trial 15\n");
-	int slowDownProccessing = 0;
-	conveyor->Set(.1);
+	// conveyor->Set(.1);
 	
 	while(IsAutonomous()) {
-#if 0
+		#if 0
 		GetWatchdog().Feed();
 		driveStrait(500);
 		GetWatchdog().Feed();
-		turn130Left();
-		robotDrive.Drive(0, 0);
-#endif
+		turn90Right();
+		robotDrive->Drive(0, 0);
+		#endif
 		 
-		   
+		#if 0
 		if (getRange() == 5) {
 			shooter->Set(1);
 		} else if  (getRange() == 4) {
@@ -185,18 +184,20 @@ void RobotBeta1::Autonomous(void) {
 			shooter->Set(0);
 		}
 		UpdateDashboard();
-		if (slowDownProccessing % 1000) {
-			recieveAndReactToCameraData();
-		}
-		slowDownProccessing++;
-		GetWatchdog().Feed();
-		Wait(1.0);
 		if (fake_range == 0) {
-			fake_range = 10;
-		} else {
-			fake_range = fake_range - 1;
-		}
-	} 
+					fake_range = 10;
+				} else {
+					fake_range = fake_range - 1;
+				}
+		#endif
+		#if 1
+		recieveAndReactToCameraData();
+		GetWatchdog().Feed();
+		Wait(.05);
+		GetWatchdog().Feed();
+		#endif
+	}
+	robotDrive->Drive(0, 0);
 	conveyor->Set(0);
 	DBG("\nEnd Autonomous Mode\n");	
 }
@@ -219,7 +220,7 @@ void RobotBeta1::OperatorControl(void) {
 	DBG("\nEnd Operator Control\n");
 }
 /************************************************************
-NOTE:  FindTwoColors takes its own raw images so if
+NOTE:  FindTwoColors (located in Target.cpp) takes its own raw images so if
 	   the camera is upside down then FindTwoColors will
 	   see that pink is above even though it really is below
 ************************************************************/
@@ -227,17 +228,41 @@ void RobotBeta1::recieveAndReactToCameraData(void) {
 	if (FindTwoColors(tt1, tt2, ABOVE, &pa1, &pa2)) { //if the trailor's beam is found
 		//STEP#1:	measure distance to trailer's beam
 		double dToTrailor = 0;
-		dToTrailor = distanceToTrailor((double)(pa1.boundingRect.height + pa2.boundingRect.height));
+		double heightOfColor = 0;
+		heightOfColor = (double)(pa1.boundingRect.height + pa2.boundingRect.height);
+		dToTrailor = distanceToTrailor(heightOfColor);
+		cout << "\nHeight:  "; cout << (heightOfColor); cout << "\n";
 		cout << "\nDistance To Trailor:  ";  cout << dToTrailor; cout << "\n";
 		//STEP#2:	align
+		moveToTrailor(dToTrailor);
 		//STEP#3:	shoot
 	}
 }
 
+void RobotBeta1::moveToTrailor(double distance) {
+	if (distance >= 10.0) {
+		GetWatchdog().Feed();
+		cout << pa1.center_mass_x_normalized;
+		robotDrive->Drive(-.5, -pa1.center_mass_x_normalized);
+		GetWatchdog().Feed();
+	} else {
+		robotDrive->Drive(0, 0);
+	}
+}
+
+/* Pre: 
+ * 		#1:takes in the height of the image in pixels
+ * 		#2:the screen size must be:
+ * 			medium(k320x240) (<-- look in intialiazeCamera()) if the constant to the equation is 8520.0
+ * 			small(k160x120) (<-- look in initializeCamera()) if the constant to the equation is 4128.0
+ * 			large(k640x480) (<-- look in initializeCamera()) if the constant to the equation is 16980.0
+ * Post:  returns the distance of the trailer from the robot in feet  */
 double RobotBeta1::distanceToTrailor(double pxHeightOfColor) {
 	double d = 0;
-	d = (344.0/(pxHeightOfColor));
-	return d;
+	double const constant = 16980.0;
+	d = (constant/(pxHeightOfColor));
+	d = d / 12.0;   //convert inches to feet
+	return d; // in feet
 }
 
 void RobotBeta1::driveStrait(long maxTime) {
@@ -419,7 +444,15 @@ void RobotBeta1::actOnButtons(void)
 	} else {
 		shooter->Set(0);
 	}
-	
+	if (rightButtons[11] == 1) {
+		conveyor->Set(0);
+	}
+	if (rightButtons[10] == 1) {
+		conveyor->Set(.2);
+	}
+	if (rightButtons[9] == 1) {
+		conveyor->Set(-.2);
+	}
 	// Eddy.  Add servo control here. I(maciej) added code to print the 
 	// value of the z button to show you how to get it.
     
