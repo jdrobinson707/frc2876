@@ -1,4 +1,4 @@
-//Contributers:  Neil Patel, Maciej, Eddy Louis, Gerry Porthier
+//Contributers:   Maciej, Eddy Louis, Gerry Porthier
 //Started:  1/18/09
 //Last Updated:  1/27/09
 //BHS ROBOTIX TEAM
@@ -143,7 +143,7 @@ void RobotBeta1::initializeButtons(void)
 
 void RobotBeta1::initializeCamera(void)
 {
-	if (StartCameraTask(10, 0, k640x480, ROT_180) == -1) { 
+	if (StartCameraTask(10, 0, k320x240, ROT_180) == -1) { 
 		DBG("Failed to spawn camera task; Error code %s\n", 
 				GetVisionErrorText(GetLastVisionError()) ); 
 	} else {
@@ -159,8 +159,8 @@ static int getRange()
 
 
 void RobotBeta1::Autonomous(void) {
-	DBG("Starting Autonomous...Trial 15\n");
-	// conveyor->Set(.1);
+	DBG("Starting Autonomous...Trial 78\n");
+	//conveyor->Set(.5);
 	
 	while(IsAutonomous()) {
 		#if 0
@@ -206,7 +206,7 @@ void RobotBeta1::OperatorControl(void) {
 	DBG("\nStart Operator Control...\n");
 	
 	resetGyro();
-	conveyor->Set(.1);
+	conveyor->Set(.5);
 	
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
@@ -236,11 +236,13 @@ void RobotBeta1::recieveAndReactToCameraData(void) {
 		//STEP#2:	align
 		moveToTrailor(dToTrailor);
 		//STEP#3:	shoot
+	} else {
+		cout << "Else------------------";
 	}
 }
 
 void RobotBeta1::moveToTrailor(double distance) {
-	if (distance >= 10.0) {
+	if (distance >= 5.0 && distance <= 35.0) {
 		GetWatchdog().Feed();
 		cout << pa1.center_mass_x_normalized;
 		robotDrive->Drive(-.5, -pa1.center_mass_x_normalized);
@@ -259,7 +261,7 @@ void RobotBeta1::moveToTrailor(double distance) {
  * Post:  returns the distance of the trailer from the robot in feet  */
 double RobotBeta1::distanceToTrailor(double pxHeightOfColor) {
 	double d = 0;
-	double const constant = 16980.0;
+	double const constant = 8520.0;
 	d = (constant/(pxHeightOfColor));
 	d = d / 12.0;   //convert inches to feet
 	return d; // in feet
