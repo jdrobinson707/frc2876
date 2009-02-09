@@ -9,6 +9,8 @@
 #define JOYSTICK_FIRST_BUTTON 1
 #define JOYSTICK_LAST_BUTTON JOYSTICK_FIRST_BUTTON + JOYSTICK_NUM_BUTTONS
 
+extern int dbg_flag;
+
 class RobotBeta1 : public SimpleRobot {
 public:
 		RobotBeta1(void);
