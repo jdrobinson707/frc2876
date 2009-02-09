@@ -61,7 +61,7 @@ using namespace std;
 #define GYRO_ANGLE_CHANNEL 1
 #define GYRO_TEMP_CHANNEL 2
 
-static int dbg_flag = 1;
+int dbg_flag = 1;
 #define DBG if (dbg_flag)printf 
 
 
@@ -265,98 +265,6 @@ double RobotBeta1::distanceToTrailor(double pxHeightOfColor) {
 	d = (constant/(pxHeightOfColor));
 	d = d / 12.0;   //convert inches to feet
 	return d; // in feet
-}
-
-void RobotBeta1::driveStrait(long maxTime) {
-	int slowDownProccessing = 0;
-	long cTime = 0;
-	
-	resetGyro();
-	float angle = 0;
-	angle = gyro->GetAngle(); // get heading
-	GetWatchdog().SetEnabled(true);
-	
-	
-	while ((IsAutonomous()) && (cTime <= maxTime))  { 
-		GetWatchdog().Feed();
-		float angle = gyro->GetAngle(); // get heading
-		if ((slowDownProccessing % 250) == 0) {
-			DBG("\n\t\tGyro Angle:  %f\t\t\tDrive Adj:  %f", gyro->GetAngle(), (angle * 0.03));
-			cout << "\n\t\tTime:  "; cout << cTime; cout << "\t\t\tExit:  "; cout << maxTime; cout << "\n";
-		}
-		slowDownProccessing++; cTime++;
-		robotDrive->Drive(-.5, (angle * 0.03));// turn to correct heading 
-		Wait(0.004); 
-	}
-	robotDrive->Drive(0.0, 0.0);
-}
-
-void RobotBeta1::turn90Right(void) {
-	float cGyroAngle = 0.0;
-	const float maxAngle = 47.3;
-
-	while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
-		cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-		robotDrive->Drive(-.25, -1);
-		Wait(0.006);
-		GetWatchdog().Feed();
-		cGyroAngle = gyro->GetAngle();
-	}
-}
-
-void RobotBeta1::turn130Left(void) {
-	float cGyroAngle;
-	cGyroAngle = 0.0;
-	const float maxAngle = 66.67;
-	
-	while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
-			cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-			robotDrive->Drive(-.5, -1);
-			Wait(0.006);
-			GetWatchdog().Feed();
-			cGyroAngle = gyro->GetAngle();
-	}
-}
-void RobotBeta1::turnDeg(double degrees) {
-	double radians = 0;
-	radians = degreesToRadians(degrees);
-    float cGyroAngle = 0.0;
-    const float maxAngle = radians;
-
-    while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
-            cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-            robotDrive->Drive(-.25, -1);
-            Wait(0.006);
-            GetWatchdog().Feed();
-            cGyroAngle = gyro->GetAngle();
-    }
-}
-
-void RobotBeta1::turnRad(double radians) {
-    float cGyroAngle = 0.0;
-    const float maxAngle = radians;
-
-    while((cGyroAngle <= maxAngle) && (IsAutonomous())) {
-            cout << "Here\t\t"; cout << "Exit:  "; cout << (cGyroAngle <= maxAngle); cout << "\r";
-            robotDrive->Drive(-.25, -1);
-            Wait(0.006);
-            GetWatchdog().Feed();
-            cGyroAngle = gyro->GetAngle();
-    }
-}
-
-void RobotBeta1::resetGyro(void) {
-	DBG("Enter\n");
-	float angle;
-	do {
-		gyro->Reset();
-		angle = gyro->GetAngle();
-		DBG("calibrate angle %f\r", angle);
-		GetWatchdog().Feed();
-		Wait(0.1);
-		GetWatchdog().Feed();
-	} while (((int)angle) != 0);
-	DBG("\nExit\n");
 }
 
 void RobotBeta1::TestCamera(void) {
