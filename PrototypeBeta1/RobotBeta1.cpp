@@ -228,19 +228,18 @@ void RobotBeta1::OperatorControl(void) {
 float RobotBeta1::accelmonitor (float YVal) {
 	if (YVal >= .6 && YVal <= 1) {
 		return .4;
-		if (YVal >= -.6 && YVal <= -1) {
-			return -.4;
-			if (YVal >= .6 && YVal <= 1) {
-				return .4;
-				if (YVal >= .6 && YVal <= -1) {
-					return -.4;
-				}  else {
-					return YVal; 
-				}
-			}
-		}
 	}
+	if (YVal >= -.6 && YVal <= -1) {
+		return -.4;
+
+	}
+		return YVal; 
+		
 }
+
+
+
+
 
 /************************************************************
 NOTE:  FindTwoColors takes its own raw images so if
