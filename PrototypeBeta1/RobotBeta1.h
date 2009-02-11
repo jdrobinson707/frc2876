@@ -27,10 +27,12 @@ private:
 		RobotDrive *robotDrive;
 		Joystick *stickLeft;
 		Joystick *stickRight;
+		Joystick *stickCopilot;
 		Gyro *gyro;
 		Servo *pan;
 		Servo *tilt;
-		
+		Encoder *encoder;
+		DriverStation *driverStation;	
 		
 		PCVideoServer *pc;
 		DashboardDataFormat *dashboard;
@@ -39,8 +41,10 @@ private:
 		ParticleAnalysisReport pa1 /*PINK*/ , pa2 /*GREEN*/;	//Particle Analysis Report
 		
 		bool rightButtons[JOYSTICK_NUM_BUTTONS];
-		bool leftButtons[JOYSTICK_NUM_BUTTONS];	
-
+		bool leftButtons[JOYSTICK_NUM_BUTTONS];
+		bool copilotButtons[JOYSTICK_NUM_BUTTONS];
+		time_t now, lastTime;
+		
 		void moveToTrailor(double distanceToTrailor);
 		void driveStrait(long maxTime);
 		void turn90Right(void);
@@ -48,13 +52,16 @@ private:
         void turnDeg(double degrees);
         void turnRad(double radians);
 		void resetGyro(void);
-		void TestCamera(void);
+		void initializeAlliance(void);
 		void initializeColors(void);
 		void initializeCamera(void);
 		void initializeButtons(void);
 		void recieveAndReactToCameraData(void);
 		void readButtons(Joystick *stick, bool *buttons, char *side);
 		void actOnButtons(void);
+		void updateConveyor(void);
+		void updateShooter(void);
+		void updatePanTilt(void);
 		double distanceToTrailor(double pxH);
 };
 
