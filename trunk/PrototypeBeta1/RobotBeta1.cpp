@@ -118,7 +118,6 @@ RobotBeta1::~RobotBeta1(void)
 
 void RobotBeta1::initializeAlliance() {
 	TRACE_ENTER;
-	
 	// TODO add code to pick alliance based on physical switch setting
 	
 	DriverStation::Alliance alliance = driverStation->GetAlliance();
@@ -208,7 +207,16 @@ void RobotBeta1::OperatorControl(void) {
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
 		GetWatchdog().Feed();
-		robotDrive->TankDrive(stickLeft, stickRight);
+		stickLeft->GetY();
+		stickRight->GetY();
+		// accelmonitor();
+		float rightYVal;
+		float leftYVal;
+		rightYVal = stickRight->GetY();
+		leftYVal = stickLeft->GetY();
+		rightYVal = accelmonitor(rightYVal);
+		leftYVal = accelmonitor(leftYVal);
+		// robotDrive->TankDrive(stickLeft, stickRight);
 		actOnButtons();
 		UpdateDashboard();
 		Wait(0.05);
@@ -216,6 +224,24 @@ void RobotBeta1::OperatorControl(void) {
 	conveyor->Set(0);
 	DBG("\nEnd Operator Control\n");
 }
+
+float RobotBeta1::accelmonitor (float YVal) {
+	if (YVal >= .6 && YVal <= 1) {
+		return .4;
+		if (YVal >= -.6 && YVal <= -1) {
+			return -.4;
+			if (YVal >= .6 && YVal <= 1) {
+				return .4;
+				if (YVal >= .6 && YVal <= -1) {
+					return -.4;
+				}  else {
+					return YVal; 
+				}
+			}
+		}
+	}
+}
+
 /************************************************************
 NOTE:  FindTwoColors takes its own raw images so if
 	   the camera is upside down then FindTwoColors will
