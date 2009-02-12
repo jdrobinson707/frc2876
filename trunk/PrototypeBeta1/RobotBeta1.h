@@ -44,6 +44,7 @@ private:
 		bool leftButtons[JOYSTICK_NUM_BUTTONS];
 		bool copilotButtons[JOYSTICK_NUM_BUTTONS];
 		time_t now, lastTime;
+		float tcLeft, tcRight;
 		
 		void moveToTrailor(double distanceToTrailor);
 		void driveStrait(long maxTime);
