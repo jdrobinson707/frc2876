@@ -47,10 +47,10 @@ using namespace std;
 #define JOYSTICK_COPILOT 3
 
 // Which pwm inputs/outputs the drive motors are plugged into.
-#define DRIVE_MOTOR_LEFT_PWM 1
-#define DRIVE_MOTOR_RIGHT_PWM 2
-#define SHOOTER_MOTOR_PWM 3
-#define CONVEYOR_MOTOR_PWM 4
+#define DRIVE_MOTOR_LEFT_PWM 2
+#define DRIVE_MOTOR_RIGHT_PWM 1
+#define SHOOTER_MOTOR_PWM 4
+#define CONVEYOR_MOTOR_PWM 3
 
 
 // First analog module is plugged into slot 1 of cRIO
@@ -201,7 +201,7 @@ void RobotBeta1::Autonomous(void)
 void RobotBeta1::OperatorControl(void) {
 	DBG("\nStart Operator Control...\n");
 	
-	resetGyro();
+	// resetGyro();
 	// conveyor->Set(.5);
 	
 	GetWatchdog().SetEnabled(true);
@@ -209,14 +209,17 @@ void RobotBeta1::OperatorControl(void) {
 		GetWatchdog().Feed();
 		stickLeft->GetY();
 		stickRight->GetY();
-		// accelmonitor();
 		float rightYVal;
 		float leftYVal;
 		rightYVal = stickRight->GetY();
 		leftYVal = stickLeft->GetY();
 		rightYVal = accelmonitor(rightYVal);
 		leftYVal = accelmonitor(leftYVal);
-		// robotDrive->TankDrive(stickLeft, stickRight);
+		tcLeft = leftYVal;
+		tcRight = rightYVal;
+		
+		//robotDrive->TankDrive(leftYVal, rightYVal);
+		robotDrive->TankDrive(stickLeft, stickRight);
 		actOnButtons();
 		UpdateDashboard();
 		Wait(0.05);
@@ -233,13 +236,8 @@ float RobotBeta1::accelmonitor (float YVal) {
 		return -.4;
 
 	}
-		return YVal; 
-		
+	return YVal; 
 }
-
-
-
-
 
 /************************************************************
 NOTE:  FindTwoColors takes its own raw images so if
@@ -313,17 +311,16 @@ void RobotBeta1::updateConveyor()
 	float speed;
 	if (copilotButtons[7] == true) {
 		speed = conveyor->Get();
-		if (lastSpeed == speed) {
-			speed = speed - .1;
-			conveyor->Set(speed);
-		}
+		speed = speed - .1;
+		conveyor->Set(speed);
 	}
-	if (copilotButtons[8] == true) {
-			speed = conveyor->Get();
-			if (lastSpeed == speed) {
-				speed = speed + .1;
-				conveyor->Set(speed);
-			}
+	if (copilotButtons[6] == true) {
+		speed = conveyor->Get();
+		speed = speed + .1;
+		conveyor->Set(speed);
+	}
+	if (copilotButtons[1] == true) {
+		conveyor->Set(0);
 	}
 }
 
@@ -368,7 +365,7 @@ void RobotBeta1::updatePanTilt()
 	leftZ = stickLeft->GetZ();
 	rightZ = stickRight->GetZ();
 	if (lastRightZ != rightZ || lastLeftZ != leftZ) {
-		DBG("rightZ=%f leftZ=%f\n", leftZ, rightZ);
+		// DBG("rightZ=%f leftZ=%f\n", leftZ, rightZ);
 		lastLeftZ = leftZ;
 		lastRightZ = rightZ;
 		pan->Set((leftZ + 1.0) / 2.0);
@@ -384,9 +381,9 @@ void RobotBeta1::actOnButtons(void)
 	now = time(NULL);
 	if (now - lastTime >= 1) {
 		lastTime = now;
-		updateConveyor();
+		// updateConveyor();
 	}
-	
+	updateConveyor();
 	updateShooter();
 	updatePanTilt();
 }
@@ -403,16 +400,15 @@ void RobotBeta1::UpdateDashboard(void)
 	//dashboard->m_DIOChannels[1] = encoder->GetRaw();
 	//dashboard->m_DIOChannels[2] = encoder->GetRaw();
 
-	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d 8-%d 9-%d %d %d now=%d last=%d",
+	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d 8-%d 9-%d tcL=%f tcR=%f ",
 		dashboard->m_PWMChannels[0][0],
 		dashboard->m_PWMChannels[0][1],
 		dashboard->m_PWMChannels[0][2],
 		dashboard->m_PWMChannels[0][3],
 		dashboard->m_PWMChannels[0][8],
 		dashboard->m_PWMChannels[0][9],
-		dashboard->m_DIOChannels[1],
-	    dashboard->m_DIOChannels[2],
-	    (int)now, (int)lastTime);
+		tcLeft, tcRight
+		);
 	
 	// Call this last to send data to dashboard.
     dashboard->PackAndSend();
