@@ -65,6 +65,7 @@ private:
 		void updatePanTilt(void);
 		double distanceToTrailor(double pxH);
 		float accelmonitor(float YVal);
+		
 };
 
 #endif
