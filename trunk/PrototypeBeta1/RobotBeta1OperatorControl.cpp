@@ -36,43 +36,47 @@ void RobotBeta1::OperatorControl(void) {
 	
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
-		GetWatchdog().Feed();
-		/*stickLeft->GetY();
-		stickRight->GetY();
-		// accelmonitor();
-		float rightYVal;
-		float leftYVal;
-		rightYVal = stickRight->GetY();
-		leftYVal = stickLeft->GetY();
-		rightYVal = accelmonitor(rightYVal);
-		leftYVal = accelmonitor(leftYVal); */
-		robotDrive->TankDrive(stickLeft, stickRight);
 		actOnButtons();
 		UpdateDashboard();
+		GetWatchdog().Feed();
+		
+		//UpdateDrive();
+		
 		Wait(0.05);
 	}
 	conveyor->Set(0);
 	DBG("\nEnd Operator Control\n");
 }
 
-float RobotBeta1::accelmonitor (float YVal) {
-	if (YVal >= .6 && YVal <= 1) {
-		return .4;
+void RobotBeta1::UpdateDrive() {
+	
+	if (leftButtons[1] == true || rightButtons[1] == true) {
+		stickLeft->GetY();
+		stickRight->GetY();
+		// accelmonitor();
+		float rightYVal = 0.0;
+		float leftYVal = 0.0;
+		rightYVal = stickRight->GetY();
+		leftYVal = stickLeft->GetY();
+		accelmonitor(rightYVal);
+		accelmonitor(leftYVal);
 	}
-	if (YVal >= -.6 && YVal <= -1) {
-		return -.4;
-
+	if (leftButtons[1] == false && rightButtons[1] == false) {
+		robotDrive->TankDrive(stickLeft, stickRight);	
 	}
-		return YVal; 
-		
 }
 
-//
+void RobotBeta1::accelmonitor (float YVal; ) {
+	for(float iCurrentYVal = YVal; iCurrentYVal ; iCurrentYVal =) {
+		GetWatchdog().Feed();
+		robotDrive->TankDrive()
+	}
+}
+
 // Read buttons on a joystick to see if any have been pressed.
 // stick: left or right joystick
 // buttons: array of bools to store button press state
 // side: string that indicates left/right used for printing debug msgs
-//
 void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 {
 	int i;
@@ -86,21 +90,20 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 
 void RobotBeta1::updateConveyor()
 {
-	static float lastSpeed = 0;
 	float speed;
 	if (copilotButtons[7] == true) {
 		speed = conveyor->Get();
-		if (lastSpeed == speed) {
-			speed = speed - .1;
-			conveyor->Set(speed);
-		}
+		speed = speed - .1;
+		conveyor->Set(speed);
 	}
-	if (copilotButtons[8] == true) {
-			speed = conveyor->Get();
-			if (lastSpeed == speed) {
-				speed = speed + .1;
-				conveyor->Set(speed);
-			}
+	if (copilotButtons[6] == true) {
+		speed = conveyor->Get();
+		speed = speed + .1;
+		conveyor->Set(speed);
+
+	}
+	if (copilotButtons[1] == true){
+		conveyor->Set(0);
 	}
 }
 
@@ -159,11 +162,10 @@ void RobotBeta1::actOnButtons(void)
 	readButtons(stickCopilot, copilotButtons, "copilot");
 	readButtons(stickRight, rightButtons, "right");
 	now = time(NULL);
-	if (now - lastTime >= 1) {
+	if (now - lastTime >= 2) {
 		lastTime = now;
-		updateConveyor();
 	}
-	
+	updateConveyor();	
 	updateShooter();
 	updatePanTilt();
 }
