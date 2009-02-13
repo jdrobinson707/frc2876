@@ -64,8 +64,8 @@ private:
 		void updateShooter(void);
 		void updatePanTilt(void);
 		double distanceToTrailor(double pxH);
-		float accelmonitor(float YVal);
-		
+		void accelmonitor(float YVal);
+		void UpdateDrive();
 };
 
 #endif
