@@ -44,7 +44,7 @@ void RobotBeta1::OperatorControl(void) {
 		
 		UpdateDrive_Eddy();
 		UpdateDrive_Neil();
-		
+
 		if(accelbutton == 8) {
 			UpdateDrive_Eddy();
 			if(accelbutton == 9) {
@@ -77,7 +77,7 @@ void RobotBeta1::UpdateDrive_Eddy() {
 		float rightYVal;
 		float leftYVal;
 		rightYVal = stickRight->GetY();
-		leftYVal = stickLeft->GetY();
+		leftYVal = sstickLeft->GetY();
 		rightYVal = accelmonitor_Eddy(rightYVal); 
 		leftYVal = accelmonitor_Eddy(leftYVal);
 		robotDrive->TankDrive(leftYVal, rightYVal);	

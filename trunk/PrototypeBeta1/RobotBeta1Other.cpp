@@ -115,7 +115,7 @@ void RobotBeta1::initializeAlliance() {
 	TRACE_ENTER;
 	
 	//---->initialize by switch
-		if (allianceSwitch->Get() == 1) { //if the alliance switch is "ON"
+		if (allianceSwitch->Get() ==a 1) { //if the alliance switch is "ON"
 			ourAlliance = DriverStation::Alliance(DriverStation::kBlue);
 		} else {
 			ourAlliance = DriverStation::Alliance(DriverStation::kRed);
