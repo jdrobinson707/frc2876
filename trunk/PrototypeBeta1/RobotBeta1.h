@@ -44,6 +44,7 @@ private:
 		bool rightButtons[JOYSTICK_NUM_BUTTONS];
 		bool leftButtons[JOYSTICK_NUM_BUTTONS];
 		bool copilotButtons[JOYSTICK_NUM_BUTTONS];
+	    int accelbutton;
 		time_t now, lastTime;
 		float tcLeft, tcRight;
 		
