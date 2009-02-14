@@ -49,8 +49,8 @@ using namespace std;
 #define JOYSTICK_COPILOT 3
 
 // Which pwm inputs/outputs the drive motors are plugged into.
-#define DRIVE_MOTOR_LEFT_PWM 1
-#define DRIVE_MOTOR_RIGHT_PWM 2
+#define DRIVE_MOTOR_RIGHT_PWM 1
+#define DRIVE_MOTOR_LEFT_PWM 2
 #define SHOOTER_MOTOR_PWM 4
 #define CONVEYOR_MOTOR_PWM 3
 
