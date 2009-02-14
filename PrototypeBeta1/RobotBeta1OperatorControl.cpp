@@ -42,15 +42,15 @@ void RobotBeta1::OperatorControl(void) {
 		UpdateDashboard();
 		GetWatchdog().Feed();
 		
-		UpdateDrive();
-		
+		UpdateDrive_Eddy();
+
 		Wait(0.05);
 	}
 	conveyor->Set(0);
 	DBG("\nEnd Operator Control\n");
 }
 
-void RobotBeta1::UpdateDrive() {
+void RobotBeta1::UpdateDrive_Neil() {
 	if (leftButtons[1] == true || rightButtons[1] == true) {
 		Wait(.1);
 		cout << "Joystick:  "; cout << stickLeft->GetY(); cout << "\n";
@@ -58,7 +58,26 @@ void RobotBeta1::UpdateDrive() {
 	} else {
 		robotDrive->TankDrive(stickLeft, stickRight);
 	}
-}  
+}
+
+void RobotBeta1::UpdateDrive_Eddy() {
+	
+	if (leftButtons[1] == true || rightButtons[1] == true) {
+		stickLeft->GetY();
+		stickRight->GetY();
+		// accelmonitor();
+		float rightYVal = 0.0;
+		float leftYVal = 0.0;
+		rightYVal = stickRight->GetY();
+		leftYVal = stickLeft->GetY();
+		accelmonitor_Eddy(rightYVal);
+		accelmonitor_Eddy(leftYVal);
+	}
+
+	if (leftButtons[1] == false && rightButtons[1] == false) {
+		robotDrive->TankDrive(stickLeft, stickRight);	
+	}
+}
 
 void RobotBeta1::accelmonitor_Neil (float jStickY1, float jStickY2) {
 	for(float iCurrentYVal = 10.0; iCurrentYVal > 0; iCurrentYVal--) {
@@ -107,6 +126,7 @@ void RobotBeta1::updateConveyor()
 		speed = speed - .1;
 		conveyor->Set(speed);
 	}
+
 	if (copilotButtons[6] == true) {
 		speed = conveyor->Get();
 		speed = speed + .1;
