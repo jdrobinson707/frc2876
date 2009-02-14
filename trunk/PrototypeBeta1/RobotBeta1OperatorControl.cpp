@@ -28,6 +28,8 @@
 
 #define DBG if (dbg_flag)printf 
 
+using namespace std;
+
 void RobotBeta1::OperatorControl(void) {
 	DBG("\nStart Operator Control...\n");
 	
@@ -40,7 +42,7 @@ void RobotBeta1::OperatorControl(void) {
 		UpdateDashboard();
 		GetWatchdog().Feed();
 		
-		//UpdateDrive();
+		UpdateDrive();
 		
 		Wait(0.05);
 	}
@@ -49,27 +51,20 @@ void RobotBeta1::OperatorControl(void) {
 }
 
 void RobotBeta1::UpdateDrive() {
-	
 	if (leftButtons[1] == true || rightButtons[1] == true) {
-		stickLeft->GetY();
-		stickRight->GetY();
-		// accelmonitor();
-		float rightYVal = 0.0;
-		float leftYVal = 0.0;
-		rightYVal = stickRight->GetY();
-		leftYVal = stickLeft->GetY();
-		accelmonitor(rightYVal);
-		accelmonitor(leftYVal);
+		Wait(.1);
+		cout << "Joystick:  "; cout << stickLeft->GetY(); cout << "\n";
+		accelmonitor_Neil(stickLeft->GetY(), stickRight->GetY());
+	} else {
+		robotDrive->TankDrive(stickLeft, stickRight);
 	}
-	if (leftButtons[1] == false && rightButtons[1] == false) {
-		robotDrive->TankDrive(stickLeft, stickRight);	
-	}
-}
+}  
 
-void RobotBeta1::accelmonitor (float YVal; ) {
-	for(float iCurrentYVal = YVal; iCurrentYVal ; iCurrentYVal =) {
+void RobotBeta1::accelmonitor_Neil (float jStickY1, float jStickY2) {
+	for(float iCurrentYVal = 10.0; iCurrentYVal > 0; iCurrentYVal--) {
 		GetWatchdog().Feed();
-		robotDrive->TankDrive()
+		robotDrive->TankDrive((jStickY1 / iCurrentYVal), (jStickY2 / iCurrentYVal));
+		Wait(.07);
 	}
 }
 
@@ -87,6 +82,22 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 		}
 	}
 }
+float RobotBeta1::accelmonitor_Eddy (float YVal) {
+	if (YVal >= .6 && YVal <= 1) {
+		return .4;
+		if (YVal >= -.6 && YVal <= -1) {
+			return -.4;
+			if (YVal >= .6 && YVal <= 1) {
+				return .4;
+				if (YVal >= .6 && YVal <= -1) {
+					return -.4;
+				}  else {
+					return YVal;
+				}
+			}
+		}
+	}
+}
 
 void RobotBeta1::updateConveyor()
 {
@@ -100,7 +111,6 @@ void RobotBeta1::updateConveyor()
 		speed = conveyor->Get();
 		speed = speed + .1;
 		conveyor->Set(speed);
-
 	}
 	if (copilotButtons[1] == true){
 		conveyor->Set(0);
@@ -111,11 +121,7 @@ void RobotBeta1::updateShooter()
 {	
 	// Check status of copilot joystick buttons
 	if (copilotButtons[1] == true) {
-		if (shooter->Get() == 0) {
-			shooter->Set(.5);
-		} else {
 			shooter->Set(0);
-		}
 	}
 	if (copilotButtons[4] == true) {
 		shooter->Set(.4);
@@ -124,7 +130,7 @@ void RobotBeta1::updateShooter()
 		shooter->Set(.6);
 	}
 	if (copilotButtons[5] == true) {
-		shooter->Set(1.0);
+		shooter->Set(.8);
 	}	
 #if 0	
 	if (copilotButtons[1] == true && rightButtons[1] == true) {
