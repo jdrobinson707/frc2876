@@ -27,18 +27,6 @@
 #include "Math2.h"
 #include "RobotBeta1.h"
 
-/***************************************************************************/
-/*                     CHANGE THIS DURING THE COMPETITION                  */
-// Ummmm... you cannot change code during competition.  A #define is a constant
-// You need to find another way to determine team color/alliance. -Maciej
-/*     #1*																   */
-			#define OUR_TEAM 	WE_ARE_RED_TEAM                          /**/
-/*     #2*/																 /**/
-/***************************************************************************/
-
-#define WE_ARE_RED_TEAM		BELOW  //if the color of the opposite team is pink above green then they are the red team
-#define WE_ARE_BLUE_TEAM	ABOVE  //^--and therefore our color is pink BELOW green and therefore we are the blue team
-
 using namespace std;
 
 // Watchdog expiration in seconds
@@ -54,6 +42,8 @@ using namespace std;
 #define SHOOTER_MOTOR_PWM 4
 #define CONVEYOR_MOTOR_PWM 3
 
+// What is plugged into the Digital I/O (also called GPIO) slots
+#define ALLIANCE_SWITCH_GPIO 1
 
 // First analog module is plugged into slot 1 of cRIO
 #define ANALOG_MODULE_SLOT 1
@@ -87,10 +77,12 @@ RobotBeta1::RobotBeta1(void) {
 	tilt = new Servo(DIGITAL_MODULE_SLOT, 9);
 	//encoder = new Encoder(DIGITAL_MODULE_SLOT, 1);
 	driverStation = DriverStation::GetInstance();
+	allianceSwitch = new DigitalInput(DIGITAL_MODULE_SLOT, ALLIANCE_SWITCH_GPIO);
 	// initializeAlliance();
 	initializeColors();
 	initializeButtons();
 	initializeCamera();
+	initializeAlliance();
 	lastTime = time(NULL);
 	GetWatchdog().SetExpiration(WATCHDOG_EXPIRATION);
 	
@@ -115,21 +107,30 @@ RobotBeta1::~RobotBeta1(void)
 	delete tilt;
 	// delete encoder;
 	delete stickCopilot;
+	delete allianceSwitch;
 }
 
 void RobotBeta1::initializeAlliance() {
 	TRACE_ENTER;
-	// TODO add code to pick alliance based on physical switch setting
 	
-	DriverStation::Alliance alliance = driverStation->GetAlliance();
-	if (alliance == DriverStation::kRed) {
-		DBG("RED TEAM\n");
-	} else if (alliance == DriverStation::kBlue) {
-		DBG("BLUE TEAM\n");
+	//---->initialize by switch
+		if (allianceSwitch->Get() == 1) { //if the alliance switch is "ON"
+			ourAlliance = DriverStation::Alliance(DriverStation::kBlue);
+		} else {
+			ourAlliance = DriverStation::Alliance(DriverStation::kRed);
+		}
+	//---->initialize by driver station
+		/*ourAlliance = driverStation->GetAlliance(); */
+	
+		
+	//---->Output display	
+	if (ourAlliance == DriverStation::kRed) {
+		DBG("WE ARE RED TEAM\n");
+	} else if (ourAlliance == DriverStation::kBlue) {
+		DBG("WE ARE BLUE TEAM\n");
 	} else {
 		DBG("Invalid team color");
 	}
-	
 	TRACE_EXIT;
 }
 
