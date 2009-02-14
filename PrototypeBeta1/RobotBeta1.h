@@ -33,12 +33,13 @@ private:
 		Servo *tilt;
 		Encoder *encoder;
 		DriverStation *driverStation;	
-		
+		DigitalInput *allianceSwitch; /*0=OFF=RED, 1=ON=BLUE*/
 		PCVideoServer *pc;
 		DashboardDataFormat *dashboard;
 		
 		TrackingThreshold tt1 /*PINK*/, tt2 /*GREEN*/;		// these are the 2 colors to track 		
 		ParticleAnalysisReport pa1 /*PINK*/ , pa2 /*GREEN*/;	//Particle Analysis Report
+		DriverStation::Alliance ourAlliance; 
 		
 		bool rightButtons[JOYSTICK_NUM_BUTTONS];
 		bool leftButtons[JOYSTICK_NUM_BUTTONS];
