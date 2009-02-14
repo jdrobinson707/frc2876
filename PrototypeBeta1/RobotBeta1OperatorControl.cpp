@@ -43,12 +43,23 @@ void RobotBeta1::OperatorControl(void) {
 		GetWatchdog().Feed();
 		
 		UpdateDrive_Eddy();
+		UpdateDrive_Neil();
+		
+		if(accelbutton == 8) {
+			UpdateDrive_Eddy();
+			if(accelbutton == 9) {
+				UpdateDrive_Neil();	
+			} else {
+				robotDrive->TankDrive(stickLeft, stickRight);
+			}
+		}
 
-		Wait(0.05);
+
+			Wait(0.05);
+		}
+		conveyor->Set(0);
+		DBG("\nEnd Operator Control\n");
 	}
-	conveyor->Set(0);
-	DBG("\nEnd Operator Control\n");
-}
 
 void RobotBeta1::UpdateDrive_Neil() {
 	if (leftButtons[1] == true || rightButtons[1] == true) {
@@ -59,23 +70,17 @@ void RobotBeta1::UpdateDrive_Neil() {
 		robotDrive->TankDrive(stickLeft, stickRight);
 	}
 }
-
+// 
 void RobotBeta1::UpdateDrive_Eddy() {
 	
-	if (leftButtons[1] == true || rightButtons[1] == true) {
-		stickLeft->GetY();
-		stickRight->GetY();
-		// accelmonitor();
-		float rightYVal = 0.0;
-		float leftYVal = 0.0;
+	if (leftButtons[1] == true && rightButtons[1] == true) {
+		float rightYVal;
+		float leftYVal;
 		rightYVal = stickRight->GetY();
 		leftYVal = stickLeft->GetY();
-		accelmonitor_Eddy(rightYVal);
-		accelmonitor_Eddy(leftYVal);
-	}
-
-	if (leftButtons[1] == false && rightButtons[1] == false) {
-		robotDrive->TankDrive(stickLeft, stickRight);	
+		rightYVal = accelmonitor_Eddy(rightYVal); 
+		leftYVal = accelmonitor_Eddy(leftYVal);
+		robotDrive->TankDrive(leftYVal, rightYVal);	
 	}
 }
 
@@ -101,22 +106,23 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 		}
 	}
 }
-float RobotBeta1::accelmonitor_Eddy (float YVal) {
+
+// if the joystick is pushed beyond .6 then accelmonior lowers speed to .4
+float RobotBeta1::accelmonitor_Eddy (float YVal) {      
 	if (YVal >= .6 && YVal <= 1) {
 		return .4;
-		if (YVal >= -.6 && YVal <= -1) {
-			return -.4;
-			if (YVal >= .6 && YVal <= 1) {
-				return .4;
-				if (YVal >= .6 && YVal <= -1) {
-					return -.4;
-				}  else {
-					return YVal;
-				}
-			}
-		}
 	}
+	if (YVal >= -.6 && YVal <= -1) {
+		return -.4;
+	}
+	return YVal;	
 }
+	
+
+
+
+
+
 
 void RobotBeta1::updateConveyor()
 {
@@ -194,4 +200,13 @@ void RobotBeta1::actOnButtons(void)
 	updateConveyor();	
 	updateShooter();
 	updatePanTilt();
+	if (leftButtons[8] == true) {
+		accelbutton = 8;
+	}
+	if (leftButtons[9] == true) {
+		accelbutton = 9;
+	}
+	if (leftButtons[10] == true) {
+		accelbutton = 10;
+	}
 }

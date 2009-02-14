@@ -84,6 +84,7 @@ RobotBeta1::RobotBeta1(void) {
 	initializeCamera();
 	initializeAlliance();
 	lastTime = time(NULL);
+	accelbutton = 10;
 	GetWatchdog().SetExpiration(WATCHDOG_EXPIRATION);
 	
 	DBG("Done\n");
