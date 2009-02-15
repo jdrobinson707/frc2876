@@ -44,6 +44,10 @@ using namespace std;
 
 // What is plugged into the Digital I/O (also called GPIO) slots
 #define ALLIANCE_SWITCH_GPIO 1
+#define RIGHT_ENCODER_CHANNEL_A_GPIO 2
+#define RIGHT_ENCODER_CHANNEL_B_GPIO 3
+#define LEFT_ENCODER_CHANNEL_A_GPIO 4
+#define LEFT_ENCODER_CHANNEL_B_GPIO 5
 
 // First analog module is plugged into slot 1 of cRIO
 #define ANALOG_MODULE_SLOT 1
@@ -75,10 +79,14 @@ RobotBeta1::RobotBeta1(void) {
 	dashboard = new DashboardDataFormat();
 	pan = new Servo(DIGITAL_MODULE_SLOT, 10);
 	tilt = new Servo(DIGITAL_MODULE_SLOT, 9);
-	//encoder = new Encoder(DIGITAL_MODULE_SLOT, 1);
+	leftEncoder = new Encoder(DIGITAL_MODULE_SLOT, LEFT_ENCODER_CHANNEL_A_GPIO, 
+			DIGITAL_MODULE_SLOT, LEFT_ENCODER_CHANNEL_A_GPIO,
+			false, Encoder::k4X);
+	rightEncoder = new Encoder(DIGITAL_MODULE_SLOT, RIGHT_ENCODER_CHANNEL_A_GPIO, 
+				DIGITAL_MODULE_SLOT, RIGHT_ENCODER_CHANNEL_A_GPIO,
+				true, Encoder::k4X);
 	driverStation = DriverStation::GetInstance();
 	allianceSwitch = new DigitalInput(DIGITAL_MODULE_SLOT, ALLIANCE_SWITCH_GPIO);
-	// initializeAlliance();
 	initializeColors();
 	initializeButtons();
 	initializeCamera();
@@ -106,7 +114,8 @@ RobotBeta1::~RobotBeta1(void)
 	delete conveyor;
 	delete pan;
 	delete tilt;
-	// delete encoder;
+	delete leftEncoder;
+	delete rightEncoder;
 	delete stickCopilot;
 	delete allianceSwitch;
 }
@@ -172,8 +181,8 @@ void RobotBeta1::initializeButtons(void)
 
 void RobotBeta1::initializeCamera(void)
 {
-	TRACE_ENTER;
-	if (StartCameraTask(10, 0, k160x120, ROT_180) == -1) { 
+	TRACE_ENTER; 
+	if (StartCameraTask(10, 0, k320x240, ROT_0) == -1) {
 		DBG("Failed to spawn camera task; Error code %s\n", 
 				GetVisionErrorText(GetLastVisionError()) ); 
 	} else {
@@ -191,10 +200,23 @@ void RobotBeta1::UpdateDashboard(void)
 	dashboard->m_PWMChannels[0][3] = conveyor->GetRaw();
 	dashboard->m_PWMChannels[0][8] = pan->GetRaw();
 	dashboard->m_PWMChannels[0][9] = tilt->GetRaw();
-	//dashboard->m_DIOChannels[1] = encoder->GetRaw();
-	//dashboard->m_DIOChannels[2] = encoder->GetRaw();
-
-	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d 8-%d 9-%d %d %d now=%d last=%d",
+	dashboard->m_DIOChannelsOutputEnable[ALLIANCE_SWITCH_GPIO] = 1;
+	dashboard->m_DIOChannels[ALLIANCE_SWITCH_GPIO] = allianceSwitch->Get();
+	if (leftEncoder->GetDirection()) {
+		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_A_GPIO] = true;
+		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_B_GPIO] = true;
+	} else {
+		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_A_GPIO] = false;
+		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_B_GPIO] = false;
+	}
+	if (rightEncoder->GetDirection()) {
+		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = true;
+		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = true;
+	} else {
+		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = false;
+		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = false;
+	}
+	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d 8-%d 9-%d %d %d dr=%d lenc-%.2f renc-%.2f",
 		dashboard->m_PWMChannels[0][0],
 		dashboard->m_PWMChannels[0][1],
 		dashboard->m_PWMChannels[0][2],
@@ -203,7 +225,9 @@ void RobotBeta1::UpdateDashboard(void)
 		dashboard->m_PWMChannels[0][9],
 		dashboard->m_DIOChannels[1],
 	    dashboard->m_DIOChannels[2],
-	    (int)now, (int)lastTime);
+	    accelbutton,
+	    rightEncoder->GetDistance(),
+	    rightEncoder->GetDistance());
 	
 	// Call this last to send data to dashboard.
     dashboard->PackAndSend();
