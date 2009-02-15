@@ -77,7 +77,7 @@ void RobotBeta1::UpdateDrive_Eddy() {
 		float rightYVal;
 		float leftYVal;
 		rightYVal = stickRight->GetY();
-		leftYVal = sstickLeft->GetY();
+		leftYVal = stickLeft->GetY();
 		rightYVal = accelmonitor_Eddy(rightYVal); 
 		leftYVal = accelmonitor_Eddy(leftYVal);
 		robotDrive->TankDrive(leftYVal, rightYVal);	
