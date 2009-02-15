@@ -31,7 +31,8 @@ private:
 		Gyro *gyro;
 		Servo *pan;
 		Servo *tilt;
-		Encoder *encoder;
+		Encoder *leftEncoder;
+		Encoder *rightEncoder;
 		DriverStation *driverStation;	
 		DigitalInput *allianceSwitch; /*0=OFF=RED, 1=ON=BLUE*/
 		PCVideoServer *pc;

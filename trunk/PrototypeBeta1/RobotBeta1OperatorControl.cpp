@@ -35,45 +35,51 @@ void RobotBeta1::OperatorControl(void) {
 	
 	//resetGyro();
 	// conveyor->Set(.5);
-	
+	leftEncoder->Start();
+	rightEncoder->Start();
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
 		actOnButtons();
 		UpdateDashboard();
-		GetWatchdog().Feed();
+		GetWatchdog().Feed();		
 		
 		UpdateDrive_Eddy();
 		UpdateDrive_Neil();
 
-		if(accelbutton == 8) {
-			UpdateDrive_Eddy();
-			if(accelbutton == 9) {
-				UpdateDrive_Neil();	
-			} else {
-				robotDrive->TankDrive(stickLeft, stickRight);
-			}
-		}
-
-
-			Wait(0.05);
-		}
-		conveyor->Set(0);
-		DBG("\nEnd Operator Control\n");
-	}
+		Wait(0.05);
+	}	
+	conveyor->Set(0);
+	leftEncoder->Stop();
+	rightEncoder->Stop();
+	DBG("\nEnd Operator Control\n");
+}
 
 void RobotBeta1::UpdateDrive_Neil() {
 	if (leftButtons[1] == true || rightButtons[1] == true) {
 		Wait(.1);
-		cout << "Joystick:  "; cout << stickLeft->GetY(); cout << "\n";
+		cout << "\nJoystick:  "; cout << stickLeft->GetY(); cout << "\n";
 		accelmonitor_Neil(stickLeft->GetY(), stickRight->GetY());
 	} else {
 		robotDrive->TankDrive(stickLeft, stickRight);
 	}
 }
+
+
+// if the joystick is pushed beyond .6 then accelmonior lowers speed to .4
+float RobotBeta1::accelmonitor_Eddy (float YVal) {      
+	if (YVal >= .8 && YVal <= 1) {
+		return .6;
+	}
+	if (YVal >= -.8 && YVal <= -1) {
+		return -.6;
+	}
+	return YVal;	
+}
+
 // 
 void RobotBeta1::UpdateDrive_Eddy() {
 	
-	if (leftButtons[1] == true && rightButtons[1] == true) {
+	//if (leftButtons[1] == true && rightButtons[1] == true) {
 		float rightYVal;
 		float leftYVal;
 		rightYVal = stickRight->GetY();
@@ -81,7 +87,7 @@ void RobotBeta1::UpdateDrive_Eddy() {
 		rightYVal = accelmonitor_Eddy(rightYVal); 
 		leftYVal = accelmonitor_Eddy(leftYVal);
 		robotDrive->TankDrive(leftYVal, rightYVal);	
-	}
+	//}
 }
 
 void RobotBeta1::accelmonitor_Neil (float jStickY1, float jStickY2) {
@@ -107,23 +113,6 @@ void RobotBeta1::readButtons(Joystick *stick, bool *buttons, char *side)
 	}
 }
 
-// if the joystick is pushed beyond .6 then accelmonior lowers speed to .4
-float RobotBeta1::accelmonitor_Eddy (float YVal) {      
-	if (YVal >= .6 && YVal <= 1) {
-		return .4;
-	}
-	if (YVal >= -.6 && YVal <= -1) {
-		return -.4;
-	}
-	return YVal;	
-}
-	
-
-
-
-
-
-
 void RobotBeta1::updateConveyor()
 {
 	float speed;
@@ -146,7 +135,7 @@ void RobotBeta1::updateConveyor()
 void RobotBeta1::updateShooter()
 {	
 	// Check status of copilot joystick buttons
-	if (copilotButtons[1] == true) {
+	if (copilotButtons[2] == true) {
 			shooter->Set(0);
 	}
 	if (copilotButtons[4] == true) {
