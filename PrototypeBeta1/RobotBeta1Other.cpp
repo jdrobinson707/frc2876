@@ -76,7 +76,8 @@ RobotBeta1::RobotBeta1(void) {
 	gyro = new Gyro(ANALOG_MODULE_SLOT, GYRO_ANGLE_CHANNEL);
 	shooter = new Jaguar(DIGITAL_MODULE_SLOT, SHOOTER_MOTOR_PWM);
 	conveyor = new Jaguar(DIGITAL_MODULE_SLOT, CONVEYOR_MOTOR_PWM);
-	dashboard = new DashboardDataFormat();
+	ddf = new DashboardDataFormat();
+	// db = new Dashboard();
 	pan = new Servo(DIGITAL_MODULE_SLOT, 10);
 	tilt = new Servo(DIGITAL_MODULE_SLOT, 9);
 	leftEncoder = new Encoder(DIGITAL_MODULE_SLOT, LEFT_ENCODER_CHANNEL_A_GPIO, 
@@ -92,7 +93,7 @@ RobotBeta1::RobotBeta1(void) {
 	initializeCamera();
 	initializeAlliance();
 	lastTime = time(NULL);
-	accelbutton = 10;
+	accelbutton = 4;
 	GetWatchdog().SetExpiration(WATCHDOG_EXPIRATION);
 	
 	DBG("Done\n");
@@ -109,7 +110,8 @@ RobotBeta1::~RobotBeta1(void)
 	delete robotDrive;
 	delete rightMotor;
 	delete leftMotor;
-	delete dashboard;
+	delete ddf;
+	// delete db;
 	delete shooter;
 	delete conveyor;
 	delete pan;
@@ -194,43 +196,43 @@ void RobotBeta1::initializeCamera(void)
 void RobotBeta1::UpdateDashboard(void) 
 {
 	GetWatchdog().Feed();
-	dashboard->m_PWMChannels[0][0] = leftMotor->GetRaw();
-	dashboard->m_PWMChannels[0][1] = rightMotor->GetRaw();
-	dashboard->m_PWMChannels[0][2] = shooter->GetRaw();
-	dashboard->m_PWMChannels[0][3] = conveyor->GetRaw();
-	dashboard->m_PWMChannels[0][8] = pan->GetRaw();
-	dashboard->m_PWMChannels[0][9] = tilt->GetRaw();
-	dashboard->m_DIOChannelsOutputEnable[ALLIANCE_SWITCH_GPIO] = 1;
-	dashboard->m_DIOChannels[ALLIANCE_SWITCH_GPIO] = allianceSwitch->Get();
+	ddf->m_PWMChannels[0][0] = leftMotor->GetRaw();
+	ddf->m_PWMChannels[0][1] = rightMotor->GetRaw();
+	ddf->m_PWMChannels[0][2] = shooter->GetRaw();
+	ddf->m_PWMChannels[0][3] = conveyor->GetRaw();
+	ddf->m_PWMChannels[0][8] = pan->GetRaw();
+	ddf->m_PWMChannels[0][9] = tilt->GetRaw();
+	ddf->m_DIOChannelsOutputEnable[ALLIANCE_SWITCH_GPIO] = 1;
+	ddf->m_DIOChannels[ALLIANCE_SWITCH_GPIO] = allianceSwitch->Get();
 	if (leftEncoder->GetDirection()) {
-		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_A_GPIO] = true;
-		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_B_GPIO] = true;
+		ddf->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_A_GPIO] = true;
+		ddf->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_B_GPIO] = true;
 	} else {
-		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_A_GPIO] = false;
-		dashboard->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_B_GPIO] = false;
+		ddf->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_A_GPIO] = false;
+		ddf->m_DIOChannelsOutputEnable[LEFT_ENCODER_CHANNEL_B_GPIO] = false;
 	}
 	if (rightEncoder->GetDirection()) {
-		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = true;
-		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = true;
+		ddf->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = true;
+		ddf->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = true;
 	} else {
-		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = false;
-		dashboard->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = false;
+		ddf->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = false;
+		ddf->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = false;
 	}
 	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d 8-%d 9-%d %d %d dr=%d lenc-%.2f renc-%.2f",
-		dashboard->m_PWMChannels[0][0],
-		dashboard->m_PWMChannels[0][1],
-		dashboard->m_PWMChannels[0][2],
-		dashboard->m_PWMChannels[0][3],
-		dashboard->m_PWMChannels[0][8],
-		dashboard->m_PWMChannels[0][9],
-		dashboard->m_DIOChannels[1],
-	    dashboard->m_DIOChannels[2],
+		ddf->m_PWMChannels[0][0],
+		ddf->m_PWMChannels[0][1],
+		ddf->m_PWMChannels[0][2],
+		ddf->m_PWMChannels[0][3],
+		ddf->m_PWMChannels[0][8],
+		ddf->m_PWMChannels[0][9],
+		ddf->m_DIOChannels[1],
+	    ddf->m_DIOChannels[2],
 	    accelbutton,
 	    rightEncoder->GetDistance(),
 	    rightEncoder->GetDistance());
 	
 	// Call this last to send data to dashboard.
-    dashboard->PackAndSend();
+    ddf->PackAndSend();
 }
 
 START_ROBOT_CLASS(RobotBeta1);
