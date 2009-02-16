@@ -36,7 +36,8 @@ private:
 		DriverStation *driverStation;	
 		DigitalInput *allianceSwitch; /*0=OFF=RED, 1=ON=BLUE*/
 		PCVideoServer *pc;
-		DashboardDataFormat *dashboard;
+		DashboardDataFormat *ddf;
+		Dashboard *db;
 		
 		TrackingThreshold tt1 /*PINK*/, tt2 /*GREEN*/;		// these are the 2 colors to track 		
 		ParticleAnalysisReport pa1 /*PINK*/ , pa2 /*GREEN*/;	//Particle Analysis Report
@@ -67,10 +68,11 @@ private:
 		void updateShooter(void);
 		void updatePanTilt(void);
 		double distanceToTrailor(double pxH);
-		void accelmonitor_Neil(float Y1, float Y2);
+		void accelmonitor_Neil(float Y1, float Y2, bool reset);
 		float accelmonitor_Eddy(float YVAl);
 		void UpdateDrive_Neil();
 		void UpdateDrive_Eddy();
+		bool RobotIsAtHighestSpeed(float currentSpeed, float j1speed, float j2speed);
 };
 
 #endif

@@ -31,7 +31,7 @@
 using namespace std;
 
 void RobotBeta1::OperatorControl(void) {
-	DBG("\nStart Operator Control...\n");
+	DBG("\nStart Operator Control...version 4\n");
 	
 	//resetGyro();
 	// conveyor->Set(.5);
@@ -43,11 +43,21 @@ void RobotBeta1::OperatorControl(void) {
 		UpdateDashboard();
 		GetWatchdog().Feed();		
 		
-		UpdateDrive_Eddy();
-		UpdateDrive_Neil();
-
+		if (accelbutton == 8) {
+			UpdateDrive_Eddy();
+		} else if (accelbutton == 9) {
+			UpdateDrive_Neil();
+		} else if (accelbutton == 10) {
+			robotDrive->TankDrive(stickLeft->GetY() / 1.5 , stickRight->GetY() / 1.5);
+		} else if (accelbutton == 4) {
+			robotDrive->TankDrive(stickLeft->GetY() / 1.8 , stickRight->GetY() / 2.0);			
+		} else if (accelbutton == 3) {
+			robotDrive->TankDrive(stickLeft->GetY() / 1.4 , stickRight->GetY() / 1.4);			
+		} else if (accelbutton == 5) {
+			robotDrive->TankDrive(stickLeft->GetY() / 1.1 , stickRight->GetY() / 1.1);			
+		}
 		Wait(0.05);
-	}	
+	}
 	conveyor->Set(0);
 	leftEncoder->Stop();
 	rightEncoder->Stop();
@@ -57,21 +67,29 @@ void RobotBeta1::OperatorControl(void) {
 void RobotBeta1::UpdateDrive_Neil() {
 	if (leftButtons[1] == true || rightButtons[1] == true) {
 		Wait(.1);
-		cout << "\nJoystick:  "; cout << stickLeft->GetY(); cout << "\n";
-		accelmonitor_Neil(stickLeft->GetY(), stickRight->GetY());
+		accelmonitor_Neil(stickLeft->GetY(), stickRight->GetY(), false);
 	} else {
-		robotDrive->TankDrive(stickLeft, stickRight);
+		robotDrive->TankDrive((stickLeft->GetY()), (stickRight->GetY()));
+		accelmonitor_Neil(0.0, 0.0, true);
 	}
 }
 
 
 // if the joystick is pushed beyond .6 then accelmonior lowers speed to .4
-float RobotBeta1::accelmonitor_Eddy (float YVal) {      
-	if (YVal >= .8 && YVal <= 1) {
-		return .6;
+float RobotBeta1::accelmonitor_Eddy (float YVal) {
+	if (rightButtons[1] == true || leftButtons[1] == true) {
+		if (YVal >= .8 && YVal <= 1) {
+			return .8;
+		}
+		if (YVal <= -.8 && YVal >= -1) {
+			return -.8;
+		}
 	}
-	if (YVal >= -.8 && YVal <= -1) {
-		return -.6;
+	if (YVal >= .8 && YVal <= 1) {
+		return .5;
+	}
+	if (YVal <= -.8 && YVal >= -1) {
+		return -.5;
 	}
 	return YVal;	
 }
@@ -90,12 +108,43 @@ void RobotBeta1::UpdateDrive_Eddy() {
 	//}
 }
 
-void RobotBeta1::accelmonitor_Neil (float jStickY1, float jStickY2) {
-	for(float iCurrentYVal = 10.0; iCurrentYVal > 0; iCurrentYVal--) {
-		GetWatchdog().Feed();
-		robotDrive->TankDrive((jStickY1 / iCurrentYVal), (jStickY2 / iCurrentYVal));
-		Wait(.07);
+void RobotBeta1::accelmonitor_Neil (float jStickY1, float jStickY2, bool reset) {
+	float iCurrentYVal = 0.0;
+		if (jStickY1 >= jStickY2) iCurrentYVal = jStickY2;
+		else iCurrentYVal = jStickY1;
+	float rampupVal = 0.0;
+		if (iCurrentYVal >= 0.0) rampupVal = .05;
+		else rampupVal = -.05;
+	static int firstTime = 0;
+	
+	cout << "YVal:  "; cout << iCurrentYVal;
+	
+	if (!reset) { 
+		while (!RobotIsAtHighestSpeed(iCurrentYVal, jStickY1, jStickY2) && IsOperatorControl() && firstTime < 1 && 
+				(leftButtons[1] == true || rightButtons[1] == true)) {
+			//if all of the above is true then you may execute this code which ramps up speed slowly
+			GetWatchdog().Feed();
+			robotDrive->TankDrive((jStickY1 - iCurrentYVal), (jStickY2 - iCurrentYVal));
+			Wait(.8);
+			iCurrentYVal -= rampupVal;
+			cout << "first";
+		}
+		if (firstTime >= 1) {
+			robotDrive->TankDrive((jStickY1), (jStickY2));
+			cout << "second";
+		}
 	}
+	
+	firstTime++;
+	if ((!IsOperatorControl()) || !(leftButtons[1] == true || rightButtons[1] == true) || reset) {
+		firstTime = 0;
+	}
+}
+
+bool RobotBeta1::RobotIsAtHighestSpeed(float currentYVal, float jy1, float jy2) {
+	if (currentYVal <= 0.01 || currentYVal >= -0.01) { // of robot is approximately 
+		return true; //at the highest speed return true
+	} else return false;
 }
 
 // Read buttons on a joystick to see if any have been pressed.
@@ -198,4 +247,13 @@ void RobotBeta1::actOnButtons(void)
 	if (leftButtons[10] == true) {
 		accelbutton = 10;
 	}
+	if (leftButtons[4] == true) {
+		accelbutton = 4;
+	}
+	if (leftButtons[3] == true) {
+		accelbutton = 3;
+	}
+	if (leftButtons[5] == true) {
+		accelbutton = 5;
+	}	
 }
