@@ -40,7 +40,6 @@ void RobotBeta1::OperatorControl(void) {
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())  {
 		actOnButtons();
-		UpdateDashboard();
 		GetWatchdog().Feed();		
 		
 		if (accelbutton == 8) {
@@ -56,8 +55,12 @@ void RobotBeta1::OperatorControl(void) {
 		} else if (accelbutton == 5) {
 			robotDrive->TankDrive(stickLeft->GetY() / 1.1 , stickRight->GetY() / 1.1);			
 		}
+		UpdateDashboard();
 		Wait(0.05);
 	}
+	shooter->Set(0);
+	leftMotor->Set(0);
+	rightMotor->Set(0);
 	conveyor->Set(0);
 	leftEncoder->Stop();
 	rightEncoder->Stop();
@@ -188,7 +191,7 @@ void RobotBeta1::updateShooter()
 			shooter->Set(0);
 	}
 	if (copilotButtons[4] == true) {
-		shooter->Set(.4);
+		shooter->Set(.5);
 	}
 	if (copilotButtons[3] == true) {
 		shooter->Set(.6);
@@ -237,7 +240,7 @@ void RobotBeta1::actOnButtons(void)
 	}
 	updateConveyor();	
 	updateShooter();
-	updatePanTilt();
+//	updatePanTilt();
 	if (leftButtons[8] == true) {
 		accelbutton = 8;
 	}

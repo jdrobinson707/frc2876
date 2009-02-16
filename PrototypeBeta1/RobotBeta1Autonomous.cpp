@@ -30,6 +30,9 @@
 void RobotBeta1::Autonomous(void) {
 	DBG("Starting Autonomous...Trial 91\n");
 	//conveyor->Set(.5);
+	pan->Set(.36);
+	tilt->Set(.51);
+	
 	while(IsAutonomous()) {
 #if 0
 		GetWatchdog().Feed();
@@ -44,10 +47,12 @@ void RobotBeta1::Autonomous(void) {
 	} 
 	conveyor->Set(0);
 	DBG("\nEnd Autonomous Mode\n");	
+	pan->Set(.36);
+	tilt->Set(.51);
 }
 
 /************************************************************
-NOTE:  FindTwoColors takes its own raw images so if
+NOTE:  FindTwoColors takes its own raw images so if			<-- umm... may not be true
 	   the camera is upside down then FindTwoColors will
 	   see that pink is above even though it really is below
 ************************************************************/
@@ -69,18 +74,25 @@ void RobotBeta1::recieveAndReactToCameraData(void) {
 		dToTrailor = distanceToTrailor((double)(pa1.boundingRect.height + pa2.boundingRect.height));
 		cout << "\nDistance To Trailor:  ";  cout << dToTrailor; cout << "\n";
 		
-		//STEP#2:	align
-		moveToTrailor(dToTrailor);
+		//STEP#2:	CHARGE!!!!
+		if (dToTrailor > 23.0) {
+			robotDrive->Drive(-1.0, (-1 * pa1.center_mass_x_normalized * .5));
+		}
 		
-		//STEP#3:	shoot
-		if (dToTrailor >= 5.0 && dToTrailor <= 6.0) {
+		//STEP#2A: Align
+		else if (dToTrailor <= 23.0 && dToTrailor > 14.0) {
+			robotDrive->Drive(-.4, -1 * pa1.center_mass_x_normalized);
+			tilt->Set(.56);
+		}
+		
+		//STEP#3:	FIRE!!!!
+		else {
+			robotDrive->Drive(0,0);
 			shooter->Set(.6);
-			Wait(2.0);
+			Wait(8.0);
 			shooter->Set(0.0);
 		}
-	} else {
-		cout << "Else------------------";
-	}
+	} else cout << "Trailor-Not-Found";
 }
 
 void RobotBeta1::moveToTrailor(double distance) {
@@ -107,12 +119,6 @@ void RobotBeta1::moveToTrailor(double distance) {
 	} else if (distance >= 35.0) {
 		robotDrive->Drive(0,0);
 	}*/
-	
-	if (distance > 10.0) {
-		robotDrive->Drive(-1.0, -pa1.center_mass_x_normalized);		
-	} else {
-		robotDrive->Drive(0,0);
-	}
 }
 
 /* Pre: 
