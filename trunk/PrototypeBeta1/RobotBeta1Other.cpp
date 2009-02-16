@@ -202,6 +202,7 @@ void RobotBeta1::UpdateDashboard(void)
 	ddf->m_PWMChannels[0][3] = conveyor->GetRaw();
 	ddf->m_PWMChannels[0][8] = pan->GetRaw();
 	ddf->m_PWMChannels[0][9] = tilt->GetRaw();
+#if 0
 	ddf->m_DIOChannelsOutputEnable[ALLIANCE_SWITCH_GPIO] = 1;
 	ddf->m_DIOChannels[ALLIANCE_SWITCH_GPIO] = allianceSwitch->Get();
 	if (leftEncoder->GetDirection()) {
@@ -218,7 +219,8 @@ void RobotBeta1::UpdateDashboard(void)
 		ddf->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_A_GPIO] = false;
 		ddf->m_DIOChannelsOutputEnable[RIGHT_ENCODER_CHANNEL_B_GPIO] = false;
 	}
-	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d 8-%d 9-%d %d %d dr=%d lenc-%.2f renc-%.2f",
+#endif
+	DBG("\rPWM 1-%d 2-%d 3-%d 4-%d pan-%d til-%d %d %d dr=%d lenc-%.2f renc-%.2f",
 		ddf->m_PWMChannels[0][0],
 		ddf->m_PWMChannels[0][1],
 		ddf->m_PWMChannels[0][2],
