@@ -187,11 +187,6 @@ public class RobotTemplate extends SimpleRobot {
         }
         lowDashData.finalizeCluster();
         lowDashData.commit();
-        /*try {
-        ColorImage ci = camera.getImage();
-        } catch (AxisCameraException ace) {
-        } catch (NIVisionException nie) {
-        }*/
     }
 
     public void updateVisionDashboard(double joyStickX, double gyroAngle) {
