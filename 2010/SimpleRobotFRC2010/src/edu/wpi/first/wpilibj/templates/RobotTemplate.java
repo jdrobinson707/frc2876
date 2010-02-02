@@ -104,13 +104,23 @@ public class RobotTemplate extends SimpleRobot {
 
         Watchdog.getInstance().setExpiration(8.0);
         System.out.println("In Auto");
+        encoder.start();
         while (isAutonomous() && isEnabled()) {
             Watchdog.getInstance().feed();
-            drive.drive(-.5, 0); // drive forward
-            Timer.delay(2.0); // wait 3 seconds
-            drive.drive(-0.5, 1); // turn
-            Timer.delay(3.0);
+            System.out.print(encoder.getDistance() + "distance\r");
+            if (encoder.getDistance() > -3200){
+                drive.drive(-.5, 0);
+                Timer.delay(1);
+//                drive.drive(-.5, 1);
+            }
+            drive.drive(0, 0);
+//            drive.drive(-.5, 0); // drive forward
+//            //Timer.delay(2.0); // wait 3 seconds
+//            drive.drive(-0.5, 1); // turn
+//            Timer.delay(3.0);
         }
+         encoder.stop();
+         encoder.reset();
     }
 
     void updateDashboard() {
@@ -335,7 +345,7 @@ public class RobotTemplate extends SimpleRobot {
         while (isOperatorControl() && isEnabled()) {
             updateDashboard();
             updateVisionDashboard(stickCopilot.getX(), gyro.getAngle());
-            System.out.println(encoder.getDistance());
+            System.out.print(encoder.getDistance() + "\r");
             Watchdog.getInstance().feed();
             Timer.delay(0.5);  //changed timer delay from .5
             drive.tankDrive(stickLeft, stickRight);
@@ -343,5 +353,6 @@ public class RobotTemplate extends SimpleRobot {
             updateZButton();
         }
         encoder.stop();
+        System.out.println("\nEnd operatorControl");
     }
 }
