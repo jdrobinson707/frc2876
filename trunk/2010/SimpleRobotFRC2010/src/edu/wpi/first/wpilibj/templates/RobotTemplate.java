@@ -328,8 +328,8 @@ public class RobotTemplate extends SimpleRobot {
         Watchdog.getInstance().setExpiration(1.0);
         camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
-        // camera.writeResolution(AxisCamera.ResolutionT.k320x240);
-        camera.writeResolution(AxisCamera.ResolutionT.k160x120);
+        camera.writeResolution(AxisCamera.ResolutionT.k320x240);
+        // camera.writeResolution(AxisCamera.ResolutionT.k160x120);
         encoder.start();
 
         while (isOperatorControl() && isEnabled()) {
