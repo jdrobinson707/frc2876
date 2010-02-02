@@ -325,7 +325,7 @@ public class RobotTemplate extends SimpleRobot {
     public void operatorControl() {
         System.out.println("In OperatorControl");
         // camera
-        Watchdog.getInstance().setExpiration(1.0);
+        Watchdog.getInstance().setExpiration(2.0);
         camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
         camera.writeResolution(AxisCamera.ResolutionT.k320x240);
