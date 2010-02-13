@@ -20,13 +20,9 @@ interface Constants {
     // which pwm inputs/outputs the drive motors are plugged into
     public static final int DRIVE_MOTOR_RIGHT_PWM = 1;
     public static final int DRIVE_MOTOR_LEFT_PWM = 2;
-    public static final int SHOOTER_MOTOR_PWM = 4;
-    public static final int CONVEYOR_MOTOR_PWM = 3;
-    public static final int ALLIANCE_SWITCH_GPIO = 1;
     public static final int ANALOG_MODULE_SLOT = 1;
     public static final int DIGITAL_MODULE_SLOT = 4;
-    public static final int GYRO_ANGLE_CHANNEL = 1;
-    public static final int GYRO_TEMP_CHANNEL = 2;
+    public static final int GYRO_ANGLE_CHANNEL = 2;
     public static final int JOYSTICK_NUM_BUTTONS = 17;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
     public static final int JOYSTICK_LAST_BUTTON = Constants.JOYSTICK_FIRST_BUTTON
@@ -46,8 +42,6 @@ public class RobotTemplate extends SimpleRobot {
 
     Jaguar leftMotor;
     Jaguar rightMotor;
-    Jaguar conveyor;
-    Jaguar shooter;
     RobotDrive robotDrive;
     Joystick stickLeft;
     Joystick stickRight;
@@ -56,17 +50,17 @@ public class RobotTemplate extends SimpleRobot {
     Servo pan;
     Servo tilt;
     DriverStation driverStation;
-    DigitalInput allianceSwitch;
+    DriverStationLCD dslcd;
     boolean rightButtons[];
     boolean leftButtons[];
     boolean copilotButtons[];
-    int accelbutton;
     AxisCamera cam;
     DashboardUpdater dbu;
+    Encoder encoder;
     private int dbgLevel = OFF;
     private static final int DEBUG = 5;
     private static final int WARN = 2;
-        private static final int ERR = 1;
+    private static final int ERR = 1;
     private static final int OFF = 0;
 
     private void DBG(int msgLevel, String msg) {
@@ -76,16 +70,21 @@ public class RobotTemplate extends SimpleRobot {
     }
 
     public RobotTemplate() {
-        leftMotor = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
-                Constants.DRIVE_MOTOR_LEFT_PWM);
-        rightMotor = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
-                Constants.DRIVE_MOTOR_RIGHT_PWM);
+        Watchdog.getInstance().setExpiration(2.0);
+        Watchdog.getInstance().feed();
 
-        robotDrive = new RobotDrive(leftMotor, rightMotor);
-        // Play with this to make joystick drive robot forward when pushed
-        // forward.
-        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
-        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+//        leftMotor = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
+//                Constants.DRIVE_MOTOR_LEFT_PWM);
+//        rightMotor = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
+//                Constants.DRIVE_MOTOR_RIGHT_PWM);
+//
+//        robotDrive = new RobotDrive(leftMotor, rightMotor);
+//        // Play with this to make joystick drive robot forward when pushed
+//        // forward.
+//        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, false);
+//        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, false);
+
+        robotDrive = new RobotDrive(1, 3, 2, 4);
 
         stickLeft = new Joystick(Constants.JOYSTICK_LEFT);
         stickRight = new Joystick(Constants.JOYSTICK_RIGHT);
@@ -94,22 +93,18 @@ public class RobotTemplate extends SimpleRobot {
         gyro = new Gyro(Constants.ANALOG_MODULE_SLOT,
                 Constants.GYRO_ANGLE_CHANNEL);
 
-        shooter = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
-                Constants.SHOOTER_MOTOR_PWM);
-        conveyor = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
-                Constants.CONVEYOR_MOTOR_PWM);
-
         rightButtons = new boolean[Constants.JOYSTICK_NUM_BUTTONS];
         leftButtons = new boolean[Constants.JOYSTICK_NUM_BUTTONS];
         copilotButtons = new boolean[Constants.JOYSTICK_NUM_BUTTONS];
 
         pan = new Servo(Constants.DIGITAL_MODULE_SLOT, Constants.PAN_CHANNEL);
         tilt = new Servo(Constants.DIGITAL_MODULE_SLOT, Constants.TILT_CHANNEL);
-        cam = AxisCamera.getInstance();
-        cam.writeResolution(AxisCamera.ResolutionT.k320x240);
-        cam.writeBrightness(0);
-
-        dbu = new DashboardUpdater();
+        Watchdog.getInstance().feed();
+//        cam = AxisCamera.getInstance();
+//        cam.writeResolution(AxisCamera.ResolutionT.k320x240);
+//        cam.writeBrightness(0);
+        Watchdog.getInstance().feed();
+//        dbu = new DashboardUpdater();
     }
 
     public void initializeButtons() {
@@ -137,6 +132,59 @@ public class RobotTemplate extends SimpleRobot {
         readButtons(stickRight, rightButtons, "right");
     }
 
+    private void updateZButton() {
+        double zValR;
+        double zValL;
+        zValR = stickRight.getZ();
+        zValL = stickLeft.getZ();
+        zValR = (zValR + 1) / 2;
+        zValL = (zValL + 1) / 2;
+
+        tilt.set(zValR);
+        pan.set(zValL);
+    }
+    private boolean last_target = false;
+
+    private void do_camera_test() {
+        double kScoreThreshold = .01;
+        try {
+            if (cam.freshImage()) {// && turnController.onTarget()) {
+                double gyroAngle = gyro.pidGet();
+                ColorImage image = cam.getImage();
+                Thread.yield();
+                Target[] targets = Target.findCircularTargets(image);
+                Thread.yield();
+                image.free();
+                if (targets.length == 0 || targets[0].m_score < kScoreThreshold) {
+                    if (last_target == true) {
+                        System.out.println("No target found");
+                    }
+                    last_target = false;
+
+                    Target[] newTargets = new Target[targets.length + 1];
+                    newTargets[0] = new Target();
+                    newTargets[0].m_majorRadius = 0;
+                    newTargets[0].m_minorRadius = 0;
+                    newTargets[0].m_score = 0;
+                    for (int i = 0; i < targets.length; i++) {
+                        newTargets[i + 1] = targets[i];
+                    }
+                    dbu.updateVisionDashboard(0.0, gyro.getAngle(), 0.0, 0.0, newTargets);
+                } else {
+                    last_target = true;
+                    System.out.println(targets[0]);
+                    System.out.println("Target Angle: " + targets[0].getHorizontalAngle());
+                    dbu.updateVisionDashboard(0.0, gyro.getAngle(), 0.0,
+                            targets[0].m_xPos / targets[0].m_xMax, targets);
+                }
+            }
+        } catch (NIVisionException ex) {
+            ex.printStackTrace();
+        } catch (AxisCameraException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     /**
      * This function is called once each time the robot enters autonomous mode.
      */
@@ -144,20 +192,7 @@ public class RobotTemplate extends SimpleRobot {
         DBG(WARN, "Enter autonomous");
 
         while (this.isAutonomous() && this.isEnabled()) {
-            int maxPWM = 150;
-            shooter.set(0);
-            conveyor.set(0);
-            Watchdog.getInstance().feed();
-            Timer.delay(0.5);
-            for (int i = 0; i < 10; i++) {
-                shooter.set((i + 1) * 10);
-                conveyor.set((i + 1) * 10);
-                Watchdog.getInstance().feed();
-                Timer.delay(0.5);
-            }
         }
-        shooter.set(0);
-        conveyor.set(0);
         DBG(WARN, "Exit autonomous");
     }
 
@@ -166,12 +201,14 @@ public class RobotTemplate extends SimpleRobot {
      */
     public void operatorControl() {
         DBG(WARN, "Enter operatorControl");
+        Watchdog.getInstance().setExpiration(2.0);
+        Watchdog.getInstance().feed();
         while (isOperatorControl() && isEnabled()) {
-
-            robotDrive.tankDrive(stickLeft, stickRight);
-
             Watchdog.getInstance().feed();
-            Timer.delay(0.05);
+            robotDrive.tankDrive(stickLeft, stickRight);
+            updateZButton();
+            //do_camera_test();
+            Timer.delay(0.005);
         }
         DBG(WARN, "Exit operatorControl");
     }
