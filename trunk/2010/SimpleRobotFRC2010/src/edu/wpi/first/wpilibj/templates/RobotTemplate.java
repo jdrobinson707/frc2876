@@ -301,18 +301,20 @@ public class RobotTemplate extends SimpleRobot {
     }
     }
     }
-*/
+     */
+
     public void updateConveyor() {
         double speed = 0.0;
         /*if (copilotButtons[7] == true) {
-            speed = conveyor.get();
-            speed = speed - .1;
-            conveyor.set(speed);
+        speed = conveyor.get();
+        speed = speed - .1;
+        conveyor.set(speed);
         }*/
         if (copilotButtons[6] == true) {
             speed = conveyor.get();
             speed = speed + .1;
             conveyor.set(speed);
+            String str = "SPEED: " + conveyor.get();
         }
         if (copilotButtons[1] == true) {
             conveyor.set(0);
@@ -321,8 +323,6 @@ public class RobotTemplate extends SimpleRobot {
             encoder.reset();
         }
     }
-
-    
 
     /*    private void updateZButton() {
     double zValR;
@@ -341,17 +341,19 @@ public class RobotTemplate extends SimpleRobot {
 
     }*/
     private void dumpEncoderInfo(Encoder e) {
-        System.out.println("ENCODER: "
+        String str = "ENCODER: "
                 + " dir=" + e.getDirection()
                 + " dist=" + e.getDistance()
                 + " period=" + e.getPeriod()
                 + " rate=" + e.getRate()
                 + " raw=" + e.getRaw()
-                + " stopped=" + e.getStopped());
+                + " stopped=" + e.getStopped();
+        System.out.println(str);
     }
     private int totalKickRotations = 0;
 
     private void kickApoo(Encoder e) {
+        // takes a button press
         String strButton = "none";
         readButtons(stickLeft, leftButtons, "left");
         if (leftButtons[1] == true) {
@@ -373,7 +375,7 @@ public class RobotTemplate extends SimpleRobot {
         }
 
         if (!strButton.equals("none")) {
-            int btn = Integer.parseInt(strButton);
+            int btn = Integer.parseInt(strButton);      // Converts string to an integer
             double speed = ((double) btn) / 10.0;
             if (speed < 0 || speed > 1.0) {
                 speed = .5;
@@ -385,23 +387,24 @@ public class RobotTemplate extends SimpleRobot {
             }
             encoder.setDistancePerPulse((btn - 1) * 100);
             System.out.println("=========================================");
-            System.out.println(" strButton=" + strButton
-                    + " speed=" + speed + " limit=" + limit + " tmp=" + tmp);
-
+            String str = " strButton=" + strButton
+                    + " speed=" + speed + " limit=" + limit + " tmp=" + tmp;
+            System.out.println(str);
             encoder.start();
             dumpEncoderInfo(encoder);
             drive.setLeftRightMotorSpeeds(-speed, 0.0);
             while (encoder.get() < limit) {
                 Watchdog.getInstance().feed();
+                Timer.delay(.005);
             }
             drive.setLeftRightMotorSpeeds(0.0, 0.0);
             encoder.stop();
             dumpEncoderInfo(encoder);
             int counts = encoder.get();
             totalKickRotations += counts;
-            System.out.println("EncoderRotationCount:  "
-                    + counts
-                    + "  totalKickRotations: " + totalKickRotations);
+            str = "EncoderRotationCount:  " + counts
+                    + "  totalKickRotations: " + totalKickRotations;
+            System.out.println(str);
             encoder.reset();
         }
 
@@ -415,14 +418,12 @@ public class RobotTemplate extends SimpleRobot {
 
         encoder.reset();
         dumpEncoderInfo(encoder);
-
         while (isOperatorControl() && isEnabled()) {
-
             Watchdog.getInstance().feed();
-            Timer.delay(0.5);
-            //kickApoo(encoder);
-            readButtons(stickCopilot, copilotButtons, "copilot");
-            updateConveyor();
+            Timer.delay(0.05);
+            kickApoo(encoder);
+//            readButtons(stickCopilot, copilotButtons, "copilot");
+//            updateConveyor();
         }
     }
     /*
