@@ -28,8 +28,8 @@ interface Constants {
     public static final int DRIVE_MOTOR_RIGHT_REAR_PWM = 4;
 
     public static final int JOYSTICK_LEFT = 1;
-    public static final int JOYSTICK_RIGHT = 3;
-    public static final int JOYSTICK_COPILOT = 2;
+    public static final int JOYSTICK_RIGHT = 2;
+    public static final int JOYSTICK_COPILOT = 3;
 
     public static final int ROLLER_MOTOR_PWM = 4;
     public static final int CAM_MOTOR_PWM = 7;
