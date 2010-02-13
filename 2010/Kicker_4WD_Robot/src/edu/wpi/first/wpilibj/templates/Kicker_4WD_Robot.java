@@ -31,7 +31,7 @@ interface Constants {
     public static final int JOYSTICK_RIGHT = 2;
     public static final int JOYSTICK_COPILOT = 3;
 
-    public static final int ROLLER_MOTOR_PWM = 4;
+    public static final int ROLLER_MOTOR_PWM = 5;
     public static final int CAM_MOTOR_PWM = 7;
     public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
@@ -113,6 +113,10 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 Constants.DRIVE_MOTOR_LEFT_REAR_PWM,
                 Constants.DRIVE_MOTOR_RIGHT_FRONT_PWM,
                 Constants.DRIVE_MOTOR_RIGHT_REAR_PWM);
+        drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
+        drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+        drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
+        drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
         Watchdog.getInstance().feed();
     }
         void updateDashboard() {
@@ -265,13 +269,15 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         eCam.start();
         while (isAutonomous() && isEnabled()) {
             Watchdog.getInstance().feed();
-            System.out.print(eCam.getDistance() + "distance\r");
-            if (eCam.getDistance() > -3200) {
+            Timer.delay(.05);
+            drive.setLeftRightMotorSpeeds(.1, -.5);
+            //System.out.print(eCam.getDistance() + "distance\r");
+            /*if (eCam.getDistance() > -3200) {
                 drive.drive(-.5, 0);
                 Timer.delay(1);
 //                drive.drive(-.5, 1);
-            }
-            drive.drive(0, 0);
+            }*/
+//            drive.drive(0, 0);
 //            drive.drive(-.5, 0); // drive forward
 //            //Timer.delay(2.0); // wait 3 seconds
 //            drive.drive(-0.5, 1); // turn
@@ -381,11 +387,11 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         while (isOperatorControl() && isEnabled()) {
 
             Watchdog.getInstance().feed();
-            Timer.delay(0.2);
+            Timer.delay(0.05);
             //kickApoo(eCam);
             readButtons(stickCopilot, copilotButtons, "copilot");
             updateConveyor();
-            drive.tankDrive(stickLeft, stickRight);
+            drive.tankDrive(stickLeft.getY(), stickRight.getY());
         }
     }
 }
