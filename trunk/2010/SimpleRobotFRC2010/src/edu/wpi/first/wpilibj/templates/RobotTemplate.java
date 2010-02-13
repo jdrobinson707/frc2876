@@ -18,13 +18,14 @@ import edu.wpi.first.wpilibj.camera.*;
  * directory.
  */
 interface Constants {
+
     public static final int DRIVE_MOTOR_LEFT_PWM = 1;
     public static final int DRIVE_MOTOR_RIGHT_PWM = 2;
     public static final int JOYSTICK_LEFT = 1;
-    public static final int JOYSTICK_RIGHT = 2;
-    public static final int JOYSTICK_COPILOT = 3;
+    public static final int JOYSTICK_RIGHT = 3;
+    public static final int JOYSTICK_COPILOT = 2;
     public static final int SHOOTER_MOTOR_PWM = 4;
-    public static final int CONVEYOR_MOTOR_PWM = 3;
+    public static final int CONVEYOR_MOTOR_PWM = 7;
     public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
@@ -84,9 +85,9 @@ public class RobotTemplate extends SimpleRobot {
         encoder = new Encoder(Constants.ENCODER_CHANNEL_A, Constants.ENCODER_CHANNEL_B);
 
 //        Watchdog.getInstance().feed();
-        camera = AxisCamera.getInstance();
+        /*camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
-        camera.writeResolution(AxisCamera.ResolutionT.k320x240);
+        camera.writeResolution(AxisCamera.ResolutionT.k320x240);*/
         // camera.writeResolution(AxisCamera.ResolutionT.k160x120);
 
         drive = new RobotDrive(Constants.DRIVE_MOTOR_LEFT_PWM, Constants.DRIVE_MOTOR_RIGHT_PWM);
@@ -300,28 +301,28 @@ public class RobotTemplate extends SimpleRobot {
     }
     }
     }
-
+*/
     public void updateConveyor() {
-    double speed;
-    if (copilotButtons[7] == true) {
-    speed = conveyor.get();
-    speed = speed - .1;
-    conveyor.set(speed);
-    }
-    if (copilotButtons[6] == true) {
-    speed = conveyor.get();
-    speed = speed + .1;
-    conveyor.set(speed);
-    }
-    if (copilotButtons[1] == true) {
-    conveyor.set(0);
-    }
-    if (copilotButtons[2] == true) {
-    encoder.reset();
-    }
+        double speed = 0.0;
+        /*if (copilotButtons[7] == true) {
+            speed = conveyor.get();
+            speed = speed - .1;
+            conveyor.set(speed);
+        }*/
+        if (copilotButtons[6] == true) {
+            speed = conveyor.get();
+            speed = speed + .1;
+            conveyor.set(speed);
+        }
+        if (copilotButtons[1] == true) {
+            conveyor.set(0);
+        }
+        if (copilotButtons[2] == true) {
+            encoder.reset();
+        }
     }
 
-     */
+    
 
     /*    private void updateZButton() {
     double zValR;
@@ -339,35 +340,89 @@ public class RobotTemplate extends SimpleRobot {
     //        + zValR);
 
     }*/
+    private void dumpEncoderInfo(Encoder e) {
+        System.out.println("ENCODER: "
+                + " dir=" + e.getDirection()
+                + " dist=" + e.getDistance()
+                + " period=" + e.getPeriod()
+                + " rate=" + e.getRate()
+                + " raw=" + e.getRaw()
+                + " stopped=" + e.getStopped());
+    }
+    private int totalKickRotations = 0;
+
+    private void kickApoo(Encoder e) {
+        String strButton = "none";
+        readButtons(stickLeft, leftButtons, "left");
+        if (leftButtons[1] == true) {
+            strButton = "1";
+        } else if (leftButtons[2] == true) {
+            strButton = "2";
+        } else if (leftButtons[3] == true) {
+            strButton = "3";
+        } else if (leftButtons[4] == true) {
+            strButton = "4";
+        } else if (leftButtons[5] == true) {
+            strButton = "5";
+        } else if (leftButtons[6] == true) {
+            strButton = "6";
+        } else if (leftButtons[7] == true) {
+            strButton = "7";
+        } else if (leftButtons[8] == true) {
+            strButton = "8";
+        }
+
+        if (!strButton.equals("none")) {
+            int btn = Integer.parseInt(strButton);
+            double speed = ((double) btn) / 10.0;
+            if (speed < 0 || speed > 1.0) {
+                speed = .5;
+            }
+            double limit = 360;
+            double tmp = (stickLeft.getZ() + 1) * 200;
+            if (tmp != 0) {
+                limit = tmp;
+            }
+            encoder.setDistancePerPulse((btn - 1) * 100);
+            System.out.println("=========================================");
+            System.out.println(" strButton=" + strButton
+                    + " speed=" + speed + " limit=" + limit + " tmp=" + tmp);
+
+            encoder.start();
+            dumpEncoderInfo(encoder);
+            drive.setLeftRightMotorSpeeds(-speed, 0.0);
+            while (encoder.get() < limit) {
+                Watchdog.getInstance().feed();
+            }
+            drive.setLeftRightMotorSpeeds(0.0, 0.0);
+            encoder.stop();
+            dumpEncoderInfo(encoder);
+            int counts = encoder.get();
+            totalKickRotations += counts;
+            System.out.println("EncoderRotationCount:  "
+                    + counts
+                    + "  totalKickRotations: " + totalKickRotations);
+            encoder.reset();
+        }
+
+    }
+
     public void operatorControl() {
         Watchdog.getInstance().feed();
-        Watchdog.getInstance().setExpiration(15.0);
+        Watchdog.getInstance().setExpiration(3.0);
         System.out.println("In Operator control");
         initializeButtons();
-        System.out.println("debug");
-        int intEncoderRotationCount = 0;
+
+        encoder.reset();
+        dumpEncoderInfo(encoder);
 
         while (isOperatorControl() && isEnabled()) {
-            readButtons(stickLeft, leftButtons, "left");
+
             Watchdog.getInstance().feed();
-            encoder.start();
-            Timer.delay(0.005);
-            if (leftButtons[1] == true) {
-                System.out.println("true");
-                while (encoder.get() < 365) {
-                    drive.setLeftRightMotorSpeeds(-.2, 0.0);
-//                    System.out.println(encoder.get());
-                }
-                drive.setLeftRightMotorSpeeds(0.0, 0.0);
-                System.out.println("exit loop");
-                encoder.stop();
-                int intTempEncoderValue = 0;
-                intTempEncoderValue = encoder.get();
-                System.out.println("EncoderFinal: " + intTempEncoderValue);
-                intEncoderRotationCount = intEncoderRotationCount + intTempEncoderValue;
-                encoder.reset();
-                System.out.println("EncoderRotationCount:  " + intEncoderRotationCount);
-            }
+            Timer.delay(0.5);
+            //kickApoo(encoder);
+            readButtons(stickCopilot, copilotButtons, "copilot");
+            updateConveyor();
         }
     }
     /*
