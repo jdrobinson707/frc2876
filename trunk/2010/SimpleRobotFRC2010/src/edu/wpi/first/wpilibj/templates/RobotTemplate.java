@@ -22,10 +22,8 @@ interface Constants {
     public static final int DRIVE_MOTOR_LEFT_PWM = 1;
     public static final int DRIVE_MOTOR_RIGHT_PWM = 2;
     public static final int JOYSTICK_LEFT = 1;
-    public static final int JOYSTICK_RIGHT = 3;
-    public static final int JOYSTICK_COPILOT = 2;
-    public static final int SHOOTER_MOTOR_PWM = 4;
-    public static final int CONVEYOR_MOTOR_PWM = 7;
+    public static final int JOYSTICK_RIGHT = 2;
+    public static final int JOYSTICK_COPILOT = 3;
     public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
@@ -49,6 +47,7 @@ public class RobotTemplate extends SimpleRobot {
     boolean rightButtons[];
     boolean leftButtons[];
     boolean copilotButtons[];
+    boolean flag = true;
     int accelbutton;
     ColorImage image;
     AxisCamera camera;
@@ -56,6 +55,10 @@ public class RobotTemplate extends SimpleRobot {
     Servo tilt;
     Gyro gyro;
     Encoder encoder;
+    private int totalKickRotations = 0;
+    private int encoder_counts = 0;
+    private int limit = 360;
+    DigitalInput limSwitch;
 
     public RobotTemplate() {
         System.out.println("Starting 2010 FRC RobotTemplate");
@@ -70,12 +73,6 @@ public class RobotTemplate extends SimpleRobot {
         leftButtons = new boolean[Constants.JOYSTICK_NUM_BUTTONS];
         copilotButtons = new boolean[Constants.JOYSTICK_NUM_BUTTONS];
 
-        // motors
-        shooter = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
-                Constants.SHOOTER_MOTOR_PWM);
-        conveyor = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
-                Constants.CONVEYOR_MOTOR_PWM);
-
         // servos
         tilt = new Servo(Constants.PAN_SERVO);
         pan = new Servo(Constants.TILT_SERVO);
@@ -83,6 +80,9 @@ public class RobotTemplate extends SimpleRobot {
         // Gyro
         gyro = new Gyro(Constants.GYRO_CHANNEL);     // indicates port Number
         encoder = new Encoder(Constants.ENCODER_CHANNEL_A, Constants.ENCODER_CHANNEL_B);
+
+        // Limit switch
+        limSwitch = new DigitalInput(5);
 
 //        Watchdog.getInstance().feed();
         /*camera = AxisCamera.getInstance();
@@ -272,36 +272,6 @@ public class RobotTemplate extends SimpleRobot {
             buttons[i] = stick.getRawButton(i);
         }
     }
-    /*
-    public void actOnButtons() {
-    readButtons(stickLeft, leftButtons, "left");
-    readButtons(stickCopilot, copilotButtons, "copilot");
-    readButtons(stickRight, rightButtons, "right");
-
-    updateConveyor();
-
-
-    if (leftButtons[8] == true) {
-    accelbutton = 8;
-
-    if (leftButtons[9] == true) {
-    accelbutton = 9;
-    }
-    if (leftButtons[10] == true) {
-    accelbutton = 10;
-    }
-    if (leftButtons[4] == true) {
-    accelbutton = 4;
-    }
-    if (leftButtons[3] == true) {
-    accelbutton = 3;
-    }
-    if (leftButtons[5] == true) {
-    accelbutton = 5;
-    }
-    }
-    }
-     */
 
     public void updateConveyor() {
         double speed = 0.0;
@@ -312,7 +282,7 @@ public class RobotTemplate extends SimpleRobot {
         }*/
         if (copilotButtons[6] == true) {
             speed = conveyor.get();
-            speed = speed + .1;
+            speed = speed + .02;
             conveyor.set(speed);
             String str = "SPEED: " + conveyor.get();
         }
@@ -324,22 +294,29 @@ public class RobotTemplate extends SimpleRobot {
         }
     }
 
-    /*    private void updateZButton() {
-    double zValR;
-    double zValL;
-    zValR = stickRight.getZ();
-    zValL = stickLeft.getZ();
-    zValR = (zValR + 1) / 2;
-    zValL = (zValL + 1) / 2;
+    private void updateZButton() {
+//        double zValR;
+//        double zValL;
+//        zValR = stickRight.getZ();
+//        zValL = stickLeft.getZ();
+//        zValR = (zValR + 1) / 2;
+//        zValL = (zValL + 1) / 2;
+//        tilt.set(zValR);
+//        pan.set(zValL);
+//        //System.out.println(stickCopilot.getZ() + " "
+        //        + stickLeft.getZ() + " "
+        //        + stickRight.getZ() + " "
+        //        + zValR);
+        int tmp = (int) ((stickLeft.getZ() + 1) * 200);
+        if (tmp != 0) {
+            if (tmp != limit) {
+                limit = tmp;
+                System.out.println("LIMIT=" + limit);
+            }
 
-    tilt.set(zValR);
-    pan.set(zValL);
-    //System.out.println(stickCopilot.getZ() + " "
-    //        + stickLeft.getZ() + " "
-    //        + stickRight.getZ() + " "
-    //        + zValR);
+        }
+    }
 
-    }*/
     private void dumpEncoderInfo(Encoder e) {
         String str = "ENCODER: "
                 + " dir=" + e.getDirection()
@@ -350,11 +327,11 @@ public class RobotTemplate extends SimpleRobot {
                 + " stopped=" + e.getStopped();
         System.out.println(str);
     }
-    private int totalKickRotations = 0;
 
     private void kickApoo(Encoder e) {
         // takes a button press
         String strButton = "none";
+
         readButtons(stickLeft, leftButtons, "left");
         if (leftButtons[1] == true) {
             strButton = "1";
@@ -380,34 +357,49 @@ public class RobotTemplate extends SimpleRobot {
             if (speed < 0 || speed > 1.0) {
                 speed = .5;
             }
-            double limit = 360;
-            double tmp = (stickLeft.getZ() + 1) * 200;
-            if (tmp != 0) {
-                limit = tmp;
-            }
-            encoder.setDistancePerPulse((btn - 1) * 100);
+            // double limit = (358 - (btn*2));
+            //double tmp = (stickLeft.getZ() + 1) * 200;
+            //if (tmp != 0) {
+            //    limit = tmp;
+            //}
+            // encoder.setDistancePerPulse((btn - 1) * 100);
+            encoder.setDistancePerPulse(.05);
             System.out.println("=========================================");
             String str = " strButton=" + strButton
-                    + " speed=" + speed + " limit=" + limit + " tmp=" + tmp;
+                    + " speed=" + speed + " limit=" + limit;            // + " tmp=" + tmp REMOVED
             System.out.println(str);
-            encoder.start();
+
             dumpEncoderInfo(encoder);
             drive.setLeftRightMotorSpeeds(-speed, 0.0);
             while (encoder.get() < limit) {
+//                int tempEncoder = 0;
+//                tempEncoder = encoder.get();
                 Watchdog.getInstance().feed();
                 Timer.delay(.005);
+//                if (tempEncoder == encoder.get()+1) {
+//                    System.out.println("Encoder value doesn't change.");
+//                    break;
+//                }
             }
             drive.setLeftRightMotorSpeeds(0.0, 0.0);
-            encoder.stop();
+
             dumpEncoderInfo(encoder);
             int counts = encoder.get();
             totalKickRotations += counts;
             str = "EncoderRotationCount:  " + counts
                     + "  totalKickRotations: " + totalKickRotations;
             System.out.println(str);
-            encoder.reset();
+        }
+        int tmp_counts = encoder.get();
+        if (tmp_counts != encoder_counts) {
+            encoder_counts = tmp_counts;
+            System.out.println("COUNTS=" + encoder_counts);
+            dumpEncoderInfo(encoder);
         }
 
+    }
+
+    public void resetStuff() {
     }
 
     public void operatorControl() {
@@ -415,16 +407,27 @@ public class RobotTemplate extends SimpleRobot {
         Watchdog.getInstance().setExpiration(3.0);
         System.out.println("In Operator control");
         initializeButtons();
-
         encoder.reset();
+        encoder.start();
         dumpEncoderInfo(encoder);
+        drive.drive(-0.5, 0.0);
         while (isOperatorControl() && isEnabled()) {
             Watchdog.getInstance().feed();
-            Timer.delay(0.05);
-            kickApoo(encoder);
-//            readButtons(stickCopilot, copilotButtons, "copilot");
-//            updateConveyor();
+            Timer.delay(0.005);
+            updateZButton();
+            //kickApoo(encoder);
+                if ((!limSwitch.get()) && (flag == false)) {
+                     flag = true;
+                }
+                else if ((limSwitch.get()) && (flag == true)){
+                    drive.setLeftRightMotorSpeeds(0.0, 0.0);
+                    flag = false;
+                }
+            Thread.yield();
+            updateDashboard();
+            updateVisionDashboard(stickCopilot.getX(), gyro.getAngle());
         }
+        encoder.stop();
     }
     /*
     public void operatorControl() {
