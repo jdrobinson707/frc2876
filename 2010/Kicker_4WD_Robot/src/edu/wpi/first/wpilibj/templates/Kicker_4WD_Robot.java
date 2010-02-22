@@ -4,13 +4,11 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.camera.*;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,20 +17,17 @@ import edu.wpi.first.wpilibj.camera.*;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-
 interface Constants {
 
     public static final int DRIVE_MOTOR_LEFT_FRONT_PWM = 1;
     public static final int DRIVE_MOTOR_LEFT_REAR_PWM = 2;
     public static final int DRIVE_MOTOR_RIGHT_FRONT_PWM = 3;
     public static final int DRIVE_MOTOR_RIGHT_REAR_PWM = 4;
-
     public static final int JOYSTICK_LEFT = 1;
     public static final int JOYSTICK_RIGHT = 2;
     public static final int JOYSTICK_COPILOT = 3;
-
-    public static final int ROLLER_MOTOR_PWM = 5;
-    public static final int CAM_MOTOR_PWM = 7;
+    public static final int ROLLER_MOTOR_PWM = 6;
+    public static final int CAM_MOTOR_PWM = 5;
     public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
@@ -41,7 +36,6 @@ interface Constants {
     public static final int PAN_SERVO = 9;
     public static final int TILT_SERVO = 10;
     public static final int GYRO_CHANNEL = 2;      // Slot number for the Gyro
-    
     public static final int ENCODER_LEFT_DRIVE_CHANNEL_A = 5;
     public static final int ENCODER_LEFT_DRIVE_CHANNEL_B = 6;
     public static final int ENCODER_RIGHT_DRIVE_CHANNEL_A = 3;
@@ -51,10 +45,10 @@ interface Constants {
 }
 
 public class Kicker_4WD_Robot extends SimpleRobot {
+
     RobotDrive drive;
     Jaguar cam;
     Jaguar roller;
-
     Joystick stickLeft;
     Joystick stickRight;
     Joystick stickCopilot;
@@ -119,7 +113,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
         Watchdog.getInstance().feed();
     }
-        void updateDashboard() {
+
+    void updateDashboard() {
         Dashboard lowDashData = DriverStation.getInstance().getDashboardPackerLow();
         lowDashData.addCluster();
         {
@@ -273,9 +268,9 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             drive.setLeftRightMotorSpeeds(.1, -.5);
             //System.out.print(eCam.getDistance() + "distance\r");
             /*if (eCam.getDistance() > -3200) {
-                drive.drive(-.5, 0);
-                Timer.delay(1);
-//                drive.drive(-.5, 1);
+            drive.drive(-.5, 0);
+            Timer.delay(1);
+            //                drive.drive(-.5, 1);
             }*/
 //            drive.drive(0, 0);
 //            drive.drive(-.5, 0); // drive forward
@@ -290,13 +285,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     public void updateConveyor() {
         double speed = 0.0;
         /*if (copilotButtons[7] == true) {
-            speed = conveyor.get();
-            speed = speed - .1;
-            conveyor.set(speed);
+        speed = conveyor.get();
+        speed = speed - .1;
+        conveyor.set(speed);
         }*/
         if (copilotButtons[6] == true) {
             speed = cam.get();
-            speed = speed + .1;
+            speed = speed + .01;
             cam.set(speed);
         }
         if (copilotButtons[1] == true) {
@@ -306,6 +301,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             eCam.reset();
         }
     }
+
     private void dumpEncoderInfo(Encoder e) {
         System.out.println("ENCODER: "
                 + " dir=" + e.getDirection()
@@ -316,6 +312,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 + " stopped=" + e.getStopped());
     }
     private int totalKickRotations = 0;
+
     private void kickApoo(Encoder e) {
         String strButton = "none";
         readButtons(stickLeft, leftButtons, "left");
@@ -375,6 +372,28 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     /**
      * This function is called once each time the robot enters operator control.
      */
+    public void userOptions() {
+        // determine if tank or arcade mode, based upon position of "Z" wheel on kit joystick
+        if (stickRight.getZ() <= 0) {    // Logitech Attack3 has z-polarity reversed; up is negative
+            // use arcade drive
+            drive.arcadeDrive(stickRight, false);			// drive with arcade style (use right stick)
+            if (drive != drive.arcadeDrive) {
+                // if newly entered arcade drive, print out a message
+                System.out.println("Arcade Drive\n");
+                drive = arcadeDrive(stickRight, false);
+            }
+        } else {
+            // use tank drive
+            drive.tankDrive(stickLeft, stickRight);	// drive with tank style
+            if (drive != drive.tankDrive) {
+                // if newly entered tank drive, print out a message
+                System.out.println("Tank Drive\n");
+                drive = tankDrive();
+            }
+        }
+
+    }
+
     public void operatorControl() {
         Watchdog.getInstance().feed();
         Watchdog.getInstance().setExpiration(3.0);
@@ -388,10 +407,14 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
             Watchdog.getInstance().feed();
             Timer.delay(0.05);
-            //kickApoo(eCam);
+            // kickApoo(eCam);
             readButtons(stickCopilot, copilotButtons, "copilot");
             updateConveyor();
             drive.tankDrive(stickLeft.getY(), stickRight.getY());
+            System.out.println("Stick Left: " + stickLeft.getY()
+                    + "\tStickRight: " + stickRight.getY() + "\tCAM M:  "
+                    + cam.get() + "\tRoller:  " + roller.get());
+
         }
     }
 }
