@@ -64,6 +64,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     Encoder eCam;
     Encoder eLeftDrive;
     Encoder eRightDrive;
+    boolean rollerIsRolling;
 
     public Kicker_4WD_Robot() {
         System.out.println("Starting 2010 FRC RobotTemplate");
@@ -111,6 +112,11 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+
+        //starting roller condition
+        rollerIsRolling = false;
+        roller.set(0.0);
+
         Watchdog.getInstance().feed();
     }
 
@@ -282,8 +288,25 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         eCam.reset();
     }
 
+    public void updateRoller() {
+        readButtons(stickRight, rightButtons, "right");
+
+        if (rightButtons[1] == true) {
+            if (rollerIsRolling == false) {
+                rollerIsRolling = true;
+                roller.set(1.0);
+            } else {
+                rollerIsRolling = false;
+                roller.set(0.0);
+            }
+        }
+    }
+
     public void updateConveyor() {
         double speed = 0.0;
+        
+        readButtons(stickCopilot, copilotButtons, "copilot");
+
         /*if (copilotButtons[7] == true) {
         speed = conveyor.get();
         speed = speed - .1;
@@ -408,7 +431,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             Watchdog.getInstance().feed();
             Timer.delay(0.05);
             // kickApoo(eCam);
-            readButtons(stickCopilot, copilotButtons, "copilot");
+            updateRoller();
             updateConveyor();
             drive.tankDrive(stickLeft.getY(), stickRight.getY());
             System.out.println("Stick Left: " + stickLeft.getY()
