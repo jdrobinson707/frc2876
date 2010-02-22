@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.camera.*;
  * directory.
  */
 interface Constants {
-
     public static final int DRIVE_MOTOR_LEFT_FRONT_PWM = 1;
     public static final int DRIVE_MOTOR_LEFT_REAR_PWM = 2;
     public static final int DRIVE_MOTOR_RIGHT_FRONT_PWM = 3;
@@ -28,6 +27,7 @@ interface Constants {
     public static final int JOYSTICK_COPILOT = 3;
     public static final int ROLLER_MOTOR_PWM = 6;
     public static final int CAM_MOTOR_PWM = 5;
+
     public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
@@ -42,6 +42,7 @@ interface Constants {
     public static final int ENCODER_RIGHT_DRIVE_CHANNEL_B = 4;
     public static final int ENCODER_CAM_CHANNEL_A = 10;
     public static final int ENCODER_CAM_CHANNEL_B = 11;
+    public static final int LIMIT_SWITCH_PWM = 5;
 }
 
 public class Kicker_4WD_Robot extends SimpleRobot {
@@ -64,6 +65,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     Encoder eCam;
     Encoder eLeftDrive;
     Encoder eRightDrive;
+    DigitalInput limSwitch;
     boolean rollerIsRolling;
 
     public Kicker_4WD_Robot() {
@@ -91,6 +93,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
         // Gyro
         gyro = new Gyro(Constants.GYRO_CHANNEL);     // indicates port Number
+
+        // encoder
         eCam = new Encoder(Constants.ENCODER_CAM_CHANNEL_A,
                 Constants.ENCODER_CAM_CHANNEL_B);
         eLeftDrive = new Encoder(Constants.ENCODER_LEFT_DRIVE_CHANNEL_A,
@@ -98,6 +102,9 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         eRightDrive = new Encoder(Constants.ENCODER_RIGHT_DRIVE_CHANNEL_A,
                 Constants.ENCODER_RIGHT_DRIVE_CHANNEL_B);
 
+        // Limit switch
+        limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_PWM);
+        
 //        Watchdog.getInstance().feed();
         /*camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
@@ -394,7 +401,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
     /**
      * This function is called once each time the robot enters operator control.
-     */
+     *
     public void userOptions() {
         // determine if tank or arcade mode, based upon position of "Z" wheel on kit joystick
         if (stickRight.getZ() <= 0) {    // Logitech Attack3 has z-polarity reversed; up is negative
@@ -415,7 +422,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             }
         }
 
-    }
+    }*/
 
     public void operatorControl() {
         Watchdog.getInstance().feed();
