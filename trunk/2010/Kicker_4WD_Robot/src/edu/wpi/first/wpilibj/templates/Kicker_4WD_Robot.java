@@ -44,7 +44,6 @@ interface Constants {
     public static final int ENCODER_RIGHT_DRIVE_CHANNEL_B = 4;
     public static final int ENCODER_LEFT_DRIVE_CHANNEL_A = 5;
     public static final int ENCODER_LEFT_DRIVE_CHANNEL_B = 6;
-
     public static final int ENCODER_CAM_CHANNEL_A = 7;
     public static final int ENCODER_CAM_CHANNEL_B = 8;
     public static final int AUTONOMOUS_SILVER_SWITCH_CHANNEL = 10;
@@ -457,7 +456,6 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         }
     }
 
-
     private void kickBall() {
         readButtons(stickCopilot, copilotButtons, "copilot");
 
@@ -499,11 +497,17 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         if (copilotButtons[1]) {
             if (limSwitch.get() == true) {
                 //go through one cyle until true again
-                while (limSwitch.get() == true) cam.set(9.0);
-                while (limSwitch.get() == false) cam.set(9.0);
+                while (limSwitch.get() == true) {
+                    cam.set(9.0);
+                }
+                while (limSwitch.get() == false) {
+                    cam.set(9.0);
+                }
             } else {
                 //go through one cyle until true again
-                while (limSwitch.get() == false) cam.set(9.0);
+                while (limSwitch.get() == false) {
+                    cam.set(9.0);
+                }
             }
         } else {
             cam.set(.3);
