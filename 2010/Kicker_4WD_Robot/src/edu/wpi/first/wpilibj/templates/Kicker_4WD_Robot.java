@@ -42,12 +42,16 @@ interface Constants {
     public static final int ENCODER_RIGHT_DRIVE_CHANNEL_B = 4;
     public static final int ENCODER_CAM_CHANNEL_A = 10;
     public static final int ENCODER_CAM_CHANNEL_B = 11;
+    static final int UNINITIALIZED_DRIVE = 0;
+    static final int ARCADE_DRIVE = 1;
+    static final int TANK_DRIVE = 2;
     public static final int LIMIT_SWITCH_PWM = 5;
 }
 
 public class Kicker_4WD_Robot extends SimpleRobot {
 
     RobotDrive drive;
+    int driveMode;
     Jaguar cam;
     Jaguar roller;
     Joystick stickLeft;
@@ -111,6 +115,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         camera.writeResolution(AxisCamera.ResolutionT.k320x240);*/
         // camera.writeResolution(AxisCamera.ResolutionT.k160x120);
 
+        driveMode = Constants.UNINITIALIZED_DRIVE;
         drive = new RobotDrive(Constants.DRIVE_MOTOR_LEFT_FRONT_PWM,
                 Constants.DRIVE_MOTOR_LEFT_REAR_PWM,
                 Constants.DRIVE_MOTOR_RIGHT_FRONT_PWM,
@@ -399,36 +404,35 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
     }
 
-    /**
-     * This function is called once each time the robot enters operator control.
-     *
+    
     public void userOptions() {
         // determine if tank or arcade mode, based upon position of "Z" wheel on kit joystick
         if (stickRight.getZ() <= 0) {    // Logitech Attack3 has z-polarity reversed; up is negative
             // use arcade drive
-            drive.arcadeDrive(stickRight, false);			// drive with arcade style (use right stick)
-            if (drive != drive.arcadeDrive) {
+            			
+            if (driveMode != Constants.ARCADE_DRIVE) {
                 // if newly entered arcade drive, print out a message
                 System.out.println("Arcade Drive\n");
-                drive = arcadeDrive(stickRight, false);
+                driveMode = Constants.ARCADE_DRIVE;
             }
         } else {
             // use tank drive
-            drive.tankDrive(stickLeft, stickRight);	// drive with tank style
-            if (drive != drive.tankDrive) {
+            
+            if (driveMode!= Constants.TANK_DRIVE) {
                 // if newly entered tank drive, print out a message
                 System.out.println("Tank Drive\n");
-                drive = tankDrive();
+                driveMode = Constants.TANK_DRIVE;
             }
         }
 
-    }*/
+    }
 
     public void operatorControl() {
         Watchdog.getInstance().feed();
         Watchdog.getInstance().setExpiration(3.0);
         System.out.println("In Operator control");
         initializeButtons();
+        userOptions();
 
         eCam.reset();
         dumpEncoderInfo(eCam);
@@ -440,10 +444,16 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             // kickApoo(eCam);
             updateRoller();
             updateConveyor();
-            drive.tankDrive(stickLeft.getY(), stickRight.getY());
-            System.out.println("Stick Left: " + stickLeft.getY()
-                    + "\tStickRight: " + stickRight.getY() + "\tCAM M:  "
-                    + cam.get() + "\tRoller:  " + roller.get());
+            if (driveMode == Constants.ARCADE_DRIVE) {
+                drive.arcadeDrive(stickLeft);
+            }
+            else {
+                drive.tankDrive(stickLeft.getY(), stickRight.getY());
+            }
+
+//            System.out.println("Stick Left: " + stickLeft.getY()
+//                    + "\tStickRight: " + stickRight.getY() + "\tCAM M:  "
+//                    + cam.get() + "\tRoller:  " + roller.get());
 
         }
     }
