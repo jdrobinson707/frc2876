@@ -19,33 +19,39 @@ import edu.wpi.first.wpilibj.camera.*;
  */
 interface Constants {
 
-    public static final int DRIVE_MOTOR_LEFT_FRONT_PWM = 1;
-    public static final int DRIVE_MOTOR_LEFT_REAR_PWM = 2;
-    public static final int DRIVE_MOTOR_RIGHT_FRONT_PWM = 3;
-    public static final int DRIVE_MOTOR_RIGHT_REAR_PWM = 4;
+    public static final int ANALOG_MODULE_SLOT = 1;
+    public static final int DIGITAL_MODULE_SLOT = 4;
+    //joystick channels
     public static final int JOYSTICK_LEFT = 1;
     public static final int JOYSTICK_RIGHT = 2;
     public static final int JOYSTICK_COPILOT = 3;
-    public static final int ROLLER_MOTOR_PWM = 6;
-    public static final int CAM_MOTOR_PWM = 5;
-    public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
     public static final int JOYSTICK_LAST_BUTTON = Constants.JOYSTICK_FIRST_BUTTON
             + Constants.JOYSTICK_NUM_BUTTONS;
+    //Digital Sidecar PWM OUT channels
+    public static final int DRIVE_MOTOR_LEFT_FRONT_PWM = 1;
+    public static final int DRIVE_MOTOR_LEFT_REAR_PWM = 2;
+    public static final int DRIVE_MOTOR_RIGHT_FRONT_PWM = 3;
+    public static final int DRIVE_MOTOR_RIGHT_REAR_PWM = 4;
+    public static final int ROLLER_MOTOR_PWM = 6;
+    public static final int CAM_MOTOR_PWM = 5;
     public static final int PAN_SERVO = 9;
     public static final int TILT_SERVO = 10;
-    public static final int GYRO_CHANNEL = 2;      // Slot number for the Gyro
-    public static final int ENCODER_LEFT_DRIVE_CHANNEL_A = 5;
-    public static final int ENCODER_LEFT_DRIVE_CHANNEL_B = 6;
+    //Digital Sidecar I/O Channels
+    public static final int LIMIT_SWITCH_CHANNEL = 1;
     public static final int ENCODER_RIGHT_DRIVE_CHANNEL_A = 3;
     public static final int ENCODER_RIGHT_DRIVE_CHANNEL_B = 4;
-    public static final int ENCODER_CAM_CHANNEL_A = 10;
-    public static final int ENCODER_CAM_CHANNEL_B = 11;
-    static final int UNINITIALIZED_DRIVE = 0;
-    static final int ARCADE_DRIVE = 1;
-    static final int TANK_DRIVE = 2;
-    public static final int LIMIT_SWITCH_PWM = 5;
+    public static final int ENCODER_LEFT_DRIVE_CHANNEL_A = 5;
+    public static final int ENCODER_LEFT_DRIVE_CHANNEL_B = 6;
+    public static final int ENCODER_CAM_CHANNEL_A = 7;
+    public static final int ENCODER_CAM_CHANNEL_B = 8;
+    public static final int AUTONOMOUS_SILVER_SWITCH_CHANNEL = 10;
+    public static final int AUTONOMOUS_GREEN_SWITCH_CHANNEL = 11;
+    //other constants
+    public static final int UNINITIALIZED_DRIVE = 0;
+    public static final int ARCADE_DRIVE = 1;
+    public static final int TANK_DRIVE = 2;
 }
 
 public class Kicker_4WD_Robot extends SimpleRobot {
@@ -71,7 +77,12 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     Encoder eRightDrive;
     DigitalInput limSwitch;
     boolean rollerIsRolling;
+    boolean flag;
+    DigitalInput autonomousGreenSwitch;
+    DigitalInput autonomousSilverSwitch;
     DriverStationLCD dslcd;
+    long kickTime = 0;
+    boolean kickSwitch;
 
     public Kicker_4WD_Robot() {
         System.out.println("Starting 2010 FRC RobotTemplate");
@@ -97,7 +108,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         pan = new Servo(Constants.TILT_SERVO);
 
         // Gyro
-        gyro = new Gyro(Constants.GYRO_CHANNEL);     // indicates port Number
+        //gyro = new Gyro(Constants.GYRO_CHANNEL);     // indicates port Number
 
         // encoder
         eCam = new Encoder(Constants.ENCODER_CAM_CHANNEL_A,
@@ -107,8 +118,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         eRightDrive = new Encoder(Constants.ENCODER_RIGHT_DRIVE_CHANNEL_A,
                 Constants.ENCODER_RIGHT_DRIVE_CHANNEL_B);
 
-        // Limit switch
-        limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_PWM);
+        //Limit switch
+        limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_CHANNEL);
 
 //        Watchdog.getInstance().feed();
         /*camera = AxisCamera.getInstance();
@@ -129,6 +140,9 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         //starting roller condition
         rollerIsRolling = false;
         roller.set(0.0);
+
+        //starting limit switch condition
+        flag = true;
 
         dslcd = DriverStationLCD.getInstance();
 
@@ -323,29 +337,34 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         }
     }
 
-    public void updateCam() {
-        double speed = 0.0;
+    /*    public void updateCam() {
+    double speed = 0.0;
 
-        readButtons(stickCopilot, copilotButtons, "copilot");
+    readButtons(stickCopilot, copilotButtons, "copilot");
 
-        /*if (copilotButtons[7] == true) {
-        speed = conveyor.get();
-        speed = speed - .1;
-        conveyor.set(speed);
-        }*/
-        if (copilotButtons[6] == true) {
-            speed = cam.get();
-            speed = speed + .01;
-            cam.set(speed);
-        }
-        if (copilotButtons[1] == true) {
-            cam.set(0);
-        }
-        if (copilotButtons[2] == true) {
-            eCam.reset();
-        }
+    if (copilotButtons[7] == true) {
+    speed = cam.get();
+    if (speed > 0.0) {
+    speed = speed - .05;
     }
-
+    cam.set(speed);
+    System.out.println("CAM:  " + speed);
+    }
+    if (copilotButtons[6] == true) {
+    speed = cam.get();
+    if (speed < .8) {
+    speed = speed + .05;
+    }
+    cam.set(speed);
+    System.out.println("CAM:  " + speed);
+    }
+    if (copilotButtons[1] == true) {
+    cam.set(0);
+    }
+    if (copilotButtons[2] == true) {
+    eCam.reset();
+    }
+    }*/
     private void dumpEncoderInfo(Encoder e) {
         System.out.println("ENCODER: "
                 + " dir=" + e.getDirection()
@@ -421,7 +440,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 // if newly entered arcade drive, print out a message
                 String str = "Arcade Drive";
                 System.out.println(str);
-                dslcd.println(DriverStationLCD.Line.kUser4, 0, str);
+                dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
                 driveMode = Constants.ARCADE_DRIVE;
             }
         } else {
@@ -431,9 +450,44 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 // if newly entered tank drive, print out a message
                 String str = "Tank Drive";
                 System.out.println(str);
-                dslcd.println(DriverStationLCD.Line.kUser4, 0, str);
+                dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
                 driveMode = Constants.TANK_DRIVE;
             }
+        }
+    }
+
+    private void kickBall() {
+        readButtons(stickCopilot, copilotButtons, "copilot");
+
+        if (copilotButtons[1] == true) {
+            cam.set(.9);
+            kickTime = Timer.getUsClock();
+        }
+
+        if ((!limSwitch.get()) && (flag == false)) {
+            // false = 0 = closed
+            flag = true;
+            kickSwitch = limSwitch.get();
+            System.out.println("kicking " + limSwitch.get());
+
+        } else if ((limSwitch.get()) && (flag == true)) {
+            // true = 1 = open. kicker is loaded
+            cam.set(0.3);
+            flag = false;
+            kickSwitch = limSwitch.get();
+            System.out.println("stop kick " + limSwitch.get());
+
+            long t = Timer.getUsClock() - kickTime;
+            System.out.println("kick time = " + t + " "
+                    + Timer.getUsClock() + " " + kickTime);
+        }
+        if (limSwitch.get() != kickSwitch) {
+            System.out.println("limSwitch changed  " + limSwitch.get());
+        }
+
+
+        if (copilotButtons[2] == true) {
+            cam.set(0.0);
         }
     }
 
@@ -446,13 +500,14 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
         eCam.reset();
         dumpEncoderInfo(eCam);
+        kickSwitch = limSwitch.get();
 
         while (isOperatorControl() && isEnabled()) {
             Watchdog.getInstance().feed();
-            Timer.delay(0.05);
+            Timer.delay(0.005);
             // kickApoo(eCam);
             updateRoller();
-            updateCam();
+            kickBall();
             if (driveMode == Constants.ARCADE_DRIVE) {
                 drive.arcadeDrive(stickLeft);
             } else {
