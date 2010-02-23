@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.camera.*;
  * directory.
  */
 interface Constants {
+
     public static final int DRIVE_MOTOR_LEFT_FRONT_PWM = 1;
     public static final int DRIVE_MOTOR_LEFT_REAR_PWM = 2;
     public static final int DRIVE_MOTOR_RIGHT_FRONT_PWM = 3;
@@ -27,7 +28,6 @@ interface Constants {
     public static final int JOYSTICK_COPILOT = 3;
     public static final int ROLLER_MOTOR_PWM = 6;
     public static final int CAM_MOTOR_PWM = 5;
-
     public static final int DIGITAL_MODULE_SLOT = 4;
     public static final int JOYSTICK_NUM_BUTTONS = 11;
     public static final int JOYSTICK_FIRST_BUTTON = 1;
@@ -71,6 +71,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     Encoder eRightDrive;
     DigitalInput limSwitch;
     boolean rollerIsRolling;
+    DriverStationLCD dslcd;
 
     public Kicker_4WD_Robot() {
         System.out.println("Starting 2010 FRC RobotTemplate");
@@ -108,7 +109,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
         // Limit switch
         limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_PWM);
-        
+
 //        Watchdog.getInstance().feed();
         /*camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
@@ -128,6 +129,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         //starting roller condition
         rollerIsRolling = false;
         roller.set(0.0);
+
+        dslcd = DriverStationLCD.getInstance();
 
         Watchdog.getInstance().feed();
     }
@@ -311,12 +314,18 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 rollerIsRolling = false;
                 roller.set(0.0);
             }
+        } else if (rightButtons[2] == true) {
+            if (roller.get() == 0.0) {
+                roller.set(-1.0);
+            } else {
+                roller.set(0.0);
+            }
         }
     }
 
-    public void updateConveyor() {
+    public void updateCam() {
         double speed = 0.0;
-        
+
         readButtons(stickCopilot, copilotButtons, "copilot");
 
         /*if (copilotButtons[7] == true) {
@@ -401,30 +410,31 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                     + "  totalKickRotations: " + totalKickRotations);
             eCam.reset();
         }
-
     }
 
-    
     public void userOptions() {
         // determine if tank or arcade mode, based upon position of "Z" wheel on kit joystick
         if (stickRight.getZ() <= 0) {    // Logitech Attack3 has z-polarity reversed; up is negative
             // use arcade drive
-            			
+
             if (driveMode != Constants.ARCADE_DRIVE) {
                 // if newly entered arcade drive, print out a message
-                System.out.println("Arcade Drive\n");
+                String str = "Arcade Drive";
+                System.out.println(str);
+                dslcd.println(DriverStationLCD.Line.kUser4, 0, str);
                 driveMode = Constants.ARCADE_DRIVE;
             }
         } else {
             // use tank drive
-            
-            if (driveMode!= Constants.TANK_DRIVE) {
+
+            if (driveMode != Constants.TANK_DRIVE) {
                 // if newly entered tank drive, print out a message
-                System.out.println("Tank Drive\n");
+                String str = "Tank Drive";
+                System.out.println(str);
+                dslcd.println(DriverStationLCD.Line.kUser4, 0, str);
                 driveMode = Constants.TANK_DRIVE;
             }
         }
-
     }
 
     public void operatorControl() {
@@ -438,23 +448,16 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         dumpEncoderInfo(eCam);
 
         while (isOperatorControl() && isEnabled()) {
-
             Watchdog.getInstance().feed();
             Timer.delay(0.05);
             // kickApoo(eCam);
             updateRoller();
-            updateConveyor();
+            updateCam();
             if (driveMode == Constants.ARCADE_DRIVE) {
                 drive.arcadeDrive(stickLeft);
-            }
-            else {
+            } else {
                 drive.tankDrive(stickLeft.getY(), stickRight.getY());
             }
-
-//            System.out.println("Stick Left: " + stickLeft.getY()
-//                    + "\tStickRight: " + stickRight.getY() + "\tCAM M:  "
-//                    + cam.get() + "\tRoller:  " + roller.get());
-
         }
     }
 }
