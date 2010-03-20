@@ -78,10 +78,10 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     DigitalInput limSwitch;
     boolean rollerIsRolling;
     boolean flag;
+    boolean intervalFlag = true;
     DigitalInput autonomousGreenSwitch;
     DigitalInput autonomousSilverSwitch;
     DriverStationLCD dslcd;
-    long kickTime = 0;
     boolean kickSwitch;
 
     public Kicker_4WD_Robot() {
@@ -122,9 +122,9 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_CHANNEL);
 
 //        Watchdog.getInstance().feed();
-        /*camera = AxisCamera.getInstance();
+        camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
-        camera.writeResolution(AxisCamera.ResolutionT.k320x240);*/
+        camera.writeResolution(AxisCamera.ResolutionT.k320x240);
         // camera.writeResolution(AxisCamera.ResolutionT.k160x120);
 
         driveMode = Constants.UNINITIALIZED_DRIVE;
@@ -301,17 +301,17 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             Watchdog.getInstance().feed();
             Timer.delay(.05);
             drive.setLeftRightMotorSpeeds(.1, -.5);
-            //System.out.print(eCam.getDistance() + "distance\r");
-            /*if (eCam.getDistance() > -3200) {
-            drive.drive(-.5, 0);
-            Timer.delay(1);
-            //                drive.drive(-.5, 1);
-            }*/
-//            drive.drive(0, 0);
-//            drive.drive(-.5, 0); // drive forward
-//            //Timer.delay(2.0); // wait 3 seconds
-//            drive.drive(-0.5, 1); // turn
-//            Timer.delay(3.0);
+            if (autonomousGreenSwitch.get() == true &&
+                    autonomousSilverSwitch.get() == true) { //offense
+
+            } else if ((autonomousGreenSwitch.get() == true
+                    && autonomousSilverSwitch.get() == false) ||
+                    (autonomousGreenSwitch.get() == false 
+                    && autonomousSilverSwitch.get() == true)) { //mid-field
+
+            } else {    // defense
+
+            }
         }
         eCam.stop();
         eCam.reset();
@@ -459,33 +459,41 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     private void kickBall() {
         readButtons(stickCopilot, copilotButtons, "copilot");
 
-        if (copilotButtons[1] == true) {
-            cam.set(.9);
-            kickTime = Timer.getUsClock();
+        if (copilotButtons[1] == true && cam.getSpeed() == 0 && intervalFlag == true) {
+            cam.set(.5);
+            long nowTime = Timer.getUsClock();
+            if (intervalFlag == true) {
+                long startTime = nowTime;
+                intervalFlag = false;
+            }
+            else if (intervalFlag == false) {
+                
+            }
+//                long endTimeInterval = Timer.getUsClock();
+  //              endTimeInterval /= 10000;
+    //            System.out.println("interval end time: " + endTimeInterval);
         }
-
         if ((!limSwitch.get()) && (flag == false)) {
             // false = 0 = closed
             flag = true;
-            kickSwitch = limSwitch.get();
-            System.out.println("kicking " + limSwitch.get());
-
+            //kickSwitch = limSwitch.get();
+            //System.out.println("kicking switch=" + kickSwitch);
         } else if ((limSwitch.get()) && (flag == true)) {
             // true = 1 = open. kicker is loaded
-            cam.set(0.3);
+            cam.set(0.0);
+            long startTimeInterval = Timer.getUsClock();
+            startTimeInterval /= 10000;
+            System.out.println("interval start time: " + startTimeInterval);
             flag = false;
+            Timer.delay(2);
             kickSwitch = limSwitch.get();
-            System.out.println("stop kick " + limSwitch.get());
-
-            long t = Timer.getUsClock() - kickTime;
-            System.out.println("kick time = " + t + " "
-                    + Timer.getUsClock() + " " + kickTime);
+            System.out.println("stop kick switch= " + kickSwitch);
         }
         if (limSwitch.get() != kickSwitch) {
-            System.out.println("limSwitch changed  " + limSwitch.get());
+            // System.out.println("limSwitch changed  switch=" + limSwitch.get());
+            kickSwitch = limSwitch.get();
         }
-
-
+        
         if (copilotButtons[2] == true) {
             cam.set(0.0);
         }
