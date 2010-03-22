@@ -83,6 +83,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     DigitalInput autonomousSilverSwitch;
     DriverStationLCD dslcd;
     boolean kickSwitch;
+    long startTime = 0;
 
     public Kicker_4WD_Robot() {
         System.out.println("Starting 2010 FRC RobotTemplate");
@@ -301,16 +302,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             Watchdog.getInstance().feed();
             Timer.delay(.05);
             drive.setLeftRightMotorSpeeds(.1, -.5);
-            if (autonomousGreenSwitch.get() == true &&
-                    autonomousSilverSwitch.get() == true) { //offense
-
+            if (autonomousGreenSwitch.get() == true
+                    && autonomousSilverSwitch.get() == true) { //offense
             } else if ((autonomousGreenSwitch.get() == true
-                    && autonomousSilverSwitch.get() == false) ||
-                    (autonomousGreenSwitch.get() == false 
+                    && autonomousSilverSwitch.get() == false)
+                    || (autonomousGreenSwitch.get() == false
                     && autonomousSilverSwitch.get() == true)) { //mid-field
-
             } else {    // defense
-
             }
         }
         eCam.stop();
@@ -458,26 +456,23 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
     private void kickBall() {
         readButtons(stickCopilot, copilotButtons, "copilot");
+        long nowTime = Timer.getUsClock();
 
-        if (copilotButtons[1] == true && cam.getSpeed() == 0 && intervalFlag == true) {
-            cam.set(.5);
-            long nowTime = Timer.getUsClock();
-            if (intervalFlag == true) {
-                long startTime = nowTime;
+
+        if (copilotButtons[1] == true && cam.getSpeed() == 0) {
+            if (nowTime - startTime >= (2 * 1000 * 1000)) {
+                cam.set(.2);
                 intervalFlag = false;
             }
-            else if (intervalFlag == false) {
-                
-            }
 //                long endTimeInterval = Timer.getUsClock();
-  //              endTimeInterval /= 10000;
-    //            System.out.println("interval end time: " + endTimeInterval);
+            //              endTimeInterval /= 10000;
+            //            System.out.println("interval end time: " + endTimeInterval);
         }
         if ((!limSwitch.get()) && (flag == false)) {
             // false = 0 = closed
             flag = true;
-            //kickSwitch = limSwitch.get();
-            //System.out.println("kicking switch=" + kickSwitch);
+            kickSwitch = limSwitch.get();
+            System.out.println("kicking switch=" + kickSwitch);
         } else if ((limSwitch.get()) && (flag == true)) {
             // true = 1 = open. kicker is loaded
             cam.set(0.0);
@@ -485,15 +480,16 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             startTimeInterval /= 10000;
             System.out.println("interval start time: " + startTimeInterval);
             flag = false;
-            Timer.delay(2);
+            startTime = nowTime;
+            intervalFlag = true;
             kickSwitch = limSwitch.get();
             System.out.println("stop kick switch= " + kickSwitch);
         }
         if (limSwitch.get() != kickSwitch) {
-            // System.out.println("limSwitch changed  switch=" + limSwitch.get());
+            System.out.println("limSwitch changed  switch=" + limSwitch.get());
             kickSwitch = limSwitch.get();
         }
-        
+
         if (copilotButtons[2] == true) {
             cam.set(0.0);
         }
