@@ -85,6 +85,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     boolean kickSwitch;
     long startTime = 0;
 
+
     public Kicker_4WD_Robot() {
         System.out.println("Starting 2010 FRC RobotTemplate");
 
@@ -457,11 +458,21 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     private void kickBall() {
         readButtons(stickCopilot, copilotButtons, "copilot");
         long nowTime = Timer.getUsClock();
+        
+        
 
+        if (nowTime - startTime >= (2 * 1000 * 1000)) {
+            dslcd.println(DriverStationLCD.Line.kUser2, 1, "Kick: Now!           ");
+        } else {
+            long countDown = nowTime - startTime;
+            countDown = (2 * 1000 * 1000) - countDown;
+            countDown /= 10000;
+            dslcd.println(DriverStationLCD.Line.kUser2, 1, "Kick: " + countDown + "     ");
+        }
 
         if (copilotButtons[1] == true && cam.getSpeed() == 0) {
             if (nowTime - startTime >= (2 * 1000 * 1000)) {
-                cam.set(.2);
+                cam.set(.5);
                 intervalFlag = false;
             }
 //                long endTimeInterval = Timer.getUsClock();
@@ -524,6 +535,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         System.out.println("In Operator control");
         initializeButtons();
         userOptions();
+        System.out.println(dslcd.kLineLength);
+
 
         eCam.reset();
         dumpEncoderInfo(eCam);
@@ -532,11 +545,12 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         while (isOperatorControl() && isEnabled()) {
             Watchdog.getInstance().feed();
             Timer.delay(0.005);
+            updateDashboard();
             // kickApoo(eCam);
             updateRoller();
             //updateCam();
             kickBall();
-
+            dslcd.updateLCD();
             if (driveMode == Constants.ARCADE_DRIVE) {
                 drive.arcadeDrive(stickLeft);
             } else {
