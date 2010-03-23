@@ -48,6 +48,8 @@ interface Constants {
     public static final int ENCODER_CAM_CHANNEL_B = 8;
     public static final int AUTONOMOUS_SILVER_SWITCH_CHANNEL = 10;
     public static final int AUTONOMOUS_GREEN_SWITCH_CHANNEL = 11;
+    public static final int GYRO_CHANNEL_A = 1;
+    public static final int GYRO_CHANNEL_B = 2;
     //other constants
     public static final int UNINITIALIZED_DRIVE = 0;
     public static final int ARCADE_DRIVE = 1;
@@ -110,13 +112,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         pan = new Servo(Constants.TILT_SERVO);
 
         // Gyro
-        //gyro = new Gyro(Constants.GYRO_CHANNEL);     // indicates port Number
+        //gyro = new G1yro(Constants.ANALOG_MODULE_SLOT, Constants.GYRO_CHANNEL_A, Constants.GYRO_CHANNEL_B);     // indicates port Number
 
         // encoder
         eCam = new Encoder(Constants.ENCODER_CAM_CHANNEL_A,
                 Constants.ENCODER_CAM_CHANNEL_B);
         eLeftDrive = new Encoder(Constants.ENCODER_LEFT_DRIVE_CHANNEL_A,
-                Constants.ENCODER_LEFT_DRIVE_CHANNEL_B);
+                Constants.ENCODER_LEFT_DRIVE_CHANNEL_B, true);
         eRightDrive = new Encoder(Constants.ENCODER_RIGHT_DRIVE_CHANNEL_A,
                 Constants.ENCODER_RIGHT_DRIVE_CHANNEL_B);
 
@@ -147,7 +149,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         flag = true;
 
         dslcd = DriverStationLCD.getInstance();
-
+        eLeftDrive.setDistancePerPulse(.02); //inches per pulse
+        eRightDrive.setDistancePerPulse(.2);
         Watchdog.getInstance().feed();
     }
 
@@ -296,23 +299,54 @@ public class Kicker_4WD_Robot extends SimpleRobot {
      * This function is called once each time the robot enters autonomous mode.
      */
     public void autonomous() {
-        Watchdog.getInstance().setExpiration(8.0);
+        Watchdog.getInstance().feed();
+        Watchdog.getInstance().setExpiration(10);
         System.out.println("In Auto");
         eCam.start();
-        while (isAutonomous() && isEnabled()) {
+        //while (isAutonomous() && isEnabled()) {
             Watchdog.getInstance().feed();
-            Timer.delay(.05);
-            drive.setLeftRightMotorSpeeds(.1, -.5);
-            if (autonomousGreenSwitch.get() == true
-                    && autonomousSilverSwitch.get() == true) { //offense
-            } else if ((autonomousGreenSwitch.get() == true
-                    && autonomousSilverSwitch.get() == false)
-                    || (autonomousGreenSwitch.get() == false
-                    && autonomousSilverSwitch.get() == true)) { //mid-field
-            } else {    // defense
+        Timer.delay(.05);
+
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.start();
+        eRightDrive.start();
+        Watchdog.getInstance().feed();
+        drive.setLeftRightMotorSpeeds(.3, .3);
+        //gyro.reset();
+
+//        if (autonomousGreenSwitch.get() == true
+//                && autonomousSilverSwitch.get() == true) { //offense
+//        } else if ((autonomousGreenSwitch.get() == true
+//                && autonomousSilverSwitch.get() == false)
+//                || (autonomousGreenSwitch.get() == false
+//                && autonomousSilverSwitch.get() == true)) { //mid-field
+
+            while (eLeftDrive.getDistance() < 132.0)  {
+                System.out.println("EL:  " + eLeftDrive.getDistance());
+                drive.setLeftRightMotorSpeeds(.3, .3);
             }
-        }
-        eCam.stop();
+            drive.setLeftRightMotorSpeeds(0.0, 0.0);
+            eLeftDrive.reset();
+            eRightDrive.reset();
+            //gyro.reset();
+            System.out.println("made it to 1");
+//            while (gyro.getAngle() < 40.0) {
+//                drive.setLeftRightMotorSpeeds(.1,-.1);
+//                System.out.println("Gyro: " + gyro.getAngle());
+//            }
+            drive.setLeftRightMotorSpeeds(0.0, 0.0);
+            eLeftDrive.reset();
+            eRightDrive.reset();
+            if (eLeftDrive.getDistance() < 72.0)  drive.setLeftRightMotorSpeeds(.1, .1);
+            drive.setLeftRightMotorSpeeds(0.0, 0.0);
+//        } else {    // defense
+//        }
+//        eCam.stop();
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.stop();
+        eRightDrive.stop();
         eCam.reset();
     }
 
@@ -539,8 +573,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
 
         eCam.reset();
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.start();
+        eRightDrive.start();
         dumpEncoderInfo(eCam);
         kickSwitch = limSwitch.get();
+        int stuff3 = 1;
 
         while (isOperatorControl() && isEnabled()) {
             Watchdog.getInstance().feed();
@@ -556,6 +595,9 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             } else {
                 drive.tankDrive(stickLeft.getY(), stickRight.getY());
             }
+            stuff3++;
+            if (stuff3 % 100 == 0)
+                System.out.println("EL:" + eLeftDrive.getRaw() + "\t" + "ER:" + eRightDrive.getRaw());
         }
     }
 }
