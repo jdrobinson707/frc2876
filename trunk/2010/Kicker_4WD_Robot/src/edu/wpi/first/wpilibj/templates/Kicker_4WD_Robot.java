@@ -48,8 +48,8 @@ interface Constants {
     public static final int ENCODER_CAM_CHANNEL_B = 8;
     public static final int AUTONOMOUS_SILVER_SWITCH_CHANNEL = 10;
     public static final int AUTONOMOUS_GREEN_SWITCH_CHANNEL = 11;
-    public static final int GYRO_CHANNEL_A = 1;
-    public static final int GYRO_CHANNEL_B = 2;
+    public static final int GYRO_CHANNEL_RATE = 1;
+    public static final int GYRO_CHANNEL_TEMP = 2;
     //other constants
     public static final int UNINITIALIZED_DRIVE = 0;
     public static final int ARCADE_DRIVE = 1;
@@ -112,7 +112,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         pan = new Servo(Constants.TILT_SERVO);
 
         // Gyro
-        //gyro = new G1yro(Constants.ANALOG_MODULE_SLOT, Constants.GYRO_CHANNEL_A, Constants.GYRO_CHANNEL_B);     // indicates port Number
+        gyro = new Gyro(Constants.ANALOG_MODULE_SLOT, Constants.GYRO_CHANNEL_RATE);     // indicates port Number
 
         // encoder
         eCam = new Encoder(Constants.ENCODER_CAM_CHANNEL_A,
@@ -312,8 +312,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         eLeftDrive.start();
         eRightDrive.start();
         Watchdog.getInstance().feed();
-        drive.setLeftRightMotorSpeeds(.3, .3);
-        //gyro.reset();
+
+        gyro.reset();
 
 //        if (autonomousGreenSwitch.get() == true
 //                && autonomousSilverSwitch.get() == true) { //offense
@@ -322,24 +322,25 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 //                || (autonomousGreenSwitch.get() == false
 //                && autonomousSilverSwitch.get() == true)) { //mid-field
 
-            while (eLeftDrive.getDistance() < 132.0)  {
-                System.out.println("EL:  " + eLeftDrive.getDistance());
-                drive.setLeftRightMotorSpeeds(.3, .3);
+//            while (eLeftDrive.getDistance() < 132.0)  {
+//                System.out.println("EL:  " + eLeftDrive.getDistance());
+//                drive.setLeftRightMotorSpeeds(.2, .2);
+//            }
+//            drive.setLeftRightMotorSpeeds(0.0, 0.0);
+//            eLeftDrive.reset();
+//            eRightDrive.reset();
+            gyro.reset();
+            System.out.println("made it to 1");
+            System.out.println("Gyro: " + gyro.getAngle());
+            while (gyro.getAngle() < 40.0) {
+                drive.setLeftRightMotorSpeeds(.1,-.1);
+                System.out.println("Gyro: " + gyro.getAngle());
             }
             drive.setLeftRightMotorSpeeds(0.0, 0.0);
-            eLeftDrive.reset();
-            eRightDrive.reset();
-            //gyro.reset();
-            System.out.println("made it to 1");
-//            while (gyro.getAngle() < 40.0) {
-//                drive.setLeftRightMotorSpeeds(.1,-.1);
-//                System.out.println("Gyro: " + gyro.getAngle());
-//            }
-            drive.setLeftRightMotorSpeeds(0.0, 0.0);
-            eLeftDrive.reset();
-            eRightDrive.reset();
-            if (eLeftDrive.getDistance() < 72.0)  drive.setLeftRightMotorSpeeds(.1, .1);
-            drive.setLeftRightMotorSpeeds(0.0, 0.0);
+//            eLeftDrive.reset();
+//            eRightDrive.reset();
+//            if (eLeftDrive.getDistance() < 72.0)  drive.setLeftRightMotorSpeeds(.1, .1);
+//            drive.setLeftRightMotorSpeeds(0.0, 0.0);
 //        } else {    // defense
 //        }
 //        eCam.stop();
