@@ -635,7 +635,6 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     public void kickBall_Neil() {
         readButtons(stickCopilot, copilotButtons, "copilot");
 
-        if (copilotButtons[1]) {
             if (limSwitch.get() == true) {
                 //go through one cyle until true again
                 while (limSwitch.get() == true) {
@@ -650,9 +649,6 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                     cam.set(9.0);
                 }
             }
-        } else {
-            cam.set(.3);
-        }
     }
 
     public void operatorControl() {
