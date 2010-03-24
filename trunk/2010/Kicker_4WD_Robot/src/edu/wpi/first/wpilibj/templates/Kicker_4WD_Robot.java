@@ -355,10 +355,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         roller.set(1.0);
         moveForwardXInches(132.0);
         turnXDegreesLeft(20.0);
-        moveForwardXInches(72.0);
+        moveForwardXInches(60.0);
         roller.set(0.0);
-        kickBall();
+        Timer.delay(1.0);
+        kickBall_Auto();
         moveBackwardXInches(72.0);
+        turnXDegreesLeft(80.0);
+        moveBackwardXInches(48.0);
         eLeftDrive.stop();
         eRightDrive.stop();
         roller.set(1.0);
@@ -375,7 +378,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         turnXDegreesRight(40.0);
         moveForwardXInches(72.0);
         roller.set(0.0);
-        kickBall();
+        Timer.delay(1.0);
+        kickBall_Auto();
         moveBackwardXInches(72.0);
         eLeftDrive.stop();
         eRightDrive.stop();
@@ -635,6 +639,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     public void kickBall_Neil() {
         readButtons(stickCopilot, copilotButtons, "copilot");
 
+        if (copilotButtons[1]) {
             if (limSwitch.get() == true) {
                 //go through one cyle until true again
                 while (limSwitch.get() == true) {
@@ -649,6 +654,29 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                     cam.set(9.0);
                 }
             }
+        } else {
+            cam.set(.3);
+        }
+    }
+
+    public void kickBall_Auto() {
+       Watchdog.getInstance().feed();
+       if (limSwitch.get() == true) {
+            //go through one cyle until true again
+            while (limSwitch.get() == true) {
+                cam.set(.5);
+            }
+            Watchdog.getInstance().feed();
+            while (limSwitch.get() == false) {
+                cam.set(.5);
+            }
+        } else {
+            //go through one cyle until true again
+            while (limSwitch.get() == false) {
+                cam.set(.5);
+            }
+        }
+       cam.set(0.0);
     }
 
     public void operatorControl() {
