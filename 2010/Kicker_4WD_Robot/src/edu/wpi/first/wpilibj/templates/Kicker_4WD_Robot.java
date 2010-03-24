@@ -46,8 +46,9 @@ interface Constants {
     public static final int ENCODER_LEFT_DRIVE_CHANNEL_B = 6;
     public static final int ENCODER_CAM_CHANNEL_A = 7;
     public static final int ENCODER_CAM_CHANNEL_B = 8;
-    public static final int AUTONOMOUS_SILVER_SWITCH_CHANNEL = 10;
-    public static final int AUTONOMOUS_GREEN_SWITCH_CHANNEL = 11;
+    public static final int AUTONOMOUS_GREEN_SWITCH_CHANNEL = 10;
+    public static final int AUTONOMOUS_SILVER_SWITCH_CHANNEL = 11;
+    //Analog Channels
     public static final int GYRO_CHANNEL_RATE = 1;
     public static final int GYRO_CHANNEL_TEMP = 2;
     //other constants
@@ -125,6 +126,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         //Limit switch
         limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_CHANNEL);
 
+        //Autonomous Switch
+        autonomousSilverSwitch = new DigitalInput(Constants.DIGITAL_MODULE_SLOT,
+                Constants.AUTONOMOUS_SILVER_SWITCH_CHANNEL);
+        autonomousGreenSwitch = new DigitalInput(Constants.DIGITAL_MODULE_SLOT,
+                Constants.AUTONOMOUS_GREEN_SWITCH_CHANNEL);
+
+
 //        Watchdog.getInstance().feed();
         camera = AxisCamera.getInstance();
         camera.writeBrightness(0);
@@ -149,8 +157,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         flag = true;
 
         dslcd = DriverStationLCD.getInstance();
-        eLeftDrive.setDistancePerPulse(.02); //inches per pulse
-        eRightDrive.setDistancePerPulse(.2);
+        eLeftDrive.setDistancePerPulse(.1); //inches per pulse
+        eRightDrive.setDistancePerPulse(.1);
         Watchdog.getInstance().feed();
     }
 
@@ -303,52 +311,135 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         Watchdog.getInstance().setExpiration(10);
         System.out.println("In Auto");
         eCam.start();
-        //while (isAutonomous() && isEnabled()) {
-            Watchdog.getInstance().feed();
-        Timer.delay(.05);
-
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.start();
-        eRightDrive.start();
+        Watchdog.getInstance().feed();
+        Timer.delay(.02);
         Watchdog.getInstance().feed();
 
         gyro.reset();
 
-//        if (autonomousGreenSwitch.get() == true
-//                && autonomousSilverSwitch.get() == true) { //offense
-//        } else if ((autonomousGreenSwitch.get() == true
-//                && autonomousSilverSwitch.get() == false)
-//                || (autonomousGreenSwitch.get() == false
-//                && autonomousSilverSwitch.get() == true)) { //mid-field
+        System.out.println("" + autonomousGreenSwitch.get() + autonomousSilverSwitch.get());
+        if (autonomousGreenSwitch.get() == true
+                && autonomousSilverSwitch.get() == true) { //offense
+            System.out.println("Offense");
+            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Offense");
+            offensePush();
+        } else if ((autonomousGreenSwitch.get() == true
+                && autonomousSilverSwitch.get() == false)
+                || (autonomousGreenSwitch.get() == false
+                && autonomousSilverSwitch.get() == true)) { //mid-field
+            System.out.println("Midfield");
+            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Midfield");
+            midfieldPush();
+        } else {    // defense
+            System.out.println("Defense");
+            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Defense");
+            midfieldPush();  //currently the code for defense is the same for midfield
+        }
+        Watchdog.getInstance().feed();
 
-//            while (eLeftDrive.getDistance() < 132.0)  {
-//                System.out.println("EL:  " + eLeftDrive.getDistance());
-//                drive.setLeftRightMotorSpeeds(.2, .2);
-//            }
-//            drive.setLeftRightMotorSpeeds(0.0, 0.0);
-//            eLeftDrive.reset();
-//            eRightDrive.reset();
-            gyro.reset();
-            System.out.println("made it to 1");
-            System.out.println("Gyro: " + gyro.getAngle());
-            while (gyro.getAngle() < 40.0) {
-                drive.setLeftRightMotorSpeeds(.1,-.1);
-                System.out.println("Gyro: " + gyro.getAngle());
-            }
-            drive.setLeftRightMotorSpeeds(0.0, 0.0);
-//            eLeftDrive.reset();
-//            eRightDrive.reset();
-//            if (eLeftDrive.getDistance() < 72.0)  drive.setLeftRightMotorSpeeds(.1, .1);
-//            drive.setLeftRightMotorSpeeds(0.0, 0.0);
-//        } else {    // defense
-//        }
-//        eCam.stop();
+        eCam.stop();
         eLeftDrive.reset();
         eRightDrive.reset();
         eLeftDrive.stop();
         eRightDrive.stop();
         eCam.reset();
+        gyro.reset();
+    }
+
+    public void offensePush() {
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.start();
+        eRightDrive.start();
+        //make sure kicker is pulled back!!
+        roller.set(1.0);
+        moveForwardXInches(132.0);
+        turnXDegreesLeft(20.0);
+        moveForwardXInches(72.0);
+        roller.set(0.0);
+        kickBall();
+        moveBackwardXInches(72.0);
+        eLeftDrive.stop();
+        eRightDrive.stop();
+        roller.set(1.0);
+    }
+
+    public void midfieldPush() {
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.start();
+        eRightDrive.start();
+        //make sure kicker is pulled back!!
+        roller.set(1.0);
+        moveForwardXInches(132.0);
+        turnXDegreesRight(40.0);
+        moveForwardXInches(72.0);
+        roller.set(0.0);
+        kickBall();
+        moveBackwardXInches(72.0);
+        eLeftDrive.stop();
+        eRightDrive.stop();
+        roller.set(1.0);
+    }
+
+    public void turnXDegreesRight(double xdegrees) {  //NOTE:  CANNOT TURN LEFT!
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        gyro.reset();
+        Watchdog.getInstance().feed();
+        while (gyro.getAngle() < xdegrees) {
+            drive.setLeftRightMotorSpeeds(-.4,.4);
+            System.out.println("made it to 2");
+            System.out.println("Gyro: " + gyro.getAngle());
+            System.out.println("made it to 3");
+        }
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        gyro.reset();
+        Watchdog.getInstance().feed();
+    }
+
+    public void turnXDegreesLeft(double xdegrees) {  //NOTE:  CANNOT TURN RIGHT
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        gyro.reset();
+        Watchdog.getInstance().feed();
+        while (gyro.getAngle() > (-1 * xdegrees)) {
+            drive.setLeftRightMotorSpeeds(.4,-.4);
+            System.out.println("made it to 2");
+            System.out.println("Gyro: " + gyro.getAngle());
+            System.out.println("made it to 3");
+        }
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        gyro.reset();
+        Watchdog.getInstance().feed();
+    }
+
+    public void moveForwardXInches(double xinches) {
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        Watchdog.getInstance().feed();
+        while (eLeftDrive.getDistance() < xinches)  {
+            System.out.println("EL:  " + eLeftDrive.getDistance());
+            drive.setLeftRightMotorSpeeds(.3, .3);
+        }
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        Watchdog.getInstance().feed();
+        eLeftDrive.reset();
+        eRightDrive.reset();
+    }
+
+    public void moveBackwardXInches(double xinches) {
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        Watchdog.getInstance().feed();
+        while (eLeftDrive.getDistance() > (-1 * xinches))  {
+            System.out.println("EL:  " + eLeftDrive.getDistance());
+            drive.setLeftRightMotorSpeeds(-.3, -.3);
+        }
+        drive.setLeftRightMotorSpeeds(0.0, 0.0);
+        Watchdog.getInstance().feed();
+        eLeftDrive.reset();
+        eRightDrive.reset();
     }
 
     public void updateRoller() {
