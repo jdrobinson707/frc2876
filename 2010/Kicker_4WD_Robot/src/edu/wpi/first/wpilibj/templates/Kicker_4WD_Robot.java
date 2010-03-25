@@ -329,11 +329,11 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 && autonomousSilverSwitch.get() == true)) { //mid-field
             System.out.println("Midfield");
             dslcd.println(DriverStationLCD.Line.kUser3, 1, "Midfield");
-            midfieldPush();
+            midfieldG3();
         } else {    // defense
             System.out.println("Defense");
             dslcd.println(DriverStationLCD.Line.kUser3, 1, "Defense");
-            midfieldPush();  //currently the code for defense is the same for midfield
+            defenseG3();  //currently the code for defense is the same for midfield
         }
         Watchdog.getInstance().feed();
 
@@ -384,6 +384,65 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         eLeftDrive.stop();
         eRightDrive.stop();
         roller.set(1.0);
+    }
+
+       public void midfieldG3() {
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.start();
+        eRightDrive.start();
+        //make sure kicker is pulled back!!
+        roller.set(1.0);
+        moveForwardXInches(24.0);
+        Timer.delay(1.0);
+        turnXDegreesRight(10.0);
+        roller.set(0.0);
+        kickBall_Auto();
+        roller.set(1.0);
+        turnXDegreesLeft(10.0);
+        Timer.delay(1.0);
+        moveForwardXInches(90.0);
+        Timer.delay(1.0);
+        roller.set(0.0);
+        kickBall_Auto();
+        roller.set(1.0);
+        moveBackwardXInches(72.0);
+        eLeftDrive.stop();
+        eRightDrive.stop();
+        roller.set(0.0);
+    }
+       public void defenseG3() {
+        eLeftDrive.reset();
+        eRightDrive.reset();
+        eLeftDrive.start();
+        eRightDrive.start();
+        //make sure kicker is pulled back!!
+        roller.set(1.0);
+        moveForwardXInches(24.0);
+        Timer.delay(1.0);
+        turnXDegreesRight(10.0);
+        roller.set(0.0);
+        kickBall_Auto();
+        roller.set(1.0);
+        turnXDegreesLeft(10.0);
+        Timer.delay(1.0);
+        moveForwardXInches(60.0);
+        Timer.delay(1.0);
+        turnXDegreesRight(10.0);
+        roller.set(0.0);
+        kickBall_Auto();
+        roller.set(1.0);
+        turnXDegreesLeft(10.0);
+        Timer.delay(1.0);
+        moveForwardXInches(70.0);
+        Timer.delay(1.0);
+        roller.set(0.0);
+        kickBall_Auto();
+        roller.set(1.0);
+        moveBackwardXInches(72.0);
+        eLeftDrive.stop();
+        eRightDrive.stop();
+        roller.set(0.0);
     }
 
     public void turnXDegreesRight(double xdegrees) {  //NOTE:  CANNOT TURN LEFT!
