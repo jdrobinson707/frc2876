@@ -321,18 +321,21 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         if (autonomousGreenSwitch.get() == true
                 && autonomousSilverSwitch.get() == true) { //offense
             System.out.println("Offense");
-            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Offense");
+            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Offense              ");
+            dslcd.updateLCD();
             offensePush();
         } else if ((autonomousGreenSwitch.get() == true
                 && autonomousSilverSwitch.get() == false)
                 || (autonomousGreenSwitch.get() == false
                 && autonomousSilverSwitch.get() == true)) { //mid-field
             System.out.println("Midfield");
-            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Midfield");
+            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Midfield             ");
+            dslcd.updateLCD();
             midfieldG3();
         } else {    // defense
             System.out.println("Defense");
-            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Defense");
+            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Defense              ");
+            dslcd.updateLCD();
             defenseG3();  //currently the code for defense is the same for midfield
         }
         Watchdog.getInstance().feed();
