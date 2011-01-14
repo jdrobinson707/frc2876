@@ -7,8 +7,10 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.image.*;
-import edu.wpi.first.wpilibj.camera.*;
+import edu.wpi.first.wpilibj.camera.AxisCamera;
+import edu.wpi.first.wpilibj.image.ColorImage;
+/*import edu.wpi.first.wpilibj.image.*;
+import edu.wpi.first.wpilibj.camera.*;*/
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -69,15 +71,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     boolean rightButtons[];
     boolean leftButtons[];
     boolean copilotButtons[];
-    int accelbutton;
-    ColorImage image;
-    AxisCamera camera;
-    Servo pan;
-    Servo tilt;
     Gyro gyro;
-    Encoder eCam;
-    Encoder eLeftDrive;
-    Encoder eRightDrive;
     DigitalInput limSwitch;
     boolean rollerIsRolling;
     boolean flag;
@@ -87,7 +81,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     DriverStationLCD dslcd;
     boolean kickSwitch;
     long startTime = 0;
-
+    ColorImage image;
+    AxisCamera camera;
 
     public Kicker_4WD_Robot() {
         System.out.println("Starting 2010 FRC RobotTemplate");
@@ -108,20 +103,13 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         roller = new Jaguar(Constants.DIGITAL_MODULE_SLOT,
                 Constants.ROLLER_MOTOR_PWM);
 
-        // servos
-        tilt = new Servo(Constants.PAN_SERVO);
-        pan = new Servo(Constants.TILT_SERVO);
-
         // Gyro
         gyro = new Gyro(Constants.ANALOG_MODULE_SLOT, Constants.GYRO_CHANNEL_RATE);     // indicates port Number
 
-        // encoder
-        eCam = new Encoder(Constants.ENCODER_CAM_CHANNEL_A,
-                Constants.ENCODER_CAM_CHANNEL_B);
-        eLeftDrive = new Encoder(Constants.ENCODER_LEFT_DRIVE_CHANNEL_A,
-                Constants.ENCODER_LEFT_DRIVE_CHANNEL_B, true);
-        eRightDrive = new Encoder(Constants.ENCODER_RIGHT_DRIVE_CHANNEL_A,
-                Constants.ENCODER_RIGHT_DRIVE_CHANNEL_B);
+        // Camera
+        camera = AxisCamera.getInstance();
+        camera.writeBrightness(0);
+        camera.writeResolution(AxisCamera.ResolutionT.k320x240);
 
         //Limit switch
         limSwitch = new DigitalInput(Constants.LIMIT_SWITCH_CHANNEL);
@@ -133,21 +121,20 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 Constants.AUTONOMOUS_GREEN_SWITCH_CHANNEL);
 
 
-//        Watchdog.getInstance().feed();
-        camera = AxisCamera.getInstance();
-        camera.writeBrightness(0);
-        camera.writeResolution(AxisCamera.ResolutionT.k320x240);
-        // camera.writeResolution(AxisCamera.ResolutionT.k160x120);
+        Watchdog.getInstance().feed();
 
         driveMode = Constants.UNINITIALIZED_DRIVE;
         drive = new RobotDrive(Constants.DRIVE_MOTOR_LEFT_FRONT_PWM,
                 Constants.DRIVE_MOTOR_LEFT_REAR_PWM,
                 Constants.DRIVE_MOTOR_RIGHT_FRONT_PWM,
                 Constants.DRIVE_MOTOR_RIGHT_REAR_PWM);
+
         drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+
+
 
         //starting roller condition
         rollerIsRolling = false;
@@ -156,10 +143,14 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         //starting limit switch condition
         flag = true;
 
-        dslcd = DriverStationLCD.getInstance();
-        eLeftDrive.setDistancePerPulse(.1); //inches per pulse
-        eRightDrive.setDistancePerPulse(.1);
         Watchdog.getInstance().feed();
+
+        dslcd = DriverStationLCD.getInstance();
+        dslcd.println(DriverStationLCD.Line.kUser2, 1, "                     ");
+        dslcd.println(DriverStationLCD.Line.kUser3, 1, "                     ");
+        dslcd.println(DriverStationLCD.Line.kUser4, 1, "                     ");
+        dslcd.println(DriverStationLCD.Line.kUser5, 1, "                     ");
+        dslcd.updateLCD();
     }
 
     void updateDashboard() {
@@ -303,322 +294,92 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         }
     }
 
-    /**
-     * This function is called once each time the robot enters autonomous mode.
-     */
     public void autonomous() {
-        Watchdog.getInstance().feed();
-        Watchdog.getInstance().setExpiration(10);
-        System.out.println("In Auto");
-        eCam.start();
-        Watchdog.getInstance().feed();
-        Timer.delay(.02);
-        Watchdog.getInstance().feed();
-
+        String str = "Enter Autonomous";
+        System.out.println(str);
+        dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
+        startTime = Timer.getUsClock();
+        int kickCount = 0;
         gyro.reset();
+        double startGyro = gyro.getAngle();
+        int spinCounter = 0;
 
-        System.out.println("" + autonomousGreenSwitch.get() + autonomousSilverSwitch.get());
-        if (autonomousGreenSwitch.get() == true
-                && autonomousSilverSwitch.get() == true) { //offense
-            System.out.println("Offense");
-            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Offense              ");
-            dslcd.updateLCD();
-            offensePush();
-        } else if ((autonomousGreenSwitch.get() == true
-                && autonomousSilverSwitch.get() == false)
-                || (autonomousGreenSwitch.get() == false
-                && autonomousSilverSwitch.get() == true)) { //mid-field
-            System.out.println("Midfield");
-            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Midfield             ");
-            dslcd.updateLCD();
-            midfieldG3();
-        } else {    // defense
-            System.out.println("Defense");
-            dslcd.println(DriverStationLCD.Line.kUser3, 1, "Defense              ");
-            dslcd.updateLCD();
-            defenseG3();  //currently the code for defense is the same for midfield
+        while (isAutonomous() && isEnabled()) {
+            Watchdog.getInstance().feed();
+            Timer.delay(0.05);
+            long nowTime = Timer.getUsClock();
+            long difTime = (nowTime - startTime);
+            
+            double currentGyro = gyro.getAngle();
+            double diffGyro = startGyro - currentGyro;
+
+            System.out.println(diffGyro);
+            spinCounter = 0;
+            
+            int times = 0;
+            while (times < 4) {
+                long startDriveTime = nowTime;
+                while ( nowTime - startDriveTime <= 2) {
+
+                }
+
+                }
+            }
+
+//            if (diffGyro >= 90 && spinCounter != 4) {
+//                    drive.tankDrive(0.5, 0.5);
+//                    
+//                    
+//                }else{
+//                    drive.tankDrive(0.20, -0.20);
+//                    spinCounter++;
+//                    gyro.reset();
+//                    long lastTime = nowTime;
+
+
+        /*    System.out.println(difTime);
+            // if more than 2 seconds goes by stop driving
+            if (difTime >= (2 * 1000 * 1000)) {
+                System.out.println("stop driving");
+                drive.tankDrive(0, 0);
+            } else {
+                // if less than 2s goes by, drive
+                drive.tankDrive(-.75, -.75);
+                System.out.println("driving");
+            }
+            if (difTime < (2.55 * 1000 * 1000) && (difTime > (2.5 * 1000 * 1000) && (kickCount == 0))) {
+
+                copilotButtons[1] = true;
+                kickBall();
+                copilotButtons[1] = false;
+                kickCount = (kickCount + 1);
+
+            }*/
         }
-        Watchdog.getInstance().feed();
 
-        eCam.stop();
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.stop();
-        eRightDrive.stop();
-        eCam.reset();
-        gyro.reset();
-    }
-
-    public void offensePush() {
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.start();
-        eRightDrive.start();
-        //make sure kicker is pulled back!!
-        roller.set(1.0);
-        moveForwardXInches(132.0);
-        turnXDegreesLeft(20.0);
-        moveForwardXInches(60.0);
-        roller.set(0.0);
-        Timer.delay(1.0);
-        kickBall_Auto();
-        moveBackwardXInches(72.0);
-        turnXDegreesLeft(80.0);
-        moveBackwardXInches(48.0);
-        eLeftDrive.stop();
-        eRightDrive.stop();
-        roller.set(1.0);
-    }
-
-    public void midfieldPush() {
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.start();
-        eRightDrive.start();
-        //make sure kicker is pulled back!!
-        roller.set(1.0);
-        moveForwardXInches(132.0);
-        turnXDegreesRight(40.0);
-        moveForwardXInches(72.0);
-        roller.set(0.0);
-        Timer.delay(1.0);
-        kickBall_Auto();
-        moveBackwardXInches(72.0);
-        eLeftDrive.stop();
-        eRightDrive.stop();
-        roller.set(1.0);
-    }
-
-       public void midfieldG3() {
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.start();
-        eRightDrive.start();
-        //make sure kicker is pulled back!!
-        roller.set(1.0);
-        moveForwardXInches(24.0);
-        Timer.delay(1.0);
-        turnXDegreesRight(10.0);
-        roller.set(0.0);
-        kickBall_Auto();
-        roller.set(1.0);
-        turnXDegreesLeft(10.0);
-        Timer.delay(1.0);
-        moveForwardXInches(90.0);
-        Timer.delay(1.0);
-        roller.set(0.0);
-        kickBall_Auto();
-        roller.set(1.0);
-        moveBackwardXInches(72.0);
-        eLeftDrive.stop();
-        eRightDrive.stop();
-        roller.set(0.0);
-    }
-       public void defenseG3() {
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.start();
-        eRightDrive.start();
-        //make sure kicker is pulled back!!
-        roller.set(1.0);
-        moveForwardXInches(24.0);
-        Timer.delay(1.0);
-        turnXDegreesRight(10.0);
-        roller.set(0.0);
-        kickBall_Auto();
-        roller.set(1.0);
-        turnXDegreesLeft(10.0);
-        Timer.delay(1.0);
-        moveForwardXInches(60.0);
-        Timer.delay(1.0);
-        turnXDegreesRight(10.0);
-        roller.set(0.0);
-        kickBall_Auto();
-        roller.set(1.0);
-        turnXDegreesLeft(10.0);
-        Timer.delay(1.0);
-        moveForwardXInches(70.0);
-        Timer.delay(1.0);
-        roller.set(0.0);
-        kickBall_Auto();
-        roller.set(1.0);
-        moveBackwardXInches(72.0);
-        eLeftDrive.stop();
-        eRightDrive.stop();
-        roller.set(0.0);
-    }
-
-    public void turnXDegreesRight(double xdegrees) {  //NOTE:  CANNOT TURN LEFT!
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        gyro.reset();
-        Watchdog.getInstance().feed();
-        while (gyro.getAngle() < xdegrees) {
-            drive.setLeftRightMotorSpeeds(-.4,.4);
-            System.out.println("made it to 2");
-            System.out.println("Gyro: " + gyro.getAngle());
-            System.out.println("made it to 3");
-        }
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        gyro.reset();
-        Watchdog.getInstance().feed();
-    }
-
-    public void turnXDegreesLeft(double xdegrees) {  //NOTE:  CANNOT TURN RIGHT
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        gyro.reset();
-        Watchdog.getInstance().feed();
-        while (gyro.getAngle() > (-1 * xdegrees)) {
-            drive.setLeftRightMotorSpeeds(.4,-.4);
-            System.out.println("made it to 2");
-            System.out.println("Gyro: " + gyro.getAngle());
-            System.out.println("made it to 3");
-        }
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        gyro.reset();
-        Watchdog.getInstance().feed();
-    }
-
-    public void moveForwardXInches(double xinches) {
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        Watchdog.getInstance().feed();
-        while (eLeftDrive.getDistance() < xinches)  {
-            System.out.println("EL:  " + eLeftDrive.getDistance());
-            drive.setLeftRightMotorSpeeds(.3, .3);
-        }
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        Watchdog.getInstance().feed();
-        eLeftDrive.reset();
-        eRightDrive.reset();
-    }
-
-    public void moveBackwardXInches(double xinches) {
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        Watchdog.getInstance().feed();
-        while (eLeftDrive.getDistance() > (-1 * xinches))  {
-            System.out.println("EL:  " + eLeftDrive.getDistance());
-            drive.setLeftRightMotorSpeeds(-.3, -.3);
-        }
-        drive.setLeftRightMotorSpeeds(0.0, 0.0);
-        Watchdog.getInstance().feed();
-        eLeftDrive.reset();
-        eRightDrive.reset();
+        str = "Exit Autonomous";
+        System.out.println(str);
+        dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
     }
 
     public void updateRoller() {
         readButtons(stickRight, rightButtons, "right");
 
-        if (rightButtons[1] == true) {
-            if (rollerIsRolling == false) {
-                rollerIsRolling = true;
-                roller.set(1.0);
-            } else {
-                rollerIsRolling = false;
-                roller.set(0.0);
-            }
-        } else if (rightButtons[2] == true) {
-            if (roller.get() == 0.0) {
-                roller.set(-1.0);
-            } else {
-                roller.set(0.0);
-            }
-        }
-    }
-
-    /*    public void updateCam() {
-    double speed = 0.0;
-
-    readButtons(stickCopilot, copilotButtons, "copilot");
-
-    if (copilotButtons[7] == true) {
-    speed = cam.get();
-    if (speed > 0.0) {
-    speed = speed - .05;
-    }
-    cam.set(speed);
-    System.out.println("CAM:  " + speed);
-    }
-    if (copilotButtons[6] == true) {
-    speed = cam.get();
-    if (speed < .8) {
-    speed = speed + .05;
-    }
-    cam.set(speed);
-    System.out.println("CAM:  " + speed);
-    }
-    if (copilotButtons[1] == true) {
-    cam.set(0);
-    }
-    if (copilotButtons[2] == true) {
-    eCam.reset();
-    }
-    }*/
-    private void dumpEncoderInfo(Encoder e) {
-        System.out.println("ENCODER: "
-                + " dir=" + e.getDirection()
-                + " dist=" + e.getDistance()
-                + " period=" + e.getPeriod()
-                + " rate=" + e.getRate()
-                + " raw=" + e.getRaw()
-                + " stopped=" + e.getStopped());
-    }
-    private int totalKickRotations = 0;
-
-    private void kickApoo(Encoder e) {
-        String strButton = "none";
-        readButtons(stickLeft, leftButtons, "left");
-        if (leftButtons[1] == true) {
-            strButton = "1";
-        } else if (leftButtons[2] == true) {
-            strButton = "2";
-        } else if (leftButtons[3] == true) {
-            strButton = "3";
-        } else if (leftButtons[4] == true) {
-            strButton = "4";
-        } else if (leftButtons[5] == true) {
-            strButton = "5";
-        } else if (leftButtons[6] == true) {
-            strButton = "6";
-        } else if (leftButtons[7] == true) {
-            strButton = "7";
-        } else if (leftButtons[8] == true) {
-            strButton = "8";
-        }
-
-        if (!strButton.equals("none")) {
-            int btn = Integer.parseInt(strButton);
-            double speed = ((double) btn) / 10.0;
-            if (speed < 0 || speed > 1.0) {
-                speed = .5;
-            }
-            double limit = 360;
-            double tmp = (stickLeft.getZ() + 1) * 200;
-            if (tmp != 0) {
-                limit = tmp;
-            }
-            eCam.setDistancePerPulse((btn - 1) * 100);
-            System.out.println("=========================================");
-            System.out.println(" strButton=" + strButton
-                    + " speed=" + speed + " limit=" + limit + " tmp=" + tmp);
-
-            eCam.start();
-            dumpEncoderInfo(eCam);
-            drive.setLeftRightMotorSpeeds(-speed, 0.0);
-            while (eCam.get() < limit) {
-                Watchdog.getInstance().feed();
-            }
-            drive.setLeftRightMotorSpeeds(0.0, 0.0);
-            eCam.stop();
-            dumpEncoderInfo(eCam);
-            int counts = eCam.get();
-            totalKickRotations += counts;
-            System.out.println("EncoderRotationCount:  "
-                    + counts
-                    + "  totalKickRotations: " + totalKickRotations);
-            eCam.reset();
+        if (copilotButtons[6] == true) {
+//            if (rollerIsRolling == false) {
+//                rollerIsRolling = true;
+            roller.set(1.0);
+//            } else {
+//                rollerIsRolling = false;
+//                roller.set(0.0);
+//            }
+        } else if (copilotButtons[7] == true) {
+//            if (roller.get() == 0.0) {
+//                roller.set(-1.0);
+//            } else {
+//                roller.set(0.0);
+//            }
+            roller.set(0.0);
         }
     }
 
@@ -648,10 +409,10 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     }
 
     private void kickBall() {
-        readButtons(stickCopilot, copilotButtons, "copilot");
+        if (isOperatorControl()) {
+            readButtons(stickCopilot, copilotButtons, "copilot");
+        }
         long nowTime = Timer.getUsClock();
-        
-        
 
         if (nowTime - startTime >= (2 * 1000 * 1000)) {
             dslcd.println(DriverStationLCD.Line.kUser2, 1, "Kick: Now!           ");
@@ -664,7 +425,8 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
         if (copilotButtons[1] == true && cam.getSpeed() == 0) {
             if (nowTime - startTime >= (2 * 1000 * 1000)) {
-                cam.set(.5);
+                roller.set(0.0);
+                cam.set(.9);
                 intervalFlag = false;
             }
 //                long endTimeInterval = Timer.getUsClock();
@@ -679,6 +441,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         } else if ((limSwitch.get()) && (flag == true)) {
             // true = 1 = open. kicker is loaded
             cam.set(0.0);
+            roller.set(1.0);
             long startTimeInterval = Timer.getUsClock();
             startTimeInterval /= 10000;
             System.out.println("interval start time: " + startTimeInterval);
@@ -698,84 +461,35 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         }
     }
 
-    public void kickBall_Neil() {
-        readButtons(stickCopilot, copilotButtons, "copilot");
-
-        if (copilotButtons[1]) {
-            if (limSwitch.get() == true) {
-                //go through one cyle until true again
-                while (limSwitch.get() == true) {
-                    cam.set(9.0);
-                }
-                while (limSwitch.get() == false) {
-                    cam.set(9.0);
-                }
-            } else {
-                //go through one cyle until true again
-                while (limSwitch.get() == false) {
-                    cam.set(9.0);
-                }
-            }
-        } else {
-            cam.set(.3);
-        }
-    }
-
-    public void kickBall_Auto() {
-       Watchdog.getInstance().feed();
-       if (limSwitch.get() == true) {
-            //go through one cyle until true again
-            while (limSwitch.get() == true) {
-                cam.set(.5);
-            }
-            Watchdog.getInstance().feed();
-            while (limSwitch.get() == false) {
-                cam.set(.5);
-            }
-        } else {
-            //go through one cyle until true again
-            while (limSwitch.get() == false) {
-                cam.set(.5);
-            }
-        }
-       cam.set(0.0);
-    }
-
     public void operatorControl() {
         Watchdog.getInstance().feed();
         Watchdog.getInstance().setExpiration(3.0);
         System.out.println("In Operator control");
         initializeButtons();
         userOptions();
-        System.out.println(dslcd.kLineLength);
-
-
-        eCam.reset();
-        eLeftDrive.reset();
-        eRightDrive.reset();
-        eLeftDrive.start();
-        eRightDrive.start();
-        dumpEncoderInfo(eCam);
         kickSwitch = limSwitch.get();
-        int stuff3 = 1;
 
         while (isOperatorControl() && isEnabled()) {
+
             Watchdog.getInstance().feed();
-            Timer.delay(0.005);
+            Timer.delay(0.05);
             updateDashboard();
-            // kickApoo(eCam);
             updateRoller();
-            //updateCam();
+            // Broken -- this line causes the robot to drive without touching the joysticks.  Needs to be fixed.
             kickBall();
             dslcd.updateLCD();
-            if (driveMode == Constants.ARCADE_DRIVE) {
-                drive.arcadeDrive(stickLeft);
-            } else {
-                drive.tankDrive(stickLeft.getY(), stickRight.getY());
-            }
-            stuff3++;
-            if (stuff3 % 100 == 0)
-                System.out.println("EL:" + eLeftDrive.getRaw() + "\t" + "ER:" + eRightDrive.getRaw());
+//            if (driveMode == Constants.ARCADE_DRIVE) {
+//                drive.arcadeDrive(stickLeft);
+//            } else {
+            double right, left;
+            right = stickRight.getY();
+            left = stickLeft.getY();
+            System.out.println("The right is value " + right
+                    + ", the left value is " + left
+                    + "The gyro value is " + gyro.getAngle());
+            drive.tankDrive(left, right);
+            //           drive.tankDrive(stickLeft.getY(), stickRight.getY());
+//            }
         }
     }
 }
