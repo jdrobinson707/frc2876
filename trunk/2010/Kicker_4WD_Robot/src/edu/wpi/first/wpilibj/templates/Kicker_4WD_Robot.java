@@ -355,7 +355,6 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 kickCount = (kickCount + 1);
 
             }*/
-        }
 
         str = "Exit Autonomous";
         System.out.println(str);
