@@ -331,11 +331,12 @@ public class RobotTemplate extends SimpleRobot {
 
 
         while (isOperatorControl() && isEnabled()) {
-            Timer.delay(0.30);
+            Timer.delay(0.50);
 
             // drive.tankDrive(-stickLeft.getY(), -stickRight.getY());
 
-            drive.arcadeDrive(stickLeft);
+            // Slow down forward/backward speed of robot
+            drive.arcadeDrive(stickLeft.getY()*.75, stickLeft.getX());
 
             arm.set(stickArm.getY());
 
