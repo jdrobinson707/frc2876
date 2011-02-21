@@ -274,6 +274,9 @@ public class RobotTemplate extends SimpleRobot {
             grip1 = false;
             grip2 = true;
         }
+        if (stickArm.getTrigger()) {
+            arm.stopArm();
+        }
         if (isSet) {
             System.out.println("isSet:" + isSet + "  value:" + value);
         }
