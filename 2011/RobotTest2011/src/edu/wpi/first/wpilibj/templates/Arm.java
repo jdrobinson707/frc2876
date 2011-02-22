@@ -10,17 +10,15 @@ import edu.wpi.first.wpilibj.*;
  *
  * @author User
  */
-public class Arm extends Thread {
+public class Arm {
 
     DriverStation ds;
     AnalogChannel ac;
     PIDController mc;
     Jaguar armJag;
-    Solenoid grip1;
-    Solenoid grip2;
+    Solenoid grip;
     Solenoid armExtension1;
     Solenoid armExtension2;
-    double value;
     boolean running;
 
     public String toString() {
@@ -41,31 +39,24 @@ public class Arm extends Thread {
         mc.setTolerance(5.0);
         mc.setOutputRange(-.7, .7);
         mc.setInputRange(150, 650);
+        
+        armExtension1 = new Solenoid(8, 1);
+        armExtension2 = new Solenoid(8, 2);
+        grip = new Solenoid(8, 3);
 
-        //grip1.set(true);
-        //grip2.set(false);
+        grip.set(true);
 
-        //armExtension1.set(true);
-        //armExtension2.set(false);
+        armExtension1.set(true);
+        armExtension2.set(false);
+
+        running = false;
     }
 
-    public void armMovement(double value) {
-        // do something with value
-        this.value = value;
-        if (!running) {
-            this.start();
-            running = true;
-        }
-    }
-
-    private boolean runMovement() {
-
-        boolean foundTarget = false;
+    public void runMovement(double value) {
 
         if (mc.onTarget()) {
             mc.reset();
             System.out.println("reset mc");
-            foundTarget = true;
         }
 
         mc.setSetpoint(value);
@@ -75,34 +66,21 @@ public class Arm extends Thread {
                 + armJag.getSpeed() + " onTarget: " + mc.onTarget()
                 + " Error: " + mc.getError() + " Value: " + ac.pidGet());
 
-        return foundTarget;
     }
 
-    public void OpenClaw(boolean grip1, boolean grip2) {
-        this.grip1.set(grip1);
-        this.grip2.set(grip2);
+    public void OpenClaw(boolean grip1) {
+        grip.set(grip1);
+        System.out.println("Grip");
     }
 
     public void ExtendArm(boolean arm1, boolean arm2) {
         armExtension1.set(arm1);
         armExtension2.set(arm2);
+        System.out.println("Extend Arm");
     }
 
     public void set(double value) {
         mc.disable();
         armJag.set(value);
-    }
-
-    public void run() {
-        while (this.runMovement() && running) {
-        }
-        running = false;
-        mc.reset();
-    }
-
-    public void stopArm()
-    {
-        running = false;
-        armJag.set(0.0);
     }
 }

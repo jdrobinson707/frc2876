@@ -36,8 +36,13 @@ interface Constants {
     public static final int ARM_JAGUAR = 3;
     public static final int ANALOG_CHANNEL_SLOT = 1;
     public static final int ANALOG_CHANNEL_CHANNEL = 3;
-    public static final int PRESSURE_SWITCH_CHANNEL = 1;
-    public static final int COMPRESSOR_RELAY_CHANNEL = 1;
+    public static final int PRESSURE_SWITCH_CHANNEL = 11;
+    public static final int COMPRESSOR_RELAY_CHANNEL = 2;
+    public static final int ARM_SOLENOID_1_CHANNEL = 1;
+    public static final int ARM_SOLENOID_2_CHANNEL = 2;
+    public static final int GRIP_SOLENOID_1_CHANNEL = 3;
+    public static final int SOLENOID_SLOT = 8;
+
     public static final double TOP_PEG = 600.0;
     public static final double MIDDLE_PEG = 400.0;
     public static final double LOW_PEG = 200.0;
@@ -54,8 +59,6 @@ public class RobotTemplate extends SimpleRobot {
     DriverStation ds;
     Encoder leftEncoder;
     Encoder rightEncoder;
-    Solenoid s1;
-    Solenoid s2;
     AnalogChannel ac;
     PIDController motorControl;
     double value;
@@ -63,9 +66,9 @@ public class RobotTemplate extends SimpleRobot {
     Arm arm;
     boolean armE1;
     boolean armE2;
-    boolean grip1;
-    boolean grip2;
+    boolean grip;
     Compressor compressor;
+    DriverStationLCD dslcd;
 
     public RobotTemplate() {
         stickRight = new Joystick(Constants.JOYSTICK_RIGHT);
@@ -77,6 +80,7 @@ public class RobotTemplate extends SimpleRobot {
         drive.setExpiration(15);
 
         ds = DriverStation.getInstance();
+        dslcd = DriverStationLCD.getInstance();
 
         //drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         //drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
@@ -86,7 +90,7 @@ public class RobotTemplate extends SimpleRobot {
         leftEncoder = new Encoder(7, 8, false, CounterBase.EncodingType.k1X);
         rightEncoder = new Encoder(9, 10, false, CounterBase.EncodingType.k1X);
 
-        //CameraInit();
+        CameraInit();
 
         lt = new LineTracker(drive, leftEncoder, rightEncoder, ds);
 
@@ -94,13 +98,11 @@ public class RobotTemplate extends SimpleRobot {
 
         armE1 = true;
         armE2 = false;
-        grip1 = true;
-        grip2 = false;
+        grip = true;
 
         arm = new Arm();
-
-        compressor = new Compressor(Constants.PRESSURE_SWITCH_CHANNEL, Constants.COMPRESSOR_RELAY_CHANNEL);
-        compressor.start();
+        
+        compressor = new Compressor(11,2);
     }
 
     public void CameraInit() {
@@ -264,18 +266,17 @@ public class RobotTemplate extends SimpleRobot {
         } else if (stickArm.getRawButton(4)) {
             armE1 = true;
             armE2 = false;
+            isSet = true;
         } else if (stickArm.getRawButton(5)) {
             armE1 = false;
             armE2 = true;
+            isSet = true;
         } else if (stickArm.getRawButton(3)) {
-            grip1 = true;
-            grip2 = false;
+            grip = true;
+            isSet = true;
         } else if (stickArm.getRawButton(2)) {
-            grip1 = false;
-            grip2 = true;
-        }
-        if (stickArm.getTrigger()) {
-            arm.stopArm();
+            grip = false;
+            isSet = true;
         }
         if (isSet) {
             System.out.println("isSet:" + isSet + "  value:" + value);
@@ -296,9 +297,9 @@ public class RobotTemplate extends SimpleRobot {
 
             //lt.FollowLine();
             //SetArmValue();
-            arm.armMovement(650.0);
-            System.out.println("first movement " + arm);
-            //lt.start();
+            //arm.runMovement(650.0);
+            //System.out.println("first movement " + arm);
+            lt.start();
             //lt.FollowLine();
             //CheckJoystick();
             //arm.armMovement(value);
@@ -331,25 +332,73 @@ public class RobotTemplate extends SimpleRobot {
         rightEncoder.reset();
         leftEncoder.start();
         rightEncoder.start();
+        
+        System.out.println("Start Compressor");
+        System.out.println("Switch: " + compressor.getPressureSwitchValue());
+
+        //compressor.start();
 
 
         while (isOperatorControl() && isEnabled()) {
-            Timer.delay(0.50);
+            Timer.delay(0.1);
+
+            int x = 1;
+
+            if (stickLeft.getRawButton(3) || stickRight.getRawButton(3))
+            {
+                x = 1;
+                dslcd.println(DriverStationLCD.Line.kUser2, 1, "Full Speed");
+
+            }
+            if (stickLeft.getRawButton(2) || stickRight.getRawButton(2))
+            {
+                x = 2;
+                dslcd.println(DriverStationLCD.Line.kUser2, 1, "Half Speed");
+            }
 
             // drive.tankDrive(-stickLeft.getY(), -stickRight.getY());
-
+            //System.out.println("Switch: " + compressor.getPressureSwitchValue());
             // Slow down forward/backward speed of robot
-            drive.arcadeDrive(stickLeft.getY()*.75, stickLeft.getX());
+
+            //these lines are luke's
+            //if (x == 1) {
+            //    drive.tankDrive(stickLeft.getY() / x, stickRight.getY() / x);
+            //}
+            //if (x == 2) {
+            //    drive.tankDrive(-stickRight.getY() / x, -stickLeft.getY() / x);
+            //}
+
+            // comment this if above lines not commented
+            drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
+
+            if (stickLeft.getTrigger())
+            {
+                compressor.start();
+                System.out.println("START COMPRESSOR");
+            }
+            if (stickRight.getTrigger())
+            {
+                compressor.stop();
+                System.out.println("STOP COMPRESSOR!");
+            }
 
             arm.set(stickArm.getY());
 
             if (CheckJoystick()) {
-                arm.armMovement(value);
+                //arm.runMovement(value);
+                arm.ExtendArm(armE1, armE2);
+                System.out.println("ArmE1: " + armE1 + " ArmE2: " + armE2);
+                arm.OpenClaw(grip);
+                System.out.println("Grip: " + grip);
             }
+            
             System.out.println(arm);
+
+            dslcd.updateLCD();
         }
 
         System.out.println("Leaving Operator Control");
+        compressor.stop();
     }
 }
 
