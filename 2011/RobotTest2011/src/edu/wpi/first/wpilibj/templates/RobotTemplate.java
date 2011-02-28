@@ -43,9 +43,13 @@ interface Constants {
     public static final int GRIP_SOLENOID_1_CHANNEL = 3;
     public static final int SOLENOID_SLOT = 8;
 
-    public static final double TOP_PEG = 600.0;
-    public static final double MIDDLE_PEG = 400.0;
-    public static final double LOW_PEG = 200.0;
+    public static final double MIDDLE_PEG = 510.0;
+    public static final double LOW_PEG = 295.0;
+
+    public static final double EXTENDED_TOP_PEG = 684.0;
+    public static final double EXTENDED_MIDDLE_PEG = 527.0;
+    public static final double EXTENDED_LOW_PEG = 310.0;
+    
     public static final double FEEDER_HEIGHT = 500.0;
 }
 
@@ -57,8 +61,8 @@ public class RobotTemplate extends SimpleRobot {
     Joystick stickArm;
     int driveMode;
     DriverStation ds;
-    Encoder leftEncoder;
-    Encoder rightEncoder;
+    //Encoder leftEncoder;
+    //Encoder rightEncoder;
     AnalogChannel ac;
     PIDController motorControl;
     double value;
@@ -87,12 +91,12 @@ public class RobotTemplate extends SimpleRobot {
         //drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
         //drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
 
-        leftEncoder = new Encoder(7, 8, false, CounterBase.EncodingType.k1X);
-        rightEncoder = new Encoder(9, 10, false, CounterBase.EncodingType.k1X);
+        //leftEncoder = new Encoder(7, 8, false, CounterBase.EncodingType.k1X);
+        //rightEncoder = new Encoder(9, 10, false, CounterBase.EncodingType.k1X);
 
         CameraInit();
 
-        lt = new LineTracker(drive, leftEncoder, rightEncoder, ds);
+        lt = new LineTracker(drive, ds);
 
         value = 0.0;
 
@@ -202,7 +206,7 @@ public class RobotTemplate extends SimpleRobot {
 
     }
 
-    public void testenc() {
+    /*public void testenc() {
         leftEncoder.reset();
         rightEncoder.reset();
         leftEncoder.start();
@@ -235,8 +239,8 @@ public class RobotTemplate extends SimpleRobot {
         + " Encoder right: " + rightEncoder.getRaw());
 
         leftEncoder.stop();
-        rightEncoder.stop();*/
-    }
+        rightEncoder.stop();
+    }*/
 
     public void SetArmValue() {
         double driverValue = ds.getAnalogIn(1);
@@ -299,8 +303,10 @@ public class RobotTemplate extends SimpleRobot {
             //SetArmValue();
             //arm.runMovement(650.0);
             //System.out.println("first movement " + arm);
-            lt.start();
-            //lt.FollowLine();
+            
+            //lt.start();
+
+            lt.FollowLine();
             //CheckJoystick();
             //arm.armMovement(value);
 
@@ -328,10 +334,10 @@ public class RobotTemplate extends SimpleRobot {
 
         System.out.println("In Operator control");
 
-        leftEncoder.reset();
-        rightEncoder.reset();
-        leftEncoder.start();
-        rightEncoder.start();
+        //leftEncoder.reset();
+        //rightEncoder.reset();
+        //leftEncoder.start();
+        //rightEncoder.start();
         
         System.out.println("Start Compressor");
         System.out.println("Switch: " + compressor.getPressureSwitchValue());
@@ -371,7 +377,7 @@ public class RobotTemplate extends SimpleRobot {
             // comment this if above lines not commented
             drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
 
-            if (stickLeft.getTrigger())
+            if (stickArm.getTrigger())
             {
                 compressor.start();
                 System.out.println("START COMPRESSOR");
@@ -379,13 +385,13 @@ public class RobotTemplate extends SimpleRobot {
             if (stickRight.getTrigger())
             {
                 compressor.stop();
-                System.out.println("STOP COMPRESSOR!");
+                System.out.println("STOP COMPRESSOR");
             }
 
             arm.set(stickArm.getY());
 
             if (CheckJoystick()) {
-                //arm.runMovement(value);
+                //arm.armMovement(value);
                 arm.ExtendArm(armE1, armE2);
                 System.out.println("ArmE1: " + armE1 + " ArmE2: " + armE2);
                 arm.OpenClaw(grip);

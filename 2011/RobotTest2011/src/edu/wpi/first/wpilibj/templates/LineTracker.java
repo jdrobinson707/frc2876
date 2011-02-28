@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.*;
  *
  * @author User
  */
-public class LineTracker extends Thread {
+public class LineTracker{
 
     RobotDrive drive;
     DriverStation ds;
@@ -21,7 +21,7 @@ public class LineTracker extends Thread {
     Encoder rightEncoder;
     double defaultSteeringGain = 0.4;
 
-    public LineTracker(RobotDrive drive, Encoder leftE, Encoder rightE, DriverStation ds) {
+    public LineTracker(RobotDrive drive, DriverStation ds) {
         this.drive = drive;
         this.ds = ds;
 
@@ -29,24 +29,28 @@ public class LineTracker extends Thread {
         middle = new DigitalInput(Constants.LINE_TRACKER_MIDDLE);
         right = new DigitalInput(Constants.LINE_TRACKER_RIGHT);
 
-        leftEncoder = leftE;
-        rightEncoder = rightE;
+        leftEncoder = new Encoder(7, 8, false, CounterBase.EncodingType.k1X);
+        rightEncoder = new Encoder(9, 10, false, CounterBase.EncodingType.k1X);
+
+        leftEncoder.start();
+        rightEncoder.start();
     }
 
     public String toString() {
         return "Left Tracker: " + left.get() + " Middle Tracker: " + middle.get() + " right tracker: " + right.get() + " left encoder: " + leftEncoder.get() + " right encoder: " + rightEncoder.get();
     }
 
-    public void run() {
-        this.FollowLine();
-    }
-
     public void FollowLine() {
+
+        leftEncoder.reset();
+        rightEncoder.reset();
+
+        leftEncoder.setDistancePerPulse(.03275);
+        rightEncoder.setDistancePerPulse(.03275);
+        
         System.out.println("Starting Line Tracker");
         int i = 0;
         int c = 0;
-        double prevEncoderR = rightEncoder.getDistance();
-        double prevEncoderL = leftEncoder.getDistance();
 
         double currentEncoderR = rightEncoder.getDistance();
         double currentEncoderL = leftEncoder.getDistance();
@@ -59,11 +63,11 @@ public class LineTracker extends Thread {
         int previousValue = 0;
         double steeringGain;
 
-        double forkProfile[] = {0.80, 0.75, 0.7, 0.60, 0.6, 0.55, 0.50, 0.55, 0.45, 0.42, 0.38, 0.00};
+        double forkProfile[] = {0.7, 0.65, 0.6, 0.49, 0.45, 0.42, 0.432, .45, 0.43, .41, 0.42, 0.4};
         //double straightProfile[] = {0.7, 0.7, 0.6, 0.6, 0.35, 0.35, 0.35, 0.0};
-        double straightProfile[] = {0.76, 0.75, 0.75, 0.72, 0.65, 0.62, 0.53, 0.47, 0.44, 0.42, 0.41, 0.0};
-        double turnArrayFork[] = {0.3, 0.4, 0.5, 0.55, 0.55, .55};
-        double turnArrayStraight[] = {0.38, 0.38, 0.35, 0.35, .356, .345};
+        double straightProfile[] = {0.7, 0.7, 0.7, 0.68, 0.63, 0.6, 0.53, 0.47, 0.44, 0.42, 0.41, 0.0};
+        double turnArrayFork[] = {0.35, 0.43, 0.51, 0.57, 0.62, .65};
+        double turnArrayStraight[] = {0.4, 0.44, 0.48, 0.51, .38, .34};
 
         double powerProfile[];
         boolean isStraightLine = ds.getDigitalIn(1);
@@ -216,7 +220,7 @@ public class LineTracker extends Thread {
             }
 
             // set the robot speed and direction
-            drive.arcadeDrive(speed / 2.0, turn);
+            drive.arcadeDrive(speed, turn);
 
             if (binaryValue != 0) {
                 previousValue = binaryValue;
