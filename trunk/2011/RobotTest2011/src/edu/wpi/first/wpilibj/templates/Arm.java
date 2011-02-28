@@ -19,7 +19,6 @@ public class Arm {
     Solenoid grip;
     Solenoid armExtension1;
     Solenoid armExtension2;
-    boolean running;
 
     public String toString() {
         return ""
@@ -39,7 +38,7 @@ public class Arm {
         mc.setTolerance(5.0);
         mc.setOutputRange(-.7, .7);
         mc.setInputRange(150, 650);
-        
+
         armExtension1 = new Solenoid(8, 1);
         armExtension2 = new Solenoid(8, 2);
         grip = new Solenoid(8, 3);
@@ -48,8 +47,6 @@ public class Arm {
 
         armExtension1.set(true);
         armExtension2.set(false);
-
-        running = false;
     }
 
     public void runMovement(double value) {
