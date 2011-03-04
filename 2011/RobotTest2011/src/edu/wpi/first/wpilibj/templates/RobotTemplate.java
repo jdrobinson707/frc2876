@@ -42,15 +42,18 @@ interface Constants {
     public static final int ARM_SOLENOID_2_CHANNEL = 2;
     public static final int GRIP_SOLENOID_1_CHANNEL = 3;
     public static final int SOLENOID_SLOT = 8;
-
     public static final double MIDDLE_PEG = 510.0;
     public static final double LOW_PEG = 295.0;
-
     public static final double EXTENDED_TOP_PEG = 684.0;
     public static final double EXTENDED_MIDDLE_PEG = 527.0;
     public static final double EXTENDED_LOW_PEG = 310.0;
-    
     public static final double FEEDER_HEIGHT = 500.0;
+    public static final int CLAW_BUTTON = 1;
+    public static final int EXTEND_ARM_BUTTON = 4;
+    public static final int LOW_PEG_BUTTON = 6;
+    public static final int MIDDLE_PEG_BUTTON = 7;
+    public static final int TOP_PEG_BUTTON = 11;
+    public static final int FEEDER_HOLE_BUTTON = 10;
 }
 
 public class RobotTemplate extends SimpleRobot {
@@ -72,6 +75,7 @@ public class RobotTemplate extends SimpleRobot {
     boolean armE2;
     boolean grip;
     Compressor compressor;
+    Jaguar roller;
     DriverStationLCD dslcd;
 
     public RobotTemplate() {
@@ -80,6 +84,7 @@ public class RobotTemplate extends SimpleRobot {
         stickArm = new Joystick(Constants.JOYSTICK_ARM);
         driveMode = Constants.TANK_DRIVE;
         drive = new RobotDrive(Constants.DRIVE_MOTOR_LEFT, Constants.DRIVE_MOTOR_RIGHT);
+        roller = new Jaguar(6);
         //drive = new RobotDrive(1, 2, 3, 4); old robot
         drive.setExpiration(15);
 
@@ -105,8 +110,8 @@ public class RobotTemplate extends SimpleRobot {
         grip = true;
 
         arm = new Arm();
-        
-        compressor = new Compressor(11,2);
+
+        compressor = new Compressor(11, 2);
     }
 
     public void CameraInit() {
@@ -207,41 +212,40 @@ public class RobotTemplate extends SimpleRobot {
     }
 
     /*public void testenc() {
-        leftEncoder.reset();
-        rightEncoder.reset();
-        leftEncoder.start();
-        rightEncoder.start();
-        leftEncoder.setDistancePerPulse(-0.03202);
-        rightEncoder.setDistancePerPulse(0.03202);
+    leftEncoder.reset();
+    rightEncoder.reset();
+    leftEncoder.start();
+    rightEncoder.start();
+    leftEncoder.setDistancePerPulse(-0.03202);
+    rightEncoder.setDistancePerPulse(0.03202);
 
-        /*while ((leftEncoder.getRaw()) < 3600 && (leftEncoder.getRaw()) > -3600) {
-        drive.tankDrive(.6, .6);
+    /*while ((leftEncoder.getRaw()) < 3600 && (leftEncoder.getRaw()) > -3600) {
+    drive.tankDrive(.6, .6);
 
-        System.out.println(
-        " Encoder left: " + leftEncoder.getRaw()
-        + "(" + leftEncoder.getDistance() + ")"
-        + " Encoder right: " + rightEncoder.getRaw()
-        + "(" + rightEncoder.getDistance() + ")");
-        }
-        drive.tankDrive(0, 0);
+    System.out.println(
+    " Encoder left: " + leftEncoder.getRaw()
+    + "(" + leftEncoder.getDistance() + ")"
+    + " Encoder right: " + rightEncoder.getRaw()
+    + "(" + rightEncoder.getDistance() + ")");
+    }
+    drive.tankDrive(0, 0);
 
-        try
-        {
-        Thread.sleep(4000);
+    try
+    {
+    Thread.sleep(4000);
 
-        } catch (InterruptedException ie) {
-        System.out.println(ie.getMessage());
-        }
+    } catch (InterruptedException ie) {
+    System.out.println(ie.getMessage());
+    }
 
-        System.out.println(
-        " Encoder left: " + leftEncoder.getRaw()
-        + "(" + leftEncoder.getDistance() + ")"
-        + " Encoder right: " + rightEncoder.getRaw());
+    System.out.println(
+    " Encoder left: " + leftEncoder.getRaw()
+    + "(" + leftEncoder.getDistance() + ")"
+    + " Encoder right: " + rightEncoder.getRaw());
 
-        leftEncoder.stop();
-        rightEncoder.stop();
+    leftEncoder.stop();
+    rightEncoder.stop();
     }*/
-
     public void SetArmValue() {
         double driverValue = ds.getAnalogIn(1);
         if (driverValue == 1.0) {
@@ -253,34 +257,43 @@ public class RobotTemplate extends SimpleRobot {
         }
     }
 
-    public boolean CheckJoystick() {
+    public void CheckButtons(Joystick stick, boolean[] buttons) {
+
+        for (int i = 1; i < 12; i++) {
+
+            buttons[i] = stick.getRawButton(i);
+        }
+    }
+
+    public boolean CheckArmAction(boolean[] buttons) {
         boolean isSet = false;
-        if (stickArm.getRawButton(6)) {
+        if (buttons[Constants.LOW_PEG_BUTTON]) {
             value = 200;
             isSet = true;
-        } else if (stickArm.getRawButton(7)) {
+        } else if (buttons[Constants.MIDDLE_PEG_BUTTON]) {
             value = 400;
             isSet = true;
-        } else if (stickArm.getRawButton(11)) {
+        } else if (buttons[Constants.TOP_PEG_BUTTON]) {
             value = 600;
             isSet = true;
-        } else if (stickArm.getRawButton(10)) {
+        } else if (buttons[Constants.FEEDER_HOLE_BUTTON]) {
             value = 500;
             isSet = true;
-        } else if (stickArm.getRawButton(4)) {
+            /////////////////////////////////////////////////////////////////
+        } else if (buttons[Constants.EXTEND_ARM_BUTTON]) {
             armE1 = true;
             armE2 = false;
             isSet = true;
-        } else if (stickArm.getRawButton(5)) {
-            armE1 = false;
-            armE2 = true;
-            isSet = true;
-        } else if (stickArm.getRawButton(3)) {
-            grip = true;
-            isSet = true;
-        } else if (stickArm.getRawButton(2)) {
+        } else if (buttons[Constants.CLAW_BUTTON]) {
             grip = false;
             isSet = true;
+
+            if (roller.get() == 0){
+                roller.set(1);
+            } else{
+                roller.set(0);
+            }
+
         }
         if (isSet) {
             System.out.println("isSet:" + isSet + "  value:" + value);
@@ -303,10 +316,10 @@ public class RobotTemplate extends SimpleRobot {
             //SetArmValue();
             //arm.runMovement(650.0);
             //System.out.println("first movement " + arm);
-            
+
             //lt.start();
 
-            lt.FollowLine();
+            // lt.FollowLine();
             //CheckJoystick();
             //arm.armMovement(value);
 
@@ -332,13 +345,16 @@ public class RobotTemplate extends SimpleRobot {
 
     public void operatorControl() {
 
+        boolean armButtonArray[] = new boolean[11];
+        CheckButtons(stickArm, armButtonArray);
+
         System.out.println("In Operator control");
 
         //leftEncoder.reset();
         //rightEncoder.reset();
         //leftEncoder.start();
         //rightEncoder.start();
-        
+
         System.out.println("Start Compressor");
         System.out.println("Switch: " + compressor.getPressureSwitchValue());
 
@@ -350,17 +366,16 @@ public class RobotTemplate extends SimpleRobot {
 
             int x = 1;
 
-            if (stickLeft.getRawButton(3) || stickRight.getRawButton(3))
-            {
+            if (stickLeft.getRawButton(3) || stickRight.getRawButton(3)) {
                 x = 1;
                 dslcd.println(DriverStationLCD.Line.kUser2, 1, "Full Speed");
 
             }
-            if (stickLeft.getRawButton(2) || stickRight.getRawButton(2))
-            {
+            if (stickLeft.getRawButton(2) || stickRight.getRawButton(2)) {
                 x = 2;
                 dslcd.println(DriverStationLCD.Line.kUser2, 1, "Half Speed");
             }
+
 
             // drive.tankDrive(-stickLeft.getY(), -stickRight.getY());
             //System.out.println("Switch: " + compressor.getPressureSwitchValue());
@@ -375,29 +390,27 @@ public class RobotTemplate extends SimpleRobot {
             //}
 
             // comment this if above lines not commented
-            drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
+            //drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
 
-            if (stickArm.getTrigger())
-            {
+            if (stickArm.getTrigger()) {
                 compressor.start();
                 System.out.println("START COMPRESSOR");
             }
-            if (stickRight.getTrigger())
-            {
+            if (stickRight.getTrigger()) {
                 compressor.stop();
                 System.out.println("STOP COMPRESSOR");
             }
 
             arm.set(stickArm.getY());
 
-            if (CheckJoystick()) {
+            if (CheckArmAction(armButtonArray)) {
                 //arm.armMovement(value);
                 arm.ExtendArm(armE1, armE2);
                 System.out.println("ArmE1: " + armE1 + " ArmE2: " + armE2);
                 arm.OpenClaw(grip);
                 System.out.println("Grip: " + grip);
             }
-            
+
             System.out.println(arm);
 
             dslcd.updateLCD();
@@ -405,6 +418,8 @@ public class RobotTemplate extends SimpleRobot {
 
         System.out.println("Leaving Operator Control");
         compressor.stop();
+
+
     }
 }
 
