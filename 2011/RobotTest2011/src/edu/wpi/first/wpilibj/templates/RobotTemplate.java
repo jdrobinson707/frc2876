@@ -8,7 +8,6 @@ package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.*;
 
-
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
 import edu.wpi.first.wpilibj.image.NIVisionException;
@@ -42,12 +41,13 @@ interface Constants {
     public static final int ARM_SOLENOID_2_CHANNEL = 2;
     public static final int GRIP_SOLENOID_1_CHANNEL = 3;
     public static final int SOLENOID_SLOT = 8;
-    public static final double MIDDLE_PEG = 510.0;
-    public static final double LOW_PEG = 295.0;
-    public static final double EXTENDED_TOP_PEG = 684.0;
-    public static final double EXTENDED_MIDDLE_PEG = 527.0;
-    public static final double EXTENDED_LOW_PEG = 310.0;
-    public static final double FEEDER_HEIGHT = 500.0;
+    public static final double TOP_PEG = 618.0;
+    public static final double MIDDLE_PEG = 485.0;
+    public static final double LOW_PEG = 338.0;
+    public static final double MIDDLE_TOP_PEG = 655.0;
+    public static final double MIDDLE_MIDDLE_PEG = 501.0;
+    public static final double MIDDLE_LOW_PEG = 377.0;
+    public static final double FEEDER_HEIGHT = 400.0; //not correct height
     public static final int CLAW_BUTTON = 1;
     public static final int EXTEND_ARM_BUTTON = 4;
     public static final int LOW_PEG_BUTTON = 6;
@@ -74,9 +74,13 @@ public class RobotTemplate extends SimpleRobot {
     boolean armE1;
     boolean armE2;
     boolean grip;
+    public boolean isDone = false;
+    Solenoid minibotSolenoid1;
+    Solenoid minibotSolenoid2;
     Compressor compressor;
-    Jaguar roller;
     DriverStationLCD dslcd;
+    boolean b1 = true;
+    boolean b2 = false;
 
     public RobotTemplate() {
         stickRight = new Joystick(Constants.JOYSTICK_RIGHT);
@@ -84,7 +88,7 @@ public class RobotTemplate extends SimpleRobot {
         stickArm = new Joystick(Constants.JOYSTICK_ARM);
         driveMode = Constants.TANK_DRIVE;
         drive = new RobotDrive(Constants.DRIVE_MOTOR_LEFT, Constants.DRIVE_MOTOR_RIGHT);
-        roller = new Jaguar(6);
+
         //drive = new RobotDrive(1, 2, 3, 4); old robot
         drive.setExpiration(15);
 
@@ -99,7 +103,7 @@ public class RobotTemplate extends SimpleRobot {
         //leftEncoder = new Encoder(7, 8, false, CounterBase.EncodingType.k1X);
         //rightEncoder = new Encoder(9, 10, false, CounterBase.EncodingType.k1X);
 
-        CameraInit();
+        // CameraInit();
 
         lt = new LineTracker(drive, ds);
 
@@ -111,7 +115,11 @@ public class RobotTemplate extends SimpleRobot {
 
         arm = new Arm();
 
+        minibotSolenoid1 = new Solenoid(8, 4);
+        minibotSolenoid2 = new Solenoid(8, 5);
+
         compressor = new Compressor(11, 2);
+        compressor.start();
     }
 
     public void CameraInit() {
@@ -249,63 +257,68 @@ public class RobotTemplate extends SimpleRobot {
     public void SetArmValue() {
         double driverValue = ds.getAnalogIn(1);
         if (driverValue == 1.0) {
-            value = 200;
+            value = Constants.MIDDLE_LOW_PEG;
         } else if (driverValue == 3.0) {
-            value = 400;
+            value = Constants.MIDDLE_MIDDLE_PEG;
         } else if (driverValue == 5.0) {
-            value = 600;
+            value = Constants.MIDDLE_TOP_PEG;
         }
-    }
-
-    public void CheckButtons(Joystick stick, boolean[] buttons) {
-
-        for (int i = 1; i < 12; i++) {
-
-            buttons[i] = stick.getRawButton(i);
-        }
-    }
-
-    public boolean CheckArmAction(boolean[] buttons) {
-        boolean isSet = false;
-        if (buttons[Constants.LOW_PEG_BUTTON]) {
-            value = 200;
-            isSet = true;
-        } else if (buttons[Constants.MIDDLE_PEG_BUTTON]) {
-            value = 400;
-            isSet = true;
-        } else if (buttons[Constants.TOP_PEG_BUTTON]) {
-            value = 600;
-            isSet = true;
-        } else if (buttons[Constants.FEEDER_HOLE_BUTTON]) {
-            value = 500;
-            isSet = true;
-            /////////////////////////////////////////////////////////////////
-        } else if (buttons[Constants.EXTEND_ARM_BUTTON]) {
-            armE1 = true;
-            armE2 = false;
-            isSet = true;
-        } else if (buttons[Constants.CLAW_BUTTON]) {
-            grip = false;
-            isSet = true;
-
-            if (roller.get() == 0){
-                roller.set(1);
-            } else{
-                roller.set(0);
-            }
-
-        }
-        if (isSet) {
-            System.out.println("isSet:" + isSet + "  value:" + value);
-        }
-        return isSet;
     }
 
     public void autonomous() {
         System.out.println("Starting Autonomous");
 
-        while (isAutonomous() && isEnabled()) {
-            Timer.delay(.3);
+        double analog1 = ds.getAnalogIn(1);
+        double analog2 = ds.getAnalogIn(2);
+
+        while (isAutonomous() && isEnabled() && !isDone) {
+
+            //For autonomous:
+            //3.  Close claw
+            //2.  Raise arm completley
+            //3.  Extend arm
+            //4.  Follow Line
+            //5.  The tube will hopefully be on the peg
+            //6.  Open claw
+            //7.  Retract arm
+
+            //arm.RaiseArmSlightly();
+            //arm.OpenClaw();
+            //arm.ExtendArm();
+            //arm.CloseClaw();
+            //arm.RaiseArmToTop();
+            //lt.FollowLine();
+
+            //drive.tankDrive(-.7, -.7);
+            //Timer.delay(.8);
+            //drive.tankDrive(0, 0);
+
+            //arm.OpenClaw();
+            //arm.RetractArm();
+
+            //if (b1) {
+                Timer.delay(.3);
+                RaiseToTop();
+                System.out.println("isDone: " + isDone);
+                Timer.delay(.5);
+                arm.CloseClaw();
+                System.out.println("Is Claw Open: " + arm.isClawOpen());
+                Timer.delay(.3);
+                arm.ExtendArm();
+                Timer.delay(6);
+                lt.FollowLine();
+            //}
+
+            //Timer.delay(.3);
+            //arm.ExtendArm();
+            //lt.FollowLine();
+
+            //Timer.delay(5);
+
+            //arm.OpenClaw();
+            //arm.RetractArm();
+
+            //Timer.delay(.2);
             //OpenArm();
             //LineTracker();
             //if (motorControl.isEnable()) {
@@ -343,83 +356,125 @@ public class RobotTemplate extends SimpleRobot {
         System.out.println("Ending Autonomous");
     }
 
+    public void RaiseToTop() {
+        if (arm.ac.pidGet() > Constants.MIDDLE_TOP_PEG - 50) {
+            arm.set(0);
+            Timer.delay(5);
+            System.out.println("Reached peg!");
+            arm.OpenClaw();
+            arm.RetractArm();
+            isDone = true;
+            b2 = true;
+            b1 = false;
+        } else {
+            arm.set(1);
+            isDone = false;
+        }
+    }
+
+    public void CheckButtons(Joystick stick, boolean[] buttons) {
+        for (int i = 1; i < buttons.length; i++) {
+            buttons[i] = stick.getRawButton(i);
+            if (buttons[i] == true) {
+                System.out.println("pressed button " + i);
+            }
+        }
+    }
+
+    public boolean CheckArmAction(boolean[] buttons) {
+        boolean isSet = false;
+        if (buttons[Constants.LOW_PEG_BUTTON]) {
+            value = 200;
+            isSet = true;
+        } else if (buttons[Constants.MIDDLE_PEG_BUTTON]) {
+            value = 400;
+            isSet = true;
+        } else if (buttons[Constants.TOP_PEG_BUTTON]) {
+            value = 600;
+            isSet = true;
+        } else if (buttons[Constants.FEEDER_HOLE_BUTTON]) {
+            value = 500;
+            isSet = true;
+        }
+        if (isSet) {
+            System.out.println("isSet:" + isSet + "  value:" + value);
+            System.out.println(this.arm);
+            arm.updateSetpoint(value);
+        }
+        return isSet;
+    }
+
+    public boolean CheckArmExtend(boolean[] buttons) {
+        boolean isSet = false;
+        if (buttons[Constants.EXTEND_ARM_BUTTON]) {
+            armE1 = true;
+            armE2 = false;
+            isSet = true;
+
+            arm.ToggleArmExtend();
+            Timer.delay(.4);
+        }
+        return isSet;
+    }
+
+    public boolean CheckGrip(boolean[] buttons) {
+        boolean isSet = false;
+        if (buttons[Constants.CLAW_BUTTON]) {
+            grip = false;
+            isSet = true;
+            arm.ToggleClaw();
+            Timer.delay(.4);
+        }
+        return isSet;
+    }
+
     public void operatorControl() {
-
-        boolean armButtonArray[] = new boolean[11];
-        CheckButtons(stickArm, armButtonArray);
-
         System.out.println("In Operator control");
-
-        //leftEncoder.reset();
-        //rightEncoder.reset();
-        //leftEncoder.start();
-        //rightEncoder.start();
-
-        System.out.println("Start Compressor");
-        System.out.println("Switch: " + compressor.getPressureSwitchValue());
-
-        //compressor.start();
-
-
+        boolean armButtonArray[] = new boolean[12];
+        int x = 1;
+        CheckButtons(stickArm, armButtonArray);
         while (isOperatorControl() && isEnabled()) {
             Timer.delay(0.1);
+            drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
 
-            int x = 1;
+            CheckButtons(stickArm, armButtonArray);
+            CheckArmExtend(armButtonArray);
+            CheckGrip(armButtonArray);
+            //CheckArmAction(armButtonArray);
 
             if (stickLeft.getRawButton(3) || stickRight.getRawButton(3)) {
                 x = 1;
-                dslcd.println(DriverStationLCD.Line.kUser2, 1, "Full Speed");
-
             }
             if (stickLeft.getRawButton(2) || stickRight.getRawButton(2)) {
                 x = 2;
-                dslcd.println(DriverStationLCD.Line.kUser2, 1, "Half Speed");
             }
 
+            System.out.println("LeftStick: " + stickArm.getY());
 
-            // drive.tankDrive(-stickLeft.getY(), -stickRight.getY());
-            //System.out.println("Switch: " + compressor.getPressureSwitchValue());
-            // Slow down forward/backward speed of robot
-
-            //these lines are luke's
-            //if (x == 1) {
-            //    drive.tankDrive(stickLeft.getY() / x, stickRight.getY() / x);
-            //}
-            //if (x == 2) {
-            //    drive.tankDrive(-stickRight.getY() / x, -stickLeft.getY() / x);
-            //}
-
-            // comment this if above lines not commented
-            //drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
-
-            if (stickArm.getTrigger()) {
-                compressor.start();
-                System.out.println("START COMPRESSOR");
-            }
-            if (stickRight.getTrigger()) {
-                compressor.stop();
-                System.out.println("STOP COMPRESSOR");
+            // arm is within limits so let joystick move it
+            if (!arm.checkLimits()) {
+                arm.set(stickArm.getY() / x);
+            } else {
+                // arm is not within limit, don't move it with joystick
+                //arm.set(stickArm.getY() / x);
             }
 
-            arm.set(stickArm.getY());
-
-            if (CheckArmAction(armButtonArray)) {
-                //arm.armMovement(value);
-                arm.ExtendArm(armE1, armE2);
-                System.out.println("ArmE1: " + armE1 + " ArmE2: " + armE2);
-                arm.OpenClaw(grip);
-                System.out.println("Grip: " + grip);
+            if (stickArm.getRawButton(8) && stickArm.getRawButton(9)) {
+                boolean b = minibotSolenoid2.get();
+                minibotSolenoid1.set(b);
+                minibotSolenoid2.set(!b);
+                Timer.delay(.3);
             }
-
-            System.out.println(arm);
-
+            if (armButtonArray[5]) {
+                System.out.println("but5: " + arm);
+            }
             dslcd.updateLCD();
         }
+        arm.OpenClaw();
+        arm.RetractArm();
+        // need to lower arm
 
         System.out.println("Leaving Operator Control");
-        compressor.stop();
-
-
     }
 }
 

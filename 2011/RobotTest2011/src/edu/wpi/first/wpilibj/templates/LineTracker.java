@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.*;
  *
  * @author User
  */
-public class LineTracker{
+public class LineTracker {
 
     RobotDrive drive;
     DriverStation ds;
@@ -20,10 +20,17 @@ public class LineTracker{
     Encoder leftEncoder;
     Encoder rightEncoder;
     double defaultSteeringGain = 0.4;
+    final int STRAIGHT = 1;
+    final int LEFT = 2;
+    final int RIGHT = 3;
+    int linePath;
+    boolean isStraightLine;
+    boolean goLeft;
 
     public LineTracker(RobotDrive drive, DriverStation ds) {
         this.drive = drive;
-        this.ds = ds;
+
+        this.ds = DriverStation.getInstance();
 
         left = new DigitalInput(Constants.LINE_TRACKER_LEFT);
         middle = new DigitalInput(Constants.LINE_TRACKER_MIDDLE);
@@ -34,20 +41,55 @@ public class LineTracker{
 
         leftEncoder.start();
         rightEncoder.start();
+        updateDsReading();
     }
 
     public String toString() {
         return "Left Tracker: " + left.get() + " Middle Tracker: " + middle.get() + " right tracker: " + right.get() + " left encoder: " + leftEncoder.get() + " right encoder: " + rightEncoder.get();
     }
 
-    public void FollowLine() {
+    public void updateDsReading() {
+        isStraightLine = ds.getDigitalIn(1);
+        goLeft = !ds.getDigitalIn(2) && !isStraightLine;
+        System.out.println("StraightLine: " + isStraightLine);
+        System.out.println("GoingLeft: " + goLeft);
 
+        // figure out which line to follow, default to straight now.
+
+        // linePath = this.RIGHT;
+        // linePath = this.LEFT;
+
+        linePath = this.STRAIGHT;
+    }
+
+    public int getLinePath() {
+        return linePath;
+    }
+
+    public void printPath() {
+
+        String str = "";
+        switch (this.linePath) {
+            case RIGHT:
+                str = "right";
+                break;
+            case LEFT:
+                str = "left";
+                break;
+            case STRAIGHT:
+            default:
+                str = "straight";
+        }
+        System.out.println("LINE: " + str);
+    }
+    
+
+     void FollowLine() {
         leftEncoder.reset();
         rightEncoder.reset();
-
         leftEncoder.setDistancePerPulse(.03275);
         rightEncoder.setDistancePerPulse(.03275);
-        
+
         System.out.println("Starting Line Tracker");
         int i = 0;
         int c = 0;
@@ -57,27 +99,36 @@ public class LineTracker{
 
         drive.setExpiration(15);
 
-        ds = DriverStation.getInstance();
-
         int binaryValue;
         int previousValue = 0;
         double steeringGain;
 
         double forkProfile[] = {0.7, 0.65, 0.6, 0.49, 0.45, 0.42, 0.432, .45, 0.43, .41, 0.42, 0.4};
         //double straightProfile[] = {0.7, 0.7, 0.6, 0.6, 0.35, 0.35, 0.35, 0.0};
-        double straightProfile[] = {0.7, 0.7, 0.7, 0.68, 0.63, 0.6, 0.53, 0.47, 0.44, 0.42, 0.41, 0.0};
+        //double straightProfile[] = {0.7, 0.7, 0.7, 0.68, 0.63, 0.6, 0.53, 0.47, 0.44, 0.42, 0.41, 0.0};
+        double straightProfile[] = {0.65, 0.65, 0.65, 0.64, 0.6, 0.54, 0.47, -0.1, 0.44, 0.42, 0.41, 0.0};
         double turnArrayFork[] = {0.35, 0.43, 0.51, 0.57, 0.62, .65};
         double turnArrayStraight[] = {0.4, 0.44, 0.48, 0.51, .38, .34};
 
         double powerProfile[];
-        boolean isStraightLine = ds.getDigitalIn(1);
-        powerProfile = (isStraightLine) ? straightProfile : forkProfile;
-        double stopTime = (isStraightLine) ? 2.0 : 4.0;
-
-        boolean goLeft = !ds.getDigitalIn(2) && !isStraightLine;
-        System.out.println("StraightLine: " + isStraightLine);
-        System.out.println("GoingLeft: " + goLeft);
-
+        double stopTime;
+        switch (this.linePath) {
+            case RIGHT:
+                powerProfile = forkProfile;
+                stopTime = 4.0;
+                break;
+            case LEFT:
+                powerProfile = forkProfile;
+                stopTime = 4.0;
+                break;
+            case STRAIGHT:
+            default:
+                // do straight line as default
+                powerProfile = straightProfile;
+                stopTime = 2.0;
+                break;
+        }
+        this.printPath();
 
         boolean atCross = false; // if robot has arrived at end
 
@@ -99,7 +150,7 @@ public class LineTracker{
             // compute the single value from the 3 sensors. Notice that the bits
             // for the outside sensors are flipped depending on left or right
             // fork. Also the sign of the steering direction is different for left/right.
-            if (goLeft) {
+            if (this.linePath != STRAIGHT) {
                 binaryValue = leftValue * 4 + middleValue * 2 + rightValue;
                 steeringGain = -defaultSteeringGain;
             } else {
@@ -107,7 +158,7 @@ public class LineTracker{
                 steeringGain = defaultSteeringGain;
             }
 
-            if (isStraightLine) {
+            if (this.linePath == STRAIGHT) {
                 defaultSteeringGain = .45;
             } else {
                 defaultSteeringGain = .50;
