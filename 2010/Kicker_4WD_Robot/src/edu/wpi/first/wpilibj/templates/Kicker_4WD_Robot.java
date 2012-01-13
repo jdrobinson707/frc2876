@@ -81,6 +81,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     DriverStationLCD dslcd;
     boolean kickSwitch;
     long startTime = 0;
+    boolean nextRollerUpdate;
     ColorImage image;
     AxisCamera camera;
 
@@ -133,7 +134,6 @@ public class Kicker_4WD_Robot extends SimpleRobot {
         drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
-
 
 
         //starting roller condition
@@ -223,7 +223,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             }
             lowDashData.finalizeCluster();
 
-            lowDashData.addByte(Solenoid.getAll());
+            //lowDashData.addByte(Solenoid.getAll());
         }
         lowDashData.finalizeCluster();
         lowDashData.commit();
@@ -295,7 +295,7 @@ public class Kicker_4WD_Robot extends SimpleRobot {
     }
 
     public void autonomous() {
-        String str = "Enter Autonomous";
+        /*String str = "Enter Autonomous";
         System.out.println(str);
         dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
         startTime = Timer.getUsClock();
@@ -309,22 +309,21 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             Timer.delay(0.05);
             long nowTime = Timer.getUsClock();
             long difTime = (nowTime - startTime);
-            
+
             double currentGyro = gyro.getAngle();
             double diffGyro = startGyro - currentGyro;
 
             System.out.println(diffGyro);
             spinCounter = 0;
-            
+
             int times = 0;
             while (times < 4) {
                 long startDriveTime = nowTime;
-                while ( nowTime - startDriveTime <= 2) {
-
+                while (nowTime - startDriveTime <= 2) {
                 }
 
-                }
             }
+        }
 
 //            if (diffGyro >= 90 && spinCounter != 4) {
 //                    drive.tankDrive(0.5, 0.5);
@@ -338,48 +337,67 @@ public class Kicker_4WD_Robot extends SimpleRobot {
 
 
         /*    System.out.println(difTime);
-            // if more than 2 seconds goes by stop driving
-            if (difTime >= (2 * 1000 * 1000)) {
-                System.out.println("stop driving");
-                drive.tankDrive(0, 0);
-            } else {
-                // if less than 2s goes by, drive
-                drive.tankDrive(-.75, -.75);
-                System.out.println("driving");
-            }
-            if (difTime < (2.55 * 1000 * 1000) && (difTime > (2.5 * 1000 * 1000) && (kickCount == 0))) {
+        // if more than 2 seconds goes by stop driving
+        if (difTime >= (2 * 1000 * 1000)) {
+        System.out.println("stop driving");
+        drive.tankDrive(0, 0);
+        } else {
+        // if less than 2s goes by, drive
+        drive.tankDrive(-.75, -.75);
+        System.out.println("driving");
+        }
+        if (difTime < (2.55 * 1000 * 1000) && (difTime > (2.5 * 1000 * 1000) && (kickCount == 0))) {
 
-                copilotButtons[1] = true;
-                kickBall();
-                copilotButtons[1] = false;
-                kickCount = (kickCount + 1);
+        copilotButtons[1] = true;
+        kickBall();
+        copilotButtons[1] = false;
+        kickCount = (kickCount + 1);
 
-            }*/
+        }
 
         str = "Exit Autonomous";
         System.out.println(str);
-        dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
+        dslcd.println(DriverStationLCD.Line.kUser4, 1, str);*/
     }
 
     public void updateRoller() {
         readButtons(stickRight, rightButtons, "right");
+        if (rightButtons[1] == true && nextRollerUpdate == true) {
+            nextRollerUpdate = false;
+            System.out.println("trigger " + nextRollerUpdate);
 
-        if (copilotButtons[6] == true) {
-//            if (rollerIsRolling == false) {
-//                rollerIsRolling = true;
-            roller.set(1.0);
-//            } else {
-//                rollerIsRolling = false;
-//                roller.set(0.0);
-//            }
-        } else if (copilotButtons[7] == true) {
-//            if (roller.get() == 0.0) {
-//                roller.set(-1.0);
-//            } else {
-//                roller.set(0.0);
-//            }
-            roller.set(0.0);
+            if (rollerIsRolling == false) {
+                System.out.println("off -> on");
+                rollerIsRolling = true;
+                roller.set(1.0);
+            } else {
+                System.out.println("on -> off");
+                rollerIsRolling = false;
+                roller.set(0.0);
+            }
+            // Timer.delay(0.01);
+        } else {
+            nextRollerUpdate = true;
         }
+    }
+
+    public void printCameraOptions() {
+
+        System.out.println(" Brightness: " + camera.getBrightness());
+        System.out.println(" Resolution: " + camera.getResolution().toString());
+        System.out.println(" White Balance: " + camera.getWhiteBalance().toString());
+        System.out.println(" Color Level: " + camera.getColorLevel());
+
+        camera.writeBrightness(90);
+        camera.writeColorLevel(0);
+        camera.writeResolution(AxisCamera.ResolutionT.k160x120);
+        camera.writeWhiteBalance(AxisCamera.WhiteBalanceT.fixedFlour2);
+
+        System.out.println(" Brightness: " + camera.getBrightness());
+        System.out.println(" Resolution: " + camera.getResolution().toString());
+        System.out.println(" White Balance: " + camera.getWhiteBalance().toString());
+        System.out.println(" Color Level: " + camera.getColorLevel());
+
     }
 
     public void userOptions() {
@@ -393,6 +411,10 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 System.out.println(str);
                 dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
                 driveMode = Constants.ARCADE_DRIVE;
+
+
+
+
             }
         } else {
             // use tank drive
@@ -403,44 +425,75 @@ public class Kicker_4WD_Robot extends SimpleRobot {
                 System.out.println(str);
                 dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
                 driveMode = Constants.TANK_DRIVE;
+
+
+
+
             }
         }
     }
 
     private void kickBall() {
         if (isOperatorControl()) {
-            readButtons(stickCopilot, copilotButtons, "copilot");
+            readButtons(stickRight, rightButtons, "left");
+
+
+
         }
         long nowTime = Timer.getUsClock();
 
+
+
+
+
         if (nowTime - startTime >= (2 * 1000 * 1000)) {
             dslcd.println(DriverStationLCD.Line.kUser2, 1, "Kick: Now!           ");
+            // System.out.println("kick now!");
+
+
+
+
         } else {
             long countDown = nowTime - startTime;
             countDown = (2 * 1000 * 1000) - countDown;
             countDown /= 10000;
-            dslcd.println(DriverStationLCD.Line.kUser2, 1, "Kick: " + countDown + "     ");
+            String line2 = "Kick: " + countDown + "     ";
+            dslcd.println(DriverStationLCD.Line.kUser2, 1, line2);
+            System.out.println(line2 + "\n");
+
+
+
+
         }
 
-        if (copilotButtons[1] == true && cam.getSpeed() == 0) {
+        if (rightButtons[1] == true && cam.getSpeed() == 0) {
             if (nowTime - startTime >= (2 * 1000 * 1000)) {
                 roller.set(0.0);
                 cam.set(.9);
                 intervalFlag = false;
+
+
+
+
             }
-//                long endTimeInterval = Timer.getUsClock();
-            //              endTimeInterval /= 10000;
-            //            System.out.println("interval end time: " + endTimeInterval);
         }
         if ((!limSwitch.get()) && (flag == false)) {
             // false = 0 = closed
             flag = true;
             kickSwitch = limSwitch.get();
             System.out.println("kicking switch=" + kickSwitch);
+
+
+
+
         } else if ((limSwitch.get()) && (flag == true)) {
             // true = 1 = open. kicker is loaded
             cam.set(0.0);
             roller.set(1.0);
+
+
+
+
             long startTimeInterval = Timer.getUsClock();
             startTimeInterval /= 10000;
             System.out.println("interval start time: " + startTimeInterval);
@@ -449,24 +502,36 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             intervalFlag = true;
             kickSwitch = limSwitch.get();
             System.out.println("stop kick switch= " + kickSwitch);
+
+
+
+
         }
         if (limSwitch.get() != kickSwitch) {
             System.out.println("limSwitch changed  switch=" + limSwitch.get());
             kickSwitch = limSwitch.get();
-        }
 
-        if (copilotButtons[2] == true) {
-            cam.set(0.0);
+
+
+
         }
     }
-
+/*
     public void operatorControl() {
         Watchdog.getInstance().feed();
         Watchdog.getInstance().setExpiration(3.0);
         System.out.println("In Operator control");
         initializeButtons();
-        userOptions();
+        // userOptions();
         kickSwitch = limSwitch.get();
+
+        printCameraOptions();
+
+
+        double lastz = 2;
+
+
+
 
         while (isOperatorControl() && isEnabled()) {
 
@@ -474,21 +539,59 @@ public class Kicker_4WD_Robot extends SimpleRobot {
             Timer.delay(0.05);
             updateDashboard();
             updateRoller();
-            // Broken -- this line causes the robot to drive without touching the joysticks.  Needs to be fixed.
             kickBall();
             dslcd.updateLCD();
-//            if (driveMode == Constants.ARCADE_DRIVE) {
-//                drive.arcadeDrive(stickLeft);
-//            } else {
-            double right, left;
-            right = stickRight.getY();
-            left = stickLeft.getY();
-            System.out.println("The right is value " + right
-                    + ", the left value is " + left
-                    + "The gyro value is " + gyro.getAngle());
-            drive.tankDrive(left, right);
-            //           drive.tankDrive(stickLeft.getY(), stickRight.getY());
-//            }
+
+
+
+
+
+            double z = stickRight.getZ();
+
+
+
+
+            if (lastz != z) {
+                System.out.println("z=" + z);
+                String str = (z <= 0) ? "Tank     " : "Arcade";
+                dslcd.println(DriverStationLCD.Line.kUser4, 1, str);
+
+
+
+
+            }
+            lastz = z;
+
+
+
+
+            if (z <= 0) {
+                double right, left;
+                right = stickRight.getY();
+                left = stickLeft.getY();
+                drive.tankDrive(left / 2, right / 2);
+
+
+
+
+            } else {
+                drive.arcadeDrive(stickRight);
+
+
+            }
         }
     }
+ * */
+
+       public void operatorControl() {
+        while (isOperatorControl() && isEnabled()) {
+
+            drive.arcadeDrive((stickRight.getY() * 2) / 3, (stickRight.getX() * 2) / 3);
+            
+            kickBall();
+
+            Timer.delay(0.1);
+        }
+    }
+ 
 }
