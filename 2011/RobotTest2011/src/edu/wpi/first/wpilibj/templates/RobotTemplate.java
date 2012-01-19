@@ -40,7 +40,7 @@ interface Constants {
     public static final int ARM_SOLENOID_1_CHANNEL = 1;
     public static final int ARM_SOLENOID_2_CHANNEL = 2;
     public static final int GRIP_SOLENOID_1_CHANNEL = 3;
-    public static final int SOLENOID_SLOT = 8;
+    public static final int SOLENOID_SLOT = 3;
     public static final double TOP_PEG = 618.0;
     public static final double MIDDLE_PEG = 485.0;
     public static final double LOW_PEG = 338.0;
@@ -54,6 +54,7 @@ interface Constants {
     public static final int MIDDLE_PEG_BUTTON = 7;
     public static final int TOP_PEG_BUTTON = 11;
     public static final int FEEDER_HOLE_BUTTON = 10;
+    public static final int SONAR_CHANNEL = 6;
 }
 
 public class RobotTemplate extends SimpleRobot {
@@ -81,6 +82,8 @@ public class RobotTemplate extends SimpleRobot {
     DriverStationLCD dslcd;
     boolean b1 = true;
     boolean b2 = false;
+    //AnalogChannel sonar;
+    Sonar sonar;
 
     public RobotTemplate() {
         stickRight = new Joystick(Constants.JOYSTICK_RIGHT);
@@ -94,6 +97,10 @@ public class RobotTemplate extends SimpleRobot {
 
         ds = DriverStation.getInstance();
         dslcd = DriverStationLCD.getInstance();
+
+        sonar = new Sonar();
+
+        //sonar = new AnalogChannel(Constants.ANALOG_CHANNEL_SLOT, Constants.SONAR_CHANNEL);
 
         //drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         //drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
@@ -113,10 +120,10 @@ public class RobotTemplate extends SimpleRobot {
         armE2 = false;
         grip = true;
 
-        arm = new Arm();
+        //arm = new Arm();
 
-        minibotSolenoid1 = new Solenoid(8, 4);
-        minibotSolenoid2 = new Solenoid(8, 5);
+        //minibotSolenoid1 = new Solenoid(Constants.SOLENOID_SLOT, 4);
+        //minibotSolenoid2 = new Solenoid(Constants.SOLENOID_SLOT, 5);
 
         compressor = new Compressor(11, 2);
         compressor.start();
@@ -265,9 +272,7 @@ public class RobotTemplate extends SimpleRobot {
         }
     }
 
-    public void autonomous() {
-        System.out.println("Starting Autonomous");
-
+    public void autonomous1() {
         double analog1 = ds.getAnalogIn(1);
         double analog2 = ds.getAnalogIn(2);
 
@@ -297,16 +302,16 @@ public class RobotTemplate extends SimpleRobot {
             //arm.RetractArm();
 
             //if (b1) {
-                Timer.delay(.3);
-                RaiseToTop();
-                System.out.println("isDone: " + isDone);
-                Timer.delay(.5);
-                arm.CloseClaw();
-                System.out.println("Is Claw Open: " + arm.isClawOpen());
-                Timer.delay(.3);
-                arm.ExtendArm();
-                Timer.delay(6);
-                lt.FollowLine();
+            Timer.delay(.3);
+            RaiseToTop();
+            System.out.println("isDone: " + isDone);
+            Timer.delay(.5);
+            arm.CloseClaw();
+            System.out.println("Is Claw Open: " + arm.isClawOpen());
+            Timer.delay(.3);
+            arm.ExtendArm();
+            Timer.delay(6);
+            lt.FollowLine();
             //}
 
             //Timer.delay(.3);
@@ -348,11 +353,106 @@ public class RobotTemplate extends SimpleRobot {
             //if (FindTarget()){
             //    System.out.println("FOUND TARGET!");
             //    PutPiece();
-            //    break;
+            //    break;f
 
             //}
 
         }
+    }
+    PIDController pid;
+
+    public void test_auto_pid() {
+        pid = new PIDController(.5, 1, 1, sonar,
+                new PIDOutput() {
+
+                    public void pidWrite(double output) {
+                    }
+                });
+        pid.setSetpoint(20);
+        pid.setTolerance(1.0);
+        pid.setInputRange(6, 254);
+        pid.setOutputRange(-.6, .6);
+        pid.enable();
+        Timer.delay(.5);
+        isDone = false;
+        while (isAutonomous() && isEnabled() && !isDone) {
+            double speed = -pid.get();
+            System.out.println(" Speed: " + speed + " Error from Set Point: " + pid.getError()
+                    + " Distance: " + sonar.getDistanceF1());
+
+            if (pid.onTarget()) {
+                pid.disable();
+                System.out.println(" REACHED SET POINT ");
+                isDone = true;
+                speed = 0;
+            }
+            drive.tankDrive(speed, speed);
+            Timer.delay(.5);
+        }
+
+    }
+
+    public void test_sonar_equation() {
+        while (isAutonomous() && isEnabled() && !isDone) {
+            double distance = sonar.getDistanceF1();
+            double speed = 0.0;
+
+            if (distance < 150) {
+                speed = (1 / 150) * distance;
+            } else {
+                speed = 1;
+            }
+
+            //drive.tankDrive(speed, speed);
+            System.out.println("SonarF1: " + distance);
+            System.out.println("Speed: " + speed);
+        }
+    }
+
+    public void test_sonar_auto() {
+
+        while (isAutonomous() && isEnabled() && !isDone) {
+            double distance = sonar.getDistanceF1();
+            double speed = 0.0;
+
+            /*if (distance > 23)
+            {
+            drive.tankDrive(1, 1);
+            }
+            else if (distance < 19)
+            {
+            drive.tankDrive(-1, -1);
+            }
+            else
+            {
+            drive.tankDrive(0, 0);
+            }*/
+
+            if (distance > 150) {
+                drive.tankDrive(1, 1);
+            }
+            if (distance <= 150 && distance > 100) {
+                drive.tankDrive(0.65, 0.65);
+            }
+            if (distance <= 100 && distance > 80) {
+                drive.tankDrive(0.55, 0.55);
+            }
+            if (distance <= 80 && distance > 60) {
+                drive.tankDrive(0.45, 0.45);
+            }
+            if (distance <= 60) {
+                drive.tankDrive(0, 0);
+            }
+
+            System.out.println("SonarF1: " + distance);
+        }
+    }
+
+    public void autonomous() {
+        System.out.println("Starting Autonomous");
+        //autonomous1();
+        // test_sonar_auto();
+        test_auto_pid();
         System.out.println("Ending Autonomous");
     }
 
@@ -434,6 +534,8 @@ public class RobotTemplate extends SimpleRobot {
         int x = 1;
         CheckButtons(stickArm, armButtonArray);
         while (isOperatorControl() && isEnabled()) {
+
+            CheckButtons(stickArm, armButtonArray);
             Timer.delay(0.1);
             drive.tankDrive(-stickLeft.getY() / x, -stickRight.getY() / x);
 
@@ -449,16 +551,24 @@ public class RobotTemplate extends SimpleRobot {
                 x = 2;
             }
 
-            System.out.println("LeftStick: " + stickArm.getY());
+            //if (stickLeft.getRawButton(1))
+            //{
+            //System.out.println("Sonar Value: " + sonar.getVoltage());
+            //System.out.println("SonarRaw: " + sonar.getDistanceRaw());
+            //System.out.println("SonarF1: " + sonar.getDistanceF1());
+            //}
+            //System.out.println("Arm: " + arm.get());
+
+            //System.out.println("LeftStick: " + stickArm.getY());
 
             // arm is within limits so let joystick move it
-            if (!arm.checkLimits()) {
+            /*if (!arm.checkLimits()) {
                 arm.set(stickArm.getY() / x);
             } else {
                 // arm is not within limit, don't move it with joystick
                 //arm.set(stickArm.getY() / x);
             }
-
+*/
             if (stickArm.getRawButton(8) && stickArm.getRawButton(9)) {
                 boolean b = minibotSolenoid2.get();
                 minibotSolenoid1.set(b);
@@ -470,8 +580,8 @@ public class RobotTemplate extends SimpleRobot {
             }
             dslcd.updateLCD();
         }
-        arm.OpenClaw();
-        arm.RetractArm();
+        //arm.OpenClaw();
+        //arm.RetractArm();
         // need to lower arm
 
         System.out.println("Leaving Operator Control");
