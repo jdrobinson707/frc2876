@@ -53,15 +53,15 @@ public class Arm {
         armJag = new Jaguar(Constants.ARM_JAGUAR);
         ac = new AnalogChannel(Constants.ANALOG_CHANNEL_SLOT, Constants.ANALOG_CHANNEL_CHANNEL);
         mc = new PIDController(.25, 0.001, 0, ac, armJag);
-        mc.setTolerance(5.0);
+        mc.setTolerance(15.0);
         mc.setOutputRange(-.7, .7);
         mc.setInputRange(LOW_LIMIT, HIGH_LIMIT);
 
-        armExtension1 = new Solenoid(8, 1);
-        armExtension2 = new Solenoid(8, 2);
+        armExtension1 = new Solenoid(Constants.SOLENOID_SLOT, 1);
+        armExtension2 = new Solenoid(Constants.SOLENOID_SLOT, 2);
         this.RetractArm();
 
-        grip = new Solenoid(8, 3);
+        grip = new Solenoid(Constants.SOLENOID_SLOT, 3);
         this.OpenClaw();
         movingArm = false;
         //this.start();
@@ -151,6 +151,11 @@ public class Arm {
         if (value > 0.1 && value < -.1) {
             System.out.println("set: " + this.toString());
         }
+    }
+
+    public double get()
+    {
+        return ac.getAverageVoltage();
     }
 
     public boolean isArmTooLow() {
