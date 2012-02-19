@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.image.CriteriaCollection;
 import edu.wpi.first.wpilibj.image.NIVision.MeasurementType;
 import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.image.ParticleAnalysisReport;
-import edu.wpi.first.wpilibj.image.RGBImage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // TODO
@@ -223,8 +222,6 @@ public class CamTarget extends Subsystem {
             ex.printStackTrace();
         } catch (NIVisionException ex) {
             ex.printStackTrace();
-            //} catch (NetworkTableKeyNotDefined ex) {
-            //  ex.printStackTrace();
         }
         filter_running = false;
     }
