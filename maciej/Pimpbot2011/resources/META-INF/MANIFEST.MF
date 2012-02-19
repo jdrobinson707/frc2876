@@ -1,0 +1,6 @@
+MIDlet-Name: Pimpbot2011
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: FIRST
+MIDlet-1: Pimpbot2011, , edu.wpi.first.Pimpbot2011.Pimpbot2011
+MicroEdition-Profile: IMP-1.0
+MicroEdition-Configuration: CLDC-1.1
