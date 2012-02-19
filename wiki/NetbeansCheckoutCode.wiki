@@ -1,4 +1,4 @@
-#Using Netbeans to check out code.
+Using Netbeans to check out code.
 
 = Introduction =
 
