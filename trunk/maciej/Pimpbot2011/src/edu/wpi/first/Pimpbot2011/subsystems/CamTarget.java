@@ -109,12 +109,13 @@ public class CamTarget extends Subsystem {
         Target[] targets = new Target[4];
         try {
             ParticleAnalysisReport[] reports = img.getOrderedParticleAnalysisReports();
-            for (int i = 0, j = 0; i < reports.length; i++) {
+            for (int i = 0; i < reports.length; i++) {
                 Target t = new Target(reports[i], VIEW_ANGLE);
                 t.analyze();
                 if (t.isValid()) {
-                    targets[j] = t;
-                    j++;
+                    targets[i] = t;
+                } else {
+                    targets[i] = none;
                 }
             }
         } catch (NIVisionException ex) {
@@ -126,6 +127,9 @@ public class CamTarget extends Subsystem {
         // left smallest x
         // right largest x
         sorted = new Target[targets.length];
+        for (int i = 0; i < sorted.length; i++) {
+            sorted[i] = none;
+        }
         for (int i = 0; i < targets.length; i++) {
             sorted[i] = none;
             if (targets[i].getYCoM() < sorted[TOP].getYCoM()) {
