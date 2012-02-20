@@ -114,6 +114,7 @@ public class CamTarget extends Subsystem {
                 t.analyze();
                 if (t.isValid()) {
                     targets[j] = t;
+                    j++;
                 }
             }
         } catch (NIVisionException ex) {
@@ -127,8 +128,6 @@ public class CamTarget extends Subsystem {
         sorted = new Target[targets.length];
         for (int i = 0; i < targets.length; i++) {
             sorted[i] = none;
-        }
-        for (int i = 0; i < targets.length; i++) {
             if (targets[i].getYCoM() < sorted[TOP].getYCoM()) {
                 sorted[TOP] = targets[i];
             }
@@ -226,6 +225,9 @@ public class CamTarget extends Subsystem {
         filter_running = false;
     }
 
+    // Get the first available target. If target is not found during image
+    // analysis the sorted array gets set to 'none' Target object which
+    // returns default values (probably zero) for distance and turn amount.
     private Target getFirst() {
         Target t = none;
         if (sorted[TOP] != none) {
