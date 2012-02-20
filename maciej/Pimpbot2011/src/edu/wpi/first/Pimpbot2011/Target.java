@@ -130,38 +130,53 @@ public class Target {
     }
 
     private void calcWidthDistance() {
-        int target_w_pix = imageWidth;
-        int image_w_pix = boundingRectWidth;
-        w_inches = (target_w_pix / image_w_pix) * w_target;
-        w_distance = (w_inches / 2) / (Math.tan(Math.toRadians(theta / 2)));
+        try {
+            int target_w_pix = imageWidth;
+            int image_w_pix = boundingRectWidth;
+            w_inches = (target_w_pix / image_w_pix) * w_target;
+            w_distance = (w_inches / 2) / (Math.tan(Math.toRadians(theta / 2)));
+        } catch (ArithmeticException ex) {
+            // System.out.println(ex);
+        }
     }
 
     private void calcHeightDistance() {
-        int target_h_pix = imageHeight;
-        int image_h_pix = boundingRectHeight;
-        h_inches = (target_h_pix / image_h_pix) * h_target;
-        h_distance = (h_inches / 2) / (Math.tan(Math.toRadians(theta / 2)));
+        try {
+            int target_h_pix = imageHeight;
+            int image_h_pix = boundingRectHeight;
+            h_inches = (target_h_pix / image_h_pix) * h_target;
+            h_distance = (h_inches / 2) / (Math.tan(Math.toRadians(theta / 2)));
+        } catch (ArithmeticException ex) {
+            // System.out.println(ex);
+        }
     }
 
     private void calcAim() {
-        x_aim = (center_mass_x - (imageWidth / 2)) / (imageWidth / 2);
-        y_aim = (center_mass_y - (imageHeight / 2)) / (imageHeight / 2);
-        // delta = pixel delta * pixels/deg
-        // image width, probably 320 divided by camera field of view
-        double degPerPixel = imageWidth / theta;
-        double imgCenter = imageWidth / 2;
+        try {
+            x_aim = (center_mass_x - (imageWidth / 2)) / (imageWidth / 2);
+            y_aim = (center_mass_y - (imageHeight / 2)) / (imageHeight / 2);
+            // delta = pixel delta * pixels/deg
+            // image width, probably 320 divided by camera field of view
+            double degPerPixel = imageWidth / theta;
+            double imgCenter = imageWidth / 2;
 
-        double delta = center_mass_x - imgCenter;
-        turnDegrees = delta / degPerPixel;
-        turnDegrees = RobotMap.roundtoTwo(turnDegrees);
+            double delta = center_mass_x - imgCenter;
+            turnDegrees = delta / degPerPixel;
+            turnDegrees = RobotMap.roundtoTwo(turnDegrees);
+        } catch (ArithmeticException ex) {
+            // System.out.println(ex);
+        }
     }
 
     private void calcScores() {
-        rectScore = r.particleArea / (boundingRectHeight * boundingRectWidth) * 100;
-        rectScore = RobotMap.roundtoTwo(rectScore);
+        try {
+            rectScore = r.particleArea / (boundingRectHeight * boundingRectWidth) * 100;
+            rectScore = RobotMap.roundtoTwo(rectScore);
 
-        aspectScore = boundingRectWidth * boundingRectHeight;
-        aspectScore = RobotMap.roundtoTwo(aspectScore);
-
+            aspectScore = boundingRectWidth * boundingRectHeight;
+            aspectScore = RobotMap.roundtoTwo(aspectScore);
+        } catch (ArithmeticException ex) {
+            // System.out.println(ex);
+        }
     }
 }
