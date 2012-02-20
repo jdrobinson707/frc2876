@@ -7,7 +7,6 @@ package edu.wpi.first.wpilibj.templates.subsystems;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.image.BinaryImage;
 import edu.wpi.first.wpilibj.image.ColorImage;
@@ -17,7 +16,7 @@ import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.image.ParticleAnalysisReport;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.RobotMap;
-
+import edu.wpi.first.wpilibj.templates.commands.VisionTrackingIdle;
 
 /**
  *
@@ -38,7 +37,7 @@ public class CameraTarget extends Subsystem {
     boolean isDoneFilter = false;
     double difference = 0.0;
 
-    public CameraTarget(){
+    public CameraTarget() {
         super("CameraTarget");
 
         camera = AxisCamera.getInstance();  // get an instance ofthe camera
@@ -50,7 +49,7 @@ public class CameraTarget extends Subsystem {
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        // setDefaultCommand(new VisionTrackingIdle());
+        setDefaultCommand(new VisionTrackingIdle());
     }
 
     public double GetAngleDif(ParticleAnalysisReport r) {
@@ -125,78 +124,66 @@ public class CameraTarget extends Subsystem {
         }
     }
 
-
-    public double getDifference()
-    {
+    public double getDifference() {
         return difference;
     }
 
     public void filter() {
-       SmartDashboard.putData("SchedulerData", Scheduler.getInstance());
-       try {
-                image = camera.getImage();
-                //image = new RGBImage("/40ft2.jpg");
-                //System.out.println("Got image");
+        try {
+            image = camera.getImage();
+            BinaryImage thresholdImage = image.thresholdHSL(55, 255, 0, 255, 38, 255);   // keep only red objects
+            thresholdImage.write("/tmp/threshImage.png");
+            BinaryImage bigObjectsImage = thresholdImage.removeSmallObjects(false, 1);  //2  // remove small artifacts
+            bigObjectsImage.write("/tmp/bigObjectsImage.png");
+            BinaryImage convexHullImage = bigObjectsImage.convexHull(false);          // fill in occluded rectangles
+            convexHullImage.write("/tmp/convexImage.png");
+            BinaryImage filteredImage = convexHullImage.particleFilter(cc);
+            filteredImage.write("/tmp/filteredImage.png");
 
-                BinaryImage thresholdImage = image.thresholdHSL(55, 255, 0, 255, 38, 255);   // keep only red objects
-                thresholdImage.write("/tmp/threshImage.png");
-                BinaryImage bigObjectsImage = thresholdImage.removeSmallObjects(false, 1);  //2  // remove small artifacts
-                bigObjectsImage.write("/tmp/bigObjectsImage.png");
-                BinaryImage convexHullImage = bigObjectsImage.convexHull(false);          // fill in occluded rectangles
-                convexHullImage.write("/tmp/convexImage.png");
-                BinaryImage filteredImage = convexHullImage.particleFilter(cc);
-                filteredImage.write("/tmp/filteredImage.png");
+            double topMost = 0.0;
+            int particleNumber = -1;
+            double aspectRatio = 0.0;
 
-                double topMost = 0.0;
-                int particleNumber = -1;
-                double aspectRatio = 0.0;
+            ParticleAnalysisReport[] reports = filteredImage.getOrderedParticleAnalysisReports();  // get list of results
+            ParticleAnalysisReport wanted;
+            for (int i = 0; i < reports.length; i++) {                                // print results
+                ParticleAnalysisReport r = reports[i];
+                aspectRatio = (double) r.boundingRectWidth / (double) r.boundingRectHeight;
+                if (r.particleQuality > 90 && aspectRatio > 1.0 && aspectRatio < 1.5) {
+                    System.out.println("Particle: " + (i + 1));
+                    System.out.println("location: " + r.center_mass_x + ", " + r.center_mass_y);
+                    System.out.println(getDistance(r));
 
-                ParticleAnalysisReport[] reports = filteredImage.getOrderedParticleAnalysisReports();  // get list of results
-                ParticleAnalysisReport wanted;
-                for (int i = 0; i < reports.length; i++) {                                // print results
-                    ParticleAnalysisReport r = reports[i];
-                    aspectRatio = (double) r.boundingRectWidth / (double) r.boundingRectHeight;
-                    if (r.particleQuality > 90 && aspectRatio > 1.0 && aspectRatio < 1.5) {
-                        System.out.println("Particle: " + (i + 1));
-                        System.out.println("location: " + r.center_mass_x + ", " + r.center_mass_y);
-                        System.out.println(getDistance(r));
+                    //distance = getDistance(r);
 
-                        //distance = getDistance(r);
-
-                        if (reports.length == 1) {
-                            topMost = r.center_mass_y_normalized;
-                        }
-                        if (r.center_mass_y_normalized < topMost) {
-                            topMost = r.center_mass_y_normalized;
-                            particleNumber = i;
-                        }
-                        System.out.println();
-                        System.out.println();
-
-
+                    if (reports.length == 1) {
+                        topMost = r.center_mass_y_normalized;
                     }
+                    if (r.center_mass_y_normalized < topMost) {
+                        topMost = r.center_mass_y_normalized;
+                        particleNumber = i;
+                    }
+                    System.out.println();
+                    System.out.println();
+
+
                 }
-                SortParticles(reports);
-                wanted = reports[particleNumber];
-                difference = GetAngleDif(wanted);
-                SmartDashboard.putDouble("angle error", RobotMap.roundtoTwo(difference));
-                SmartDashboard.putDouble("distance", RobotMap.roundtoTwo(getDistance(wanted)));
-
-
-                //System.out.println("Particle Amount: " + reports.length);
-                //System.out.println();
-                //System.out.println("*********  SORTED  ***********");
-                //SortParticles(reports);
-
-                filteredImage.free();
-                convexHullImage.free();
-                bigObjectsImage.free();
-                thresholdImage.free();
-                image.free();
-            } catch (NIVisionException e) {
-            } catch (AxisCameraException e) {
             }
+            SortParticles(reports);
+            wanted = reports[particleNumber];
+            difference = GetAngleDif(wanted);
+            SmartDashboard.putDouble("angle error", RobotMap.roundtoTwo(difference));
+            SmartDashboard.putDouble("distance", RobotMap.roundtoTwo(getDistance(wanted)));
+
+            filteredImage.free();
+            convexHullImage.free();
+            bigObjectsImage.free();
+            thresholdImage.free();
+            image.free();
+        } catch (NIVisionException e) {
+        } catch (AxisCameraException e) {
         }
+    }
 
     public boolean isDoneFiltered() {
         return isDoneFilter;

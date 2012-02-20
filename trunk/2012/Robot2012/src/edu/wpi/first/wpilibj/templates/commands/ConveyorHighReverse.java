@@ -4,7 +4,6 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
-
 /**
  *
  * @author User
@@ -18,11 +17,11 @@ public class ConveyorHighReverse extends CommandBase {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+        conveyorhigh.reverse();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        conveyorhigh.reverse();
     }
 
     // Make this return true when this Command no longer needs to run execute()

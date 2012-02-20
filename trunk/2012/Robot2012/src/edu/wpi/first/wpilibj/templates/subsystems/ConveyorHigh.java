@@ -17,19 +17,26 @@ import edu.wpi.first.wpilibj.templates.commands.ConveyorHighIdle;
  */
 public class ConveyorHigh extends Subsystem {
     //Jaguar conveyjaghigh = new Jaguar(RobotMap.CONVYOR_HIGH_PORT);
-    Relay conveyrelayhigh = new Relay(RobotMap.CONVYOR_HIGH_PORT);
-     DigitalInput lm = new DigitalInput(RobotMap.LM_MIDDLE);
 
+    Relay conveyrelayhigh;
+    DigitalInput lm;
+
+    public ConveyorHigh() {
+        conveyrelayhigh = new Relay(RobotMap.CONVYOR_HIGH_PORT);
+        lm = new DigitalInput(RobotMap.LM_MIDDLE);
+
+    }
 
     public void initDefaultCommand() {
         conveyrelayhigh.setDirection(Relay.Direction.kBoth);
         // Set the default command for a subsystem here.
         setDefaultCommand(new ConveyorHighIdle());
     }
-    public void idle(){
-    //conveyjaghigh.set(0);
-    conveyrelayhigh.set(Relay.Value.kOff);
-    
+
+    public void idle() {
+        //conveyjaghigh.set(0);
+        conveyrelayhigh.set(Relay.Value.kOff);
+
     }
 
     public boolean hasBallEntered() {
@@ -38,13 +45,13 @@ public class ConveyorHigh extends Subsystem {
         return b;
     }
 
-
-    public void on(){
-    //conveyjaghigh.set(1);
-    conveyrelayhigh.set(Relay.Value.kReverse);
+    public void on() {
+        //conveyjaghigh.set(1);
+        conveyrelayhigh.set(Relay.Value.kReverse);
     }
-    public void reverse(){
-    //conveyjaghigh.set(-1);
-    conveyrelayhigh.set(Relay.Value.kForward);
+
+    public void reverse() {
+        //conveyjaghigh.set(-1);
+        conveyrelayhigh.set(Relay.Value.kForward);
     }
 }
