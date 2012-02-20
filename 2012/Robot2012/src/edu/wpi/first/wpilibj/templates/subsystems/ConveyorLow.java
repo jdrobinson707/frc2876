@@ -18,32 +18,27 @@ import edu.wpi.first.wpilibj.templates.RobotMap;
 public class ConveyorLow extends Subsystem {
     //Jaguar conveyjaglow = new Jaguar(RobotMap.CONVEYOR_LOW_PORT);
 
-    Relay conveyrelaylow = new Relay(RobotMap.CONVEYOR_LOW_PORT);
-    DigitalInput lm = new DigitalInput(RobotMap.LM_LOW);
-    int counter = 0;
-   
-    boolean previous = false;
+    Relay conveyrelaylow;
+    DigitalInput lm;
+    int counter;
+    boolean previous;
 
-    public void Count() {
-        boolean b = lm.get();
-        if (lm.get()) {
-            if (b != previous) {
-                counter++;
-                SmartDashboard.putInt("Shooter Spins", counter);
-            }
-        }
+    public ConveyorLow() {
+        conveyrelaylow = new Relay(RobotMap.CONVEYOR_LOW_PORT);
+        lm = new DigitalInput(RobotMap.LM_LOW);
+        counter = 0;
+        previous = false;
+    }
 
+    public void initDefaultCommand() {
+        // Set the default command for a subsystem here.
+        setDefaultCommand(new ConveyorLowIdle());
     }
 
     public boolean hasBallEntered() {
         boolean b = lm.get();
         SmartDashboard.putBoolean("low lm: ", b);
         return b;
-    }
-
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        setDefaultCommand(new ConveyorLowIdle());
     }
 
     public void idle() {

@@ -29,7 +29,6 @@ public class DriveTrain extends Subsystem {
     private static final double turnKd = 0.0;
     RobotDrive drive;
     SendableGyro gyro;
-    CameraTarget camera;
     SendablePIDController turnPID;
     SendablePIDController drivePID;
 
@@ -37,7 +36,6 @@ public class DriveTrain extends Subsystem {
     public DriveTrain() {
         drive = new RobotDrive(RobotMap.LEFT_DRIVE_MOTOR_PORT, RobotMap.RIGHT_DRIVE_MOTOR_PORT);
         drive.setSafetyEnabled(false);
-        camera = new CameraTarget();
         gyro = new SendableGyro(RobotMap.GYRO_PORT);
         SmartDashboard.putData("gyro", gyro);
         turnPID = new SendablePIDController(turnKp, turnKi, turnKd, gyro, new PIDOutput() {
@@ -51,6 +49,7 @@ public class DriveTrain extends Subsystem {
         });
 
         turnPID.setOutputRange(-.7, .7);
+        // not implemented in wpilib code
         turnPID.setInputRange(-90, 90);
         turnPID.setTolerance(3.6);
 
@@ -81,10 +80,6 @@ public class DriveTrain extends Subsystem {
 
     public void endTurn() {
         turnPID.disable();
-    }
-
-    public void resetGyro() {
-        gyro.reset();
     }
 
     public void drive(Joystick left, Joystick right) {

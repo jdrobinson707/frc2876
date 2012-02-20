@@ -40,23 +40,26 @@ public class Shooter extends Subsystem {
     }
 
     public void set(double x) {
+        c.reset();
         c.start();
         shootjag.set(x);
         SmartDashboard.putDouble("Shooter Speed", RobotMap.roundtoTwo(shootjag.get()));
     }
+
     public int getCount() {
         int count = c.get();
         SmartDashboard.putInt("counter", count);
         SmartDashboard.putDouble("period", c.getPeriod());
-        SmartDashboard.putDouble("rps", RobotMap.roundtoTwo(rps()));
         return count;
     }
+
     public double get() {
         return shootjag.get();
     }
 
-    public double rps()
-    {
-        return 1.0 / (2.0 * c.getPeriod());
+    public double rps() {
+        double val = 1.0 / (2.0 * c.getPeriod());
+        SmartDashboard.putDouble("rps", RobotMap.roundtoTwo(val));
+        return val;
     }
 }

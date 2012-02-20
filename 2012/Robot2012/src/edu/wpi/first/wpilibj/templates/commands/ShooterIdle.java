@@ -18,6 +18,10 @@ public class ShooterIdle extends CommandBase {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+        // when we want to test shooter speeds we want the idle
+        // command to do nothing so the shooter motor continues
+        // running at whatever speed we last set it to.
+        // shooter.idle();
     }
 
     // Called repeatedly when this Command is scheduled to run

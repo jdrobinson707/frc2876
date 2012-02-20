@@ -23,7 +23,7 @@ public class Drive extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        //drive.drive(oi.getLeftStick(), oi.getRightStick());
+        drive.drive(oi.getLeftStick(), oi.getRightStick());
     }
 
     // Make this return true when this Command no longer needs to run execute()
