@@ -45,6 +45,7 @@ public class CameraTarget extends Subsystem {
         cc.addCriteria(MeasurementType.IMAQ_MT_BOUNDING_RECT_WIDTH, 30, 400, false);
         cc.addCriteria(MeasurementType.IMAQ_MT_BOUNDING_RECT_HEIGHT, 40, 400, false);
         image = null;
+        isDoneFilter = false;
     }
 
     public void initDefaultCommand() {
@@ -131,7 +132,8 @@ public class CameraTarget extends Subsystem {
     public void filter() {
         try {
             image = camera.getImage();
-            BinaryImage thresholdImage = image.thresholdHSL(55, 255, 0, 255, 38, 255);   // keep only red objects
+            image.write("/tmp/rawImage.png");
+            BinaryImage thresholdImage = image.thresholdHSL(88, 126, 47, 255, 37, 100);   // keep only red objects
             thresholdImage.write("/tmp/threshImage.png");
             BinaryImage bigObjectsImage = thresholdImage.removeSmallObjects(false, 1);  //2  // remove small artifacts
             bigObjectsImage.write("/tmp/bigObjectsImage.png");
@@ -149,6 +151,10 @@ public class CameraTarget extends Subsystem {
             for (int i = 0; i < reports.length; i++) {                                // print results
                 ParticleAnalysisReport r = reports[i];
                 aspectRatio = (double) r.boundingRectWidth / (double) r.boundingRectHeight;
+                System.out.println("P=" + i + " AR=" + aspectRatio
+                        + " PQ=" + r.particleQuality
+                        + " CM=" + r.center_mass_x + "," + r.center_mass_y);
+
                 if (r.particleQuality > 90 && aspectRatio > 1.0 && aspectRatio < 1.5) {
                     System.out.println("Particle: " + (i + 1));
                     System.out.println("location: " + r.center_mass_x + ", " + r.center_mass_y);
@@ -157,10 +163,11 @@ public class CameraTarget extends Subsystem {
                     //distance = getDistance(r);
 
                     if (reports.length == 1) {
-                        topMost = r.center_mass_y_normalized;
+                        topMost = r.center_mass_y;
+                        particleNumber = 0;
                     }
                     if (r.center_mass_y_normalized < topMost) {
-                        topMost = r.center_mass_y_normalized;
+                        topMost = r.center_mass_y;
                         particleNumber = i;
                     }
                     System.out.println();
@@ -169,17 +176,21 @@ public class CameraTarget extends Subsystem {
 
                 }
             }
-            SortParticles(reports);
-            wanted = reports[particleNumber];
-            difference = GetAngleDif(wanted);
-            SmartDashboard.putDouble("angle error", RobotMap.roundtoTwo(difference));
-            SmartDashboard.putDouble("distance", RobotMap.roundtoTwo(getDistance(wanted)));
+            if (particleNumber != -1) {
+                //SortParticles(reports);
+                wanted = reports[particleNumber];
+                difference = GetAngleDif(wanted);
+                SmartDashboard.putDouble("angle error", RobotMap.roundtoTwo(difference));
+                //SmartDashboard.putDouble("distance", RobotMap.roundtoTwo(getDistance(wanted)));
+            }
+
 
             filteredImage.free();
             convexHullImage.free();
             bigObjectsImage.free();
             thresholdImage.free();
             image.free();
+            isDoneFilter = true;
         } catch (NIVisionException e) {
         } catch (AxisCameraException e) {
         }

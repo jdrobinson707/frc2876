@@ -4,8 +4,9 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.templates.RobotMap;
 
 /**
  *
@@ -28,29 +29,45 @@ public class ShootOneBall extends CommandBase {
     // Called just before this Command runs the first time
     protected void initialize() {
         conveyorlow.on();
-        conveyorhigh.on();
-        shooter.set(.61);
+        //conveyorhigh.on
+        //shooter.set(.61);
         wasPressed = false;
         whenReleased = false;
-
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
 
-        if (conveyorhigh.hasBallEntered() == true)
-        {
+        double x = RobotMap.START_SPEED_RPS;
+        boolean ready = false;
+        if (shooter.rps() <= RobotMap.KEY_TOP_SHOOT_RPS) {
+            shooter.set(x);
+            if (x <= 1) {
+                x += .08;
+            }
+            if (shooter.rps() <= RobotMap.KEY_TOP_SHOOT_RPS - 1.3)
+            {
+                conveyorhigh.on();
+            }
+            SmartDashboard.putDouble("x", x);
+        } else {
+            ready = true;
+        }
+
+        if (conveyorhigh.hasBallEntered() == true) {
             conveyorlow.idle();
         }
 
         boolean b = shooter.hasBallEntered();
-        if (b == true)
-        {
+        if (b == true) {
             wasPressed = true;
         }
-        if (wasPressed == true && ! shooter.hasBallEntered())
-        {
-            whenReleased = true;
+        if (wasPressed == true && !shooter.hasBallEntered()) {
+            if (ready) {
+                whenReleased = true;
+                Timer.delay(.5);
+                end();
+            }
         }
         SmartDashboard.putBoolean("shooterPressed: ", wasPressed);
         SmartDashboard.putBoolean("shooterReleased: ", whenReleased);
@@ -60,6 +77,8 @@ public class ShootOneBall extends CommandBase {
     protected boolean isFinished() {
         return whenReleased;
     }
+
+
 
     // Called once after isFinished returns true
     protected void end() {

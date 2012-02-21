@@ -2,6 +2,7 @@ package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.commands.AdjustTurn;
 import edu.wpi.first.wpilibj.templates.commands.CollectBall;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorHighIdle;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.templates.commands.ConveyorHighReverse;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowIdle;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowOn;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowReverse;
+import edu.wpi.first.wpilibj.templates.commands.DriveReverse;
 import edu.wpi.first.wpilibj.templates.commands.ShootOneBall;
 import edu.wpi.first.wpilibj.templates.commands.ShooterShoot;
 import edu.wpi.first.wpilibj.templates.commands.ShooterUpdate;
@@ -37,6 +39,9 @@ public class OI {
     JoystickButton armb10;
     JoystickButton armb11;
     JoystickButton rightb8, rightb9;
+    JoystickButton rightb10, rightb11;
+    JoystickButton leftb8, leftb9, leftb3;
+    boolean isArmLocked = false;
 
     public OI() {
         armstick = new Joystick(RobotMap.JOYSTICK_EXTRA);
@@ -55,6 +60,11 @@ public class OI {
         armb11 = new JoystickButton(armstick, 11);
         rightb9 = new JoystickButton(rightstick, 9);
         rightb8 = new JoystickButton(rightstick, 8);
+        rightb10 = new JoystickButton(rightstick, 10);
+        rightb11 = new JoystickButton(rightstick, 11);
+        leftb3 = new JoystickButton(leftstick, 3);
+        leftb8 = new JoystickButton(leftstick, 8);
+        leftb9 = new JoystickButton(leftstick, 9);
 
         armb2.whenPressed(new ConveyorLowOn());
         armb3.whenPressed(new ConveyorLowIdle());
@@ -76,7 +86,7 @@ public class OI {
         //armb11.whileHeld(new ShooterShoot(0.61));
         //armb11.whenReleased(new ShooterShoot(0.0));
 
-        //armb8.whenPressed(new TurnRobot(-45));
+        //armb8.whenPressed(new BridgeArmMove());
         //armb9.whenPressed(new TurnRobot(45));
 
         armb8.whenPressed(new CollectBall());
@@ -84,8 +94,29 @@ public class OI {
         armb10.whenPressed(new AdjustTurn());
         armb11.whenPressed(new VisionFiltering());
 
+
+        if (rightstick.getRawButton(10)) {
+            isArmLocked = true;
+        }
+        if (rightstick.getRawButton(11)) {
+            isArmLocked = false;
+        }
+        //rightb10.whenPressed(new BridgeArmLower());
+        //rightb11.whenPressed(new BridgeArmRaise());
+
         rightb8.whenPressed(new ShooterUpdate(-0.1));
         rightb9.whenPressed(new ShooterUpdate(0.1));
+
+        leftb3.whileHeld(new DriveReverse());
+        leftb8.whileHeld(new ShooterShoot(0.57));
+        leftb8.whenReleased(new ShooterShoot(0.0));
+        leftb9.whileHeld(new ShooterShoot(0.61));
+        leftb9.whenReleased(new ShooterShoot(0.0));
+    }
+
+    public boolean isArmLocked() {
+        SmartDashboard.putBoolean("isArmLocked", isArmLocked);
+        return isArmLocked;
     }
 
     public Joystick getLeftStick() {
