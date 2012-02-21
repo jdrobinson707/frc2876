@@ -4,19 +4,16 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
+
 /**
  *
  * @author User
  */
-public class BridgeArmMove extends CommandBase {
-    // TODO
-    // Make this command accept a value, like turn robot command.
-    // The values should be known constants for the arm being in
-    // high or low position.
+public class DriveReverse extends CommandBase {
 
-    public BridgeArmMove() {
+    public DriveReverse() {
         // Use requires() here to declare subsystem dependencies
-        requires(bridgearmmanual);
+        requires(drive);
     }
 
     // Called just before this Command runs the first time
@@ -25,10 +22,7 @@ public class BridgeArmMove extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        if (oi.isArmLocked() == false) {
-            bridgearmmanual.move(oi.getArmStick());
-        }
-        bridgearmmanual.updateDashboard();
+     drive.reverseDrive(oi.getLeftStick(), oi.getRightStick());
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -43,6 +37,5 @@ public class BridgeArmMove extends CommandBase {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-        end();
     }
 }

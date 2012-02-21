@@ -18,10 +18,18 @@ import edu.wpi.first.wpilibj.templates.commands.ShooterIdle;
  */
 public class Shooter extends Subsystem {
 
-    Jaguar shootjag = new Jaguar(RobotMap.SHOOTER_PORT);
-    DigitalInput lm = new DigitalInput(RobotMap.LM_HIGH);
-    DigitalInput lt = new DigitalInput(RobotMap.LINE_TRACKER_PORT);
-    Counter c = new Counter(lt);
+    Jaguar shootjag;
+    DigitalInput lm;
+    DigitalInput lt;
+    Counter c;
+
+    public Shooter() {
+        shootjag = new Jaguar(RobotMap.SHOOTER_PORT);
+        lm = new DigitalInput(RobotMap.LM_HIGH);
+        lt = new DigitalInput(RobotMap.LINE_TRACKER_PORT);
+        c = new Counter(lt);
+        c.setMaxPeriod(.3);
+    }
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -46,10 +54,17 @@ public class Shooter extends Subsystem {
         SmartDashboard.putDouble("Shooter Speed", RobotMap.roundtoTwo(shootjag.get()));
     }
 
+    public void setRPS(double x) {
+        c.reset();
+        c.start();
+
+    }
+
     public int getCount() {
         int count = c.get();
         SmartDashboard.putInt("counter", count);
         SmartDashboard.putDouble("period", c.getPeriod());
+        rps();
         return count;
     }
 

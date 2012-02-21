@@ -24,10 +24,10 @@ public class RobotMap {
     public static final int GYRO_PORT = 2;
     public static final int SHOOTER_PORT = 2;
     public static final int LINE_TRACKER_PORT = 1;
-    public static final int PONTENTIOMETER_PORT = 3;
+    public static final int PONTENTIOMETER_PORT = 1;
 
-    public static final int BRIDGE_ARM_UP_LIMIT = 0;
-    public static final int BRIDGE_ARM_DOWN_LIMIT = 153;
+    public static final int BRIDGE_ARM_UP_LIMIT = 622;
+    public static final int BRIDGE_ARM_DOWN_LIMIT = -3;
 
     public static final int MANUAL_SHOOT_B = 1;
     public static final int CONVEYOR_LOW_ON_B = 3;
@@ -46,6 +46,10 @@ public class RobotMap {
     public static final int LM_LOW = 4;
     public static final int LM_MIDDLE = 2;
     public static final int LM_HIGH = 3;
+
+    public static final double KEY_TOP_SHOOT_RPS = 17.4;
+    public static final double START_SPEED_RPS = 0.61;
+
 
 
     public static double roundtoTwo(double num) {

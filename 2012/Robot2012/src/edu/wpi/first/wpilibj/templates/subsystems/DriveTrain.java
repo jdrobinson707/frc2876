@@ -24,9 +24,9 @@ public class DriveTrain extends Subsystem {
     private static final double driveKp = 0.6;
     private static final double driveKi = 0.0;
     private static final double driveKd = 0.0;
-    private static final double turnKp = 5;
-    private static final double turnKi = 0.0;
-    private static final double turnKd = 0.0;
+    private static final double turnKp = 0.5;
+    private static final double turnKi = 1.0;
+    private static final double turnKd = 1.0;
     RobotDrive drive;
     SendableGyro gyro;
     SendablePIDController turnPID;
@@ -42,6 +42,8 @@ public class DriveTrain extends Subsystem {
 
             public void pidWrite(double output) {
                 drive.tankDrive(output, -output);
+                //drive.tankDrive(-output, output);
+                
                 SmartDashboard.putDouble("TurnPID Output", RobotMap.roundtoTwo(output));
                 SmartDashboard.putDouble("Gyro Angle", RobotMap.roundtoTwo(gyro.getAngle()));
                 SmartDashboard.putDouble("Turn PID Error:", RobotMap.roundtoTwo(turnPID.getError()));
@@ -51,7 +53,8 @@ public class DriveTrain extends Subsystem {
         turnPID.setOutputRange(-.7, .7);
         // not implemented in wpilib code
         turnPID.setInputRange(-90, 90);
-        turnPID.setTolerance(3.6);
+        turnPID.setTolerance(10);
+        Timer.delay(.3);
 
         SmartDashboard.putData("TurnPID Object", turnPID);
 
@@ -71,7 +74,7 @@ public class DriveTrain extends Subsystem {
         turnPID.reset();
         turnPID.setSetpoint(degrees);
         turnPID.enable();
-        Timer.delay(.1);
+        Timer.delay(.3);
     }
 
     public boolean isTurnFinished() {
@@ -85,6 +88,17 @@ public class DriveTrain extends Subsystem {
     public void drive(Joystick left, Joystick right) {
         drive.tankDrive(left, right);
     }
+
+    public void halfDrive(double left, double right)
+    {
+        drive.tankDrive(left / 1.5, right / 1.5);
+    }
+
+    public void reverseDrive(Joystick left, Joystick right)
+    {
+        drive.tankDrive(-right.getY(), -left.getY());
+    }
+
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.

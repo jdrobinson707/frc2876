@@ -28,7 +28,7 @@ public class VisionFiltering extends CommandBase {
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
         // TODO need to end this command
-        return false;
+        return cameratarget.isDoneFiltered();
     }
 
     // Called once after isFinished returns true

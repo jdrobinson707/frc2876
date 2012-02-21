@@ -59,5 +59,6 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        CommandBase.bridgearm.updateDashboard();
     }
 }
