@@ -24,9 +24,9 @@ public class DriveTrain extends Subsystem {
     private static final double driveKp = 0.6;
     private static final double driveKi = 0.0;
     private static final double driveKd = 0.0;
-    private static final double turnKp = 0.5;
-    private static final double turnKi = 1.0;
-    private static final double turnKd = 1.0;
+    private static final double turnKp = 1.0;
+    private static final double turnKi = 0.0;
+    private static final double turnKd = 0.0;
     RobotDrive drive;
     SendableGyro gyro;
     SendablePIDController turnPID;
@@ -53,8 +53,8 @@ public class DriveTrain extends Subsystem {
         turnPID.setOutputRange(-.7, .7);
         // not implemented in wpilib code
         turnPID.setInputRange(-90, 90);
-        turnPID.setTolerance(10);
-        Timer.delay(.3);
+        turnPID.setTolerance(5);
+        Timer.delay(.2);
 
         SmartDashboard.putData("TurnPID Object", turnPID);
 
@@ -78,7 +78,11 @@ public class DriveTrain extends Subsystem {
     }
 
     public boolean isTurnFinished() {
-        return turnPID.onTarget();
+        if (turnPID.getError() > -5 && turnPID.getError() < 5) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void endTurn() {

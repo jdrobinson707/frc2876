@@ -16,14 +16,16 @@ public class ShootOneBall extends CommandBase {
 
     boolean wasPressed = false;
     boolean whenReleased = false;
+    double rps = 0.0;
 
-    public ShootOneBall() {
+    public ShootOneBall(double r) {
         // Use requires() here to declare subsystem dependencies
         requires(conveyorlow);
         requires(conveyorhigh);
         requires(shooter);
         wasPressed = false;
         whenReleased = false;
+        rps = r;
     }
 
     // Called just before this Command runs the first time
@@ -40,12 +42,12 @@ public class ShootOneBall extends CommandBase {
 
         double x = RobotMap.START_SPEED_RPS;
         boolean ready = false;
-        if (shooter.rps() <= RobotMap.KEY_TOP_SHOOT_RPS) {
+        if (shooter.rps() <= rps) {
             shooter.set(x);
             if (x <= 1) {
                 x += .08;
             }
-            if (shooter.rps() <= RobotMap.KEY_TOP_SHOOT_RPS - 1.3)
+            if (shooter.rps() <= rps - 1.3)
             {
                 conveyorhigh.on();
             }

@@ -16,13 +16,17 @@ public class RobotMap {
     // number and the module. For example you with a rangefinder:
     // public static final int rangefinderPort = 1;
     // public static final int rangefinderModule = 1;
-    public static final int LEFT_DRIVE_MOTOR_PORT = 1;
-    public static final int RIGHT_DRIVE_MOTOR_PORT = 3;
+    //public static final int LEFT_DRIVE_MOTOR_PORT = 1;
+    public static final int LEFT_DRIVE_MOTOR_PORT = 3;
+    //public static final int RIGHT_DRIVE_MOTOR_PORT = 3;
+    public static final int RIGHT_DRIVE_MOTOR_PORT = 2;
     public static final int CONVEYOR_LOW_PORT = 1;
     public static final int CONVYOR_HIGH_PORT = 2;
     public static final int BRIDGE_ARM_PORT = 4;
     public static final int GYRO_PORT = 2;
-    public static final int SHOOTER_PORT = 2;
+    //public static final int GYRO_PORT = 1;
+    public static final int SHOOTER_PORT = 5;
+    //public static final int SHOOTER_PORT = 2;
     public static final int LINE_TRACKER_PORT = 1;
     public static final int PONTENTIOMETER_PORT = 1;
 
@@ -48,8 +52,8 @@ public class RobotMap {
     public static final int LM_HIGH = 3;
 
     public static final double KEY_TOP_SHOOT_RPS = 17.4;
+    public static final double FAR_SPEED_RPS = 27.5;
     public static final double START_SPEED_RPS = 0.61;
-
 
 
     public static double roundtoTwo(double num) {
