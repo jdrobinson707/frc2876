@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.templates.commands.AdjustTurn;
 import edu.wpi.first.wpilibj.templates.commands.CollectBall;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorHighIdle;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorHighOn;
-import edu.wpi.first.wpilibj.templates.commands.ConveyorHighReverse;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowIdle;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowOn;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowReverse;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.templates.commands.DriveReverse;
 import edu.wpi.first.wpilibj.templates.commands.ShootOneBall;
 import edu.wpi.first.wpilibj.templates.commands.ShooterShoot;
 import edu.wpi.first.wpilibj.templates.commands.ShooterUpdate;
+import edu.wpi.first.wpilibj.templates.commands.TurnRobot;
 import edu.wpi.first.wpilibj.templates.commands.VisionFiltering;
 
 /**
@@ -39,6 +39,7 @@ public class OI {
     JoystickButton armb10;
     JoystickButton armb11;
     JoystickButton rightb8, rightb9;
+    JoystickButton rightb4;
     JoystickButton rightb10, rightb11;
     JoystickButton leftb8, leftb9, leftb3;
     boolean isArmLocked = false;
@@ -58,6 +59,7 @@ public class OI {
         armb9 = new JoystickButton(armstick, 9);
         armb10 = new JoystickButton(armstick, 10);
         armb11 = new JoystickButton(armstick, 11);
+        rightb4 = new JoystickButton(rightstick, 4);
         rightb9 = new JoystickButton(rightstick, 9);
         rightb8 = new JoystickButton(rightstick, 8);
         rightb10 = new JoystickButton(rightstick, 10);
@@ -71,7 +73,7 @@ public class OI {
         armb4.whenPressed(new ConveyorHighOn());
         armb5.whenPressed(new ConveyorHighIdle());
         armb6.whenPressed(new ConveyorLowReverse());
-        armb7.whenPressed(new ConveyorHighReverse());
+        //armb7.whenPressed(new ConveyorHighReverse());
 
         armb1.whileHeld(new ShooterShoot(1.0));
         armb1.whenReleased(new ShooterShoot(0.0));
@@ -87,10 +89,11 @@ public class OI {
         //armb11.whenReleased(new ShooterShoot(0.0));
 
         //armb8.whenPressed(new BridgeArmMove());
-        //armb9.whenPressed(new TurnRobot(45));
+        rightb4.whenPressed(new TurnRobot(45));
 
+        armb7.whenPressed(new ShootOneBall(RobotMap.FAR_SPEED_RPS));
         armb8.whenPressed(new CollectBall());
-        armb9.whenPressed(new ShootOneBall());
+        armb9.whenPressed(new ShootOneBall(RobotMap.KEY_TOP_SHOOT_RPS));
         armb10.whenPressed(new AdjustTurn());
         armb11.whenPressed(new VisionFiltering());
 
