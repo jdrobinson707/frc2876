@@ -22,6 +22,7 @@ public class ShooterIdle extends CommandBase {
         // command to do nothing so the shooter motor continues
         // running at whatever speed we last set it to.
         // shooter.idle();
+        shooter.idle();
     }
 
     // Called repeatedly when this Command is scheduled to run

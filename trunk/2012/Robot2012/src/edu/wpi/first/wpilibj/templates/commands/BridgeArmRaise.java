@@ -4,7 +4,6 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
-
 /**
  *
  * @author User
@@ -19,7 +18,6 @@ public class BridgeArmRaise extends CommandBase {
     // Called just before this Command runs the first time
     protected void initialize() {
         bridgearm.raise();
-        bridgearm.enablePID();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -28,7 +26,7 @@ public class BridgeArmRaise extends CommandBase {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return bridgearm.hasFinished();
+        return bridgearm.hasFinished(oi.isDebugOn());
     }
 
     // Called once after isFinished returns true

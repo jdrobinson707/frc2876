@@ -18,7 +18,7 @@ public class ConveyorLowOn extends CommandBase {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        conveyorlow.on();
+        conveyorlow.forward();
     }
 
     // Called repeatedly when this Command is scheduled to run

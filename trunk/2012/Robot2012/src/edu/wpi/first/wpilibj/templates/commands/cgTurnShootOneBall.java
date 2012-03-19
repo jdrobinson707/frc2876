@@ -8,15 +8,12 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
  *
- * @author User
+ * @author user
  */
-public class allInOneShoot extends CommandGroup {
+public class cgTurnShootOneBall extends CommandGroup {
 
-    public allInOneShoot() {
-
-        addParallel(new ConveyorLowOn());
-        //addSequential(new Command1());
-        //(new Command1());
-
+    public cgTurnShootOneBall() {
+        addSequential(new VisionTurn());
+        addSequential(new cgShootOneBall());
     }
 }

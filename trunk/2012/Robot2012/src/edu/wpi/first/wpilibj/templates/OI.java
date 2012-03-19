@@ -1,21 +1,33 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.InternalButton;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.templates.commands.AdjustTurn;
-import edu.wpi.first.wpilibj.templates.commands.CollectBall;
+import edu.wpi.first.wpilibj.templates.commands.BridgeArmLower;
+import edu.wpi.first.wpilibj.templates.commands.BridgeArmRaise;
+import edu.wpi.first.wpilibj.templates.commands.CollectorIntakeBall;
+import edu.wpi.first.wpilibj.templates.commands.CollectorMoveBallUp;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorHighIdle;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorHighOn;
+import edu.wpi.first.wpilibj.templates.commands.ConveyorHighReverse;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowIdle;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowOn;
 import edu.wpi.first.wpilibj.templates.commands.ConveyorLowReverse;
-import edu.wpi.first.wpilibj.templates.commands.DriveReverse;
-import edu.wpi.first.wpilibj.templates.commands.ShootOneBall;
-import edu.wpi.first.wpilibj.templates.commands.ShooterShoot;
-import edu.wpi.first.wpilibj.templates.commands.ShooterUpdate;
-import edu.wpi.first.wpilibj.templates.commands.TurnRobot;
-import edu.wpi.first.wpilibj.templates.commands.VisionFiltering;
+import edu.wpi.first.wpilibj.templates.commands.Drive;
+import edu.wpi.first.wpilibj.templates.commands.ShooterFire;
+import edu.wpi.first.wpilibj.templates.commands.ShooterIdle;
+import edu.wpi.first.wpilibj.templates.commands.ShooterLoad;
+import edu.wpi.first.wpilibj.templates.commands.ShooterSet;
+import edu.wpi.first.wpilibj.templates.commands.ShooterStart;
+import edu.wpi.first.wpilibj.templates.commands.VisionFilter;
+import edu.wpi.first.wpilibj.templates.commands.VisionTurn;
+import edu.wpi.first.wpilibj.templates.commands.cgAutonomous;
+import edu.wpi.first.wpilibj.templates.commands.cgLoadCollector;
+import edu.wpi.first.wpilibj.templates.commands.cgShootOneBall;
+import edu.wpi.first.wpilibj.templates.commands.cgShootTwoBall;
+import edu.wpi.first.wpilibj.templates.commands.cgTurnShootOneBall;
+import edu.wpi.first.wpilibj.templates.commands.cgTurnShootTwoBall;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -24,30 +36,27 @@ import edu.wpi.first.wpilibj.templates.commands.VisionFiltering;
 public class OI {
     // Process operator interface input here.
 
-    Joystick armstick;
-    Joystick leftstick;
-    Joystick rightstick;
-    JoystickButton armb1;
-    JoystickButton armb2;
-    JoystickButton armb3;
-    JoystickButton armb4;
-    JoystickButton armb5;
-    JoystickButton armb6;
-    JoystickButton armb7;
-    JoystickButton armb8;
-    JoystickButton armb9;
-    JoystickButton armb10;
-    JoystickButton armb11;
-    JoystickButton rightb8, rightb9;
-    JoystickButton rightb4;
-    JoystickButton rightb10, rightb11;
-    JoystickButton leftb8, leftb9, leftb3;
+    Joystick armstick, lstick, rstick;
+    JoystickButton armb1, armb2, armb3, armb4, armb5,
+            armb6, armb7, armb8, armb9, armb10, armb11;
+    JoystickButton rb1, rb2, rb3, rb4, rb5,
+            rb6, rb7, rb8, rb9, rb10, rb11;
+    JoystickButton lb1, lb2, lb3, lb4, lb5,
+            lb6, lb7, lb8, lb9, lb10, lb11;
     boolean isArmLocked = false;
+    InternalButton ibCollectorIntakeBall, ibCollectorMoveBallUp;
+    InternalButton ibShooterStart, ibShooterIdle, ibShooterFire,
+            ibShooterLoad, ibShooterSet;
+    InternalButton ibVisionFilter, ibVisionTurn;
+    InternalButton ibArmLower, ibArmRaise;
+    InternalButton ibcgAutonomous, ibcgLoadCollector, ibcgShootOneBall,
+            ibcgShootTwoBall, ibcgTurnShootOne, ibcgTurnShootTwo;
 
     public OI() {
         armstick = new Joystick(RobotMap.JOYSTICK_EXTRA);
-        leftstick = new Joystick(RobotMap.JOYSTICK_LEFT);
-        rightstick = new Joystick(RobotMap.JOYSTICK_RIGHT);
+        lstick = new Joystick(RobotMap.JOYSTICK_LEFT);
+        rstick = new Joystick(RobotMap.JOYSTICK_RIGHT);
+
         armb1 = new JoystickButton(armstick, 1);
         armb2 = new JoystickButton(armstick, 2);
         armb3 = new JoystickButton(armstick, 3);
@@ -59,78 +68,146 @@ public class OI {
         armb9 = new JoystickButton(armstick, 9);
         armb10 = new JoystickButton(armstick, 10);
         armb11 = new JoystickButton(armstick, 11);
-        rightb4 = new JoystickButton(rightstick, 4);
-        rightb9 = new JoystickButton(rightstick, 9);
-        rightb8 = new JoystickButton(rightstick, 8);
-        rightb10 = new JoystickButton(rightstick, 10);
-        rightb11 = new JoystickButton(rightstick, 11);
-        leftb3 = new JoystickButton(leftstick, 3);
-        leftb8 = new JoystickButton(leftstick, 8);
-        leftb9 = new JoystickButton(leftstick, 9);
 
-        armb2.whenPressed(new ConveyorLowOn());
-        armb3.whenPressed(new ConveyorLowIdle());
-        armb4.whenPressed(new ConveyorHighOn());
-        armb5.whenPressed(new ConveyorHighIdle());
+        lb1 = new JoystickButton(lstick, 1);
+        lb2 = new JoystickButton(lstick, 2);
+        lb3 = new JoystickButton(lstick, 3);
+        lb4 = new JoystickButton(lstick, 4);
+        lb5 = new JoystickButton(lstick, 5);
+        lb6 = new JoystickButton(lstick, 6);
+        lb7 = new JoystickButton(lstick, 7);
+        lb8 = new JoystickButton(lstick, 8);
+        lb9 = new JoystickButton(lstick, 9);
+        lb10 = new JoystickButton(lstick, 10);
+        lb11 = new JoystickButton(lstick, 11);
+
+        rb1 = new JoystickButton(rstick, 1);
+        rb2 = new JoystickButton(rstick, 2);
+        rb3 = new JoystickButton(rstick, 3);
+        rb4 = new JoystickButton(rstick, 4);
+        rb5 = new JoystickButton(rstick, 5);
+        rb6 = new JoystickButton(rstick, 6);
+        rb7 = new JoystickButton(rstick, 7);
+        rb8 = new JoystickButton(rstick, 8);
+        rb9 = new JoystickButton(rstick, 9);
+        rb10 = new JoystickButton(rstick, 10);
+        rb11 = new JoystickButton(rstick, 11);
+
+        lb3.whileHeld(new Drive(RobotMap.DRIVE_REVERSE));
+
+        initInternalButtons();
+
+        // armb1.whenPressed(new ShooterShoot(RobotMap.));
+
         armb6.whenPressed(new ConveyorLowReverse());
-        //armb7.whenPressed(new ConveyorHighReverse());
+        armb7.whenPressed(new ConveyorLowIdle());
+        armb8.whenPressed(new ConveyorLowOn());
 
-        armb1.whileHeld(new ShooterShoot(1.0));
-        armb1.whenReleased(new ShooterShoot(0.0));
-        //armb6.whileHeld(new ShooterShoot(0.57));
-        //armb6.whenReleased(new ShooterShoot(0.0));
-        //armb7.whileHeld(new ShooterShoot(0.58));
-        //armb7.whenReleased(new ShooterShoot(0.0));
-        //armb8.whileHeld(new ShooterShoot(0.59));
-        //armb8.whenReleased(new ShooterShoot(0.0));
-        //armb10.whileHeld(new ShooterShoot(0.60));
-        //armb10.whenReleased(new ShooterShoot(0.0));
-        //armb11.whileHeld(new ShooterShoot(0.61));
-        //armb11.whenReleased(new ShooterShoot(0.0));
+        armb11.whenPressed(new ConveyorHighReverse());
+        armb10.whenPressed(new ConveyorHighIdle());
+        armb9.whenPressed(new ConveyorHighOn());
 
-        //armb8.whenPressed(new BridgeArmMove());
-        rightb4.whenPressed(new TurnRobot(45));
+        armb1.whenPressed(new cgTurnShootOneBall());
 
-        armb7.whenPressed(new ShootOneBall(RobotMap.FAR_SPEED_RPS));
-        armb8.whenPressed(new CollectBall());
-        armb9.whenPressed(new ShootOneBall(RobotMap.KEY_TOP_SHOOT_RPS));
-        armb10.whenPressed(new AdjustTurn());
-        armb11.whenPressed(new VisionFiltering());
+        armb2.whenPressed(new cgLoadCollector());
+        armb3.whenPressed(new ConveyorLowIdle());
 
-
-        if (rightstick.getRawButton(10)) {
-            isArmLocked = true;
-        }
-        if (rightstick.getRawButton(11)) {
-            isArmLocked = false;
-        }
-        //rightb10.whenPressed(new BridgeArmLower());
-        //rightb11.whenPressed(new BridgeArmRaise());
-
-        rightb8.whenPressed(new ShooterUpdate(-0.1));
-        rightb9.whenPressed(new ShooterUpdate(0.1));
-
-        leftb3.whileHeld(new DriveReverse());
-        leftb8.whileHeld(new ShooterShoot(0.57));
-        leftb8.whenReleased(new ShooterShoot(0.0));
-        leftb9.whileHeld(new ShooterShoot(0.61));
-        leftb9.whenReleased(new ShooterShoot(0.0));
+//        armb8.whenPressed(new CollectBall());
+//        armb9.whenPressed(new ShootOneBall(RobotMap.KEY_TOP_SHOOT_RPS));
+//        armb10.whenPressed(new AdjustTurn());
+//        armb11.whenPressed(new VisionFiltering());
+//
+//        rb10.whenPressed(new BridgeArmLower());
+//        rb11.whenPressed(new BridgeArmRaise());
     }
 
-    public boolean isArmLocked() {
-        SmartDashboard.putBoolean("isArmLocked", isArmLocked);
-        return isArmLocked;
+    private void initInternalButtons() {
+        ibCollectorIntakeBall = new InternalButton();
+        ibCollectorIntakeBall.whenPressed(new CollectorIntakeBall());
+        SmartDashboard.putData("CollectorIntakeBall", ibCollectorIntakeBall);
+
+        ibCollectorMoveBallUp = new InternalButton();
+        ibCollectorMoveBallUp.whenPressed(new CollectorMoveBallUp());
+        SmartDashboard.putData("CollectorMoveBallUp", ibCollectorMoveBallUp);
+
+        ibShooterStart = new InternalButton();
+        ibShooterStart.whenPressed(new ShooterStart());
+        SmartDashboard.putData("ShooterStart", ibShooterStart);
+
+        ibShooterIdle = new InternalButton();
+        ibShooterIdle.whenPressed(new ShooterIdle());
+        SmartDashboard.putData("ShooterIdle", ibShooterIdle);
+
+        ibShooterFire = new InternalButton();
+        ibShooterFire.whenPressed(new ShooterFire());
+        SmartDashboard.putData("ShooterFire", ibShooterFire);
+
+        ibShooterLoad = new InternalButton();
+        ibShooterLoad.whenPressed(new ShooterLoad());
+        SmartDashboard.putData("ShooterLoad", ibShooterLoad);
+
+        ibShooterSet = new InternalButton();
+        ibShooterSet.whenPressed(new ShooterSet(1));
+        SmartDashboard.putData("ShooterSet", ibShooterSet);
+
+        ibArmRaise = new InternalButton();
+        ibArmRaise.whenPressed(new BridgeArmRaise());
+        SmartDashboard.putData("ArmRaise", ibArmRaise);
+
+        ibArmLower = new InternalButton();
+        ibArmLower.whenPressed(new BridgeArmLower());
+        SmartDashboard.putData("ArmLower", ibArmLower);
+
+        ibVisionFilter = new InternalButton();
+        ibVisionFilter.whenPressed(new VisionFilter());
+        SmartDashboard.putData("VisionFilter", ibVisionFilter);
+
+        ibVisionTurn = new InternalButton();
+        ibVisionTurn.whenPressed(new VisionTurn());
+        SmartDashboard.putData("VisionTurn", ibVisionTurn);
+
+        ibcgAutonomous = new InternalButton();
+        ibcgAutonomous.whenPressed(new cgAutonomous());
+        SmartDashboard.putData("Autonomous", ibcgAutonomous);
+
+        ibcgLoadCollector = new InternalButton();
+        ibcgLoadCollector.whenPressed(new cgLoadCollector());
+        SmartDashboard.putData("LoadCollector", ibcgLoadCollector);
+
+        ibcgShootOneBall = new InternalButton();
+        ibcgShootOneBall.whenPressed(new cgShootOneBall());
+        SmartDashboard.putData("ShootOneBall", ibcgShootOneBall);
+        
+        ibcgShootTwoBall = new InternalButton();
+        ibcgShootTwoBall.whenPressed(new cgShootTwoBall());
+        SmartDashboard.putData("ShootTwoBall", ibcgShootTwoBall);
+        
+        ibcgTurnShootOne = new InternalButton();
+        ibcgTurnShootOne.whenPressed(new cgTurnShootOneBall());
+        SmartDashboard.putData("TurnShootOne", ibcgTurnShootOne);
+        
+        ibcgTurnShootTwo = new InternalButton();
+        ibcgTurnShootTwo.whenPressed(new cgTurnShootTwoBall());
+        SmartDashboard.putData("TurnShootTwo", ibcgTurnShootTwo);
     }
 
     public Joystick getLeftStick() {
-        return leftstick;
+        return lstick;
     }
 
     public Joystick getRightStick() {
-        return rightstick;
+        return rstick;
     }
 
     public double getArmStick() {
         return armstick.getY();
+    }
+
+    public double getArmZ() {
+        return armstick.getZ();
+    }
+
+    public boolean isDebugOn() {
+        return rstick.getZ() > 0;
     }
 }

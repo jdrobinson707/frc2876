@@ -21,52 +21,43 @@ import edu.wpi.first.wpilibj.templates.commands.Drive;
  */
 public class DriveTrain extends Subsystem {
 
-    private static final double driveKp = 0.6;
-    private static final double driveKi = 0.0;
-    private static final double driveKd = 0.0;
-    private static final double turnKp = 1.0;
-    private static final double turnKi = 0.0;
-    private static final double turnKd = 0.0;
+    private static final double turnKp = 0.5;
+    private static final double turnKi = 1.0;
+    private static final double turnKd = 1.0;
     RobotDrive drive;
     SendableGyro gyro;
     SendablePIDController turnPID;
-    SendablePIDController drivePID;
+    public double limitleft, limitright;
 
     // Initialize your subsystem here
     public DriveTrain() {
         drive = new RobotDrive(RobotMap.LEFT_DRIVE_MOTOR_PORT, RobotMap.RIGHT_DRIVE_MOTOR_PORT);
         drive.setSafetyEnabled(false);
         gyro = new SendableGyro(RobotMap.GYRO_PORT);
-        SmartDashboard.putData("gyro", gyro);
         turnPID = new SendablePIDController(turnKp, turnKi, turnKd, gyro, new PIDOutput() {
 
             public void pidWrite(double output) {
+                limitleft = output;
+                limitright = -output;
                 drive.tankDrive(output, -output);
                 //drive.tankDrive(-output, output);
-                
-                SmartDashboard.putDouble("TurnPID Output", RobotMap.roundtoTwo(output));
-                SmartDashboard.putDouble("Gyro Angle", RobotMap.roundtoTwo(gyro.getAngle()));
-                SmartDashboard.putDouble("Turn PID Error:", RobotMap.roundtoTwo(turnPID.getError()));
             }
         });
 
         turnPID.setOutputRange(-.7, .7);
         // not implemented in wpilib code
         turnPID.setInputRange(-90, 90);
-        turnPID.setTolerance(5);
-        Timer.delay(.2);
 
-        SmartDashboard.putData("TurnPID Object", turnPID);
+        turnPID.setTolerance(10);
 
-        /*drivePID = new SendablePIDController(driveKp, driveKi, driveKd, sonar, new PIDOutput() {
+        limitleft = limitright = 0;
+    }
 
-        public void pidWrite(double output) {
-        drive.tankDrive(output/2, output/2);
-        }
-        });
-        drivePID.setOutputRange(-1.0, 1.0);
-        drivePID.setInputRange(-27, 27);
-        drivePID.enable();*/
+    public void init() {
+        gyro.reset();
+        turnPID.reset();
+        turnPID.setSetpoint(0);
+        limitleft = limitright = 0;
     }
 
     public void startTurn(double degrees) {
@@ -74,38 +65,66 @@ public class DriveTrain extends Subsystem {
         turnPID.reset();
         turnPID.setSetpoint(degrees);
         turnPID.enable();
-        Timer.delay(.3);
+        Timer.delay(.1);
+        System.out.println("start turning from "
+                + RobotMap.roundtoTwo(gyro.getAngle())
+                + " to setpoint " + degrees);
     }
 
     public boolean isTurnFinished() {
-        if (turnPID.getError() > -5 && turnPID.getError() < 5) {
-            return true;
-        } else {
-            return false;
-        }
+        System.out.println("is turn done: " + turnPID.onTarget()
+                + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
+                + " out:" + RobotMap.roundtoTwo(turnPID.get())
+                + " err:" + RobotMap.roundtoTwo(turnPID.getError()));
+
+        return turnPID.onTarget();
     }
 
     public void endTurn() {
         turnPID.disable();
     }
 
-    public void drive(Joystick left, Joystick right) {
+    private double limitdrive(double joy, double last) {
+        double limit = .03;
+        double change = joy - last;
+        if (change > limit) {
+            change = limit;
+        } else if (change < -limit) {
+            change = -limit;
+        }
+        double newlimit = last + change;
+        return newlimit;
+    }
+    
+    public void drive(double left, double right) {
         drive.tankDrive(left, right);
     }
 
-    public void halfDrive(double left, double right)
-    {
-        drive.tankDrive(left / 1.5, right / 1.5);
+    public void drive(Joystick left, Joystick right, double sense) {
+        if (left.getZ() < 0) {
+            drive.tankDrive(left.getY() * sense, right.getY() * sense);
+        } else {
+            // TODO scale drive so full power can't be hit.
+            limitleft = limitdrive(left.getY(), limitleft);
+            limitright = limitdrive(right.getY(), limitright);
+            drive.tankDrive(limitleft * sense, limitright * sense);
+        }
     }
-
-    public void reverseDrive(Joystick left, Joystick right)
-    {
-        drive.tankDrive(-right.getY(), -left.getY());
-    }
-
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(new Drive());
+        setDefaultCommand(new Drive(RobotMap.DRIVE_FORWARD));
+    }
+
+    public void updateDash() {
+
+        SmartDashboard.putDouble("Gyro", RobotMap.roundtoTwo(gyro.getAngle()));
+
+        SmartDashboard.putBoolean("T_PID_en", turnPID.isEnable());
+        SmartDashboard.putDouble("T_PID_error",
+                RobotMap.roundtoTwo(turnPID.getError()));
+        SmartDashboard.putBoolean("T_PID_ontarget", turnPID.onTarget());
+        SmartDashboard.putData("T_PID", turnPID);
+
     }
 }
