@@ -72,6 +72,8 @@ public class CameraTarget extends Subsystem {
                 + " B=" + blow + "," + bhigh);
 
         none = new Target(null, 0);
+        resetTargets();
+        resetLastAngle();
     }
 
     public void initDefaultCommand() {
@@ -315,10 +317,11 @@ public class CameraTarget extends Subsystem {
     }
 
     public void resetTargets() {
-        if (sorted != null) {
-            for (int i = 0; i < sorted.length; i++) {
-                sorted[i] = none;
-            }
+        if (sorted == null) {
+            sorted = new Target[4];
+        }
+        for (int i = 0; i < sorted.length; i++) {
+            sorted[i] = none;
         }
     }
 

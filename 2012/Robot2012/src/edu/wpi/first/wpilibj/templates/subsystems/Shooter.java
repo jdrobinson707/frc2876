@@ -118,7 +118,7 @@ public class Shooter extends Subsystem {
     public void updateDash() {
         // Display driver info
         SmartDashboard.putDouble("RPS", RobotMap.roundtoTwo(getRPS()));
-        SmartDashboard.putDouble("Shooter", RobotMap.roundtoTwo(getSpeed()));
+        SmartDashboard.putDouble("SH_speed", RobotMap.roundtoTwo(getSpeed()));
 
         // This is debug data
         SmartDashboard.putBoolean("LS_H", hasBallEntered());
