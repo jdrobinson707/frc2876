@@ -16,8 +16,8 @@ public class TurnRobot extends CommandBase {
     public TurnRobot(double degrees) {
         // Use requires() here to declare subsystem dependencies
         requires(drive);
-        angleAmount = degrees;
-        
+        requires(cameratarget);
+        angleAmount = cameratarget.getTurnAmount();
     }
 
     // Called just before this Command runs the first time
@@ -43,5 +43,6 @@ public class TurnRobot extends CommandBase {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+        end();
     }
 }

@@ -7,9 +7,11 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
+import edu.wpi.first.wpilibj.templates.commands.cgAutonomous;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,14 +22,15 @@ import edu.wpi.first.wpilibj.templates.commands.CommandBase;
  */
 public class RobotTemplate extends IterativeRobot {
 
-    //Command autonomousCommand;
+    Command autonomousCommand;
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
         // instantiate the command used for the autonomous period
-        //autonomousCommand = new Drive();
+        autonomousCommand = new cgAutonomous();
         // Initialize all subsystems
         CommandBase.init();
         SmartDashboard.putData("SchedulerData", Scheduler.getInstance());
@@ -35,7 +38,7 @@ public class RobotTemplate extends IterativeRobot {
 
     public void autonomousInit() {
         // schedule the autonomous command (example)
-        //autonomousCommand.start();
+        autonomousCommand.start();
     }
 
     /**
@@ -43,6 +46,7 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
+        updateDash();
     }
 
     public void teleopInit() {
@@ -51,6 +55,10 @@ public class RobotTemplate extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         //autonomousCommand.cancel();
+        CommandBase.shooter.stop();
+        CommandBase.conveyorhigh.idle();
+        CommandBase.conveyorlow.idle();
+        CommandBase.drive.init();
 
     }
 
@@ -59,6 +67,16 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        CommandBase.bridgearm.updateDashboard();
+        updateDash();
+
+    }
+
+    public void updateDash() {
+        CommandBase.bridgearm.updateDash();
+        CommandBase.cameratarget.updateDash();
+        CommandBase.conveyorhigh.updateDash();
+        CommandBase.conveyorlow.updateDash();
+        CommandBase.drive.updateDash();
+        CommandBase.shooter.updateDash();
     }
 }

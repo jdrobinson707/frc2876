@@ -6,33 +6,48 @@ package edu.wpi.first.wpilibj.templates.commands;
 
 /**
  *
- * @author User
+ * @author user
  */
-public class Drive extends CommandBase {
+public class VisionTurn extends CommandBase {
+    double angle, lastAngle;
+    boolean onTarget = false;
 
-    private double sense = 1;
-
-    public Drive(double sense) {
-        this.sense = sense;
+    public VisionTurn() {
         requires(drive);
+        requires(cameratarget);
+        angle = cameratarget.getTurnAmount();
+        lastAngle = angle;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+        drive.startTurn(angle);
+        cameratarget.resetLastAngle();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        drive.drive(oi.getLeftStick(), oi.getRightStick(), sense);
+        if (drive.isTurnFinished()) {
+            cameratarget.findTargets(oi.isDebugOn());
+            angle = cameratarget.getTurnAmount();
+            if (Math.abs(angle - lastAngle) < 5) {
+                onTarget = true;
+            } else {
+                cameratarget.addLastAngle(angle);
+                drive.startTurn(angle);
+                lastAngle = angle;
+            }
+        }
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return onTarget;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+        drive.endTurn();
     }
 
     // Called when another command which requires one or more of the same

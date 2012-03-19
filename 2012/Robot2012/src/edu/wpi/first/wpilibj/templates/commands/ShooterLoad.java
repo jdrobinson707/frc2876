@@ -4,45 +4,44 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 /**
  *
- * @author User
+ * @author user
  */
-public class ShooterShoot extends CommandBase {
+public class ShooterLoad extends CommandBase {
 
-    double speed = 0.0;
-
-    public ShooterShoot(double s) {
+    public ShooterLoad() {
         // Use requires() here to declare subsystem dependencies
-        requires(shooter);
-        speed = s;
+        // eg. requires(chassis);
+        requires(conveyorhigh);
+        requires(conveyorlow);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        shooter.set(speed);
+        conveyorhigh.forward();
+        conveyorlow.forward();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        SmartDashboard.putDouble("Count: " , shooter.getCount());
-
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return conveyorhigh.hasBall();
     }
 
     // Called once after isFinished returns true
     protected void end() {
+        conveyorhigh.idle();
+        conveyorlow.idle();
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+        end();
     }
 }

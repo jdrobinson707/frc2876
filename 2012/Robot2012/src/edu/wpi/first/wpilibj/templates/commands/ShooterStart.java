@@ -4,38 +4,33 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.templates.RobotMap;
 
 /**
  *
- * @author User
+ * @author user
  */
-public class ReadLM extends CommandBase {
+public class ShooterStart extends CommandBase {
 
-    public ReadLM() {
-        // Use requires() here to declare subsystem dependencies
+    public ShooterStart() {
         requires(shooter);
-        requires(conveyorlow);
-        requires(conveyorhigh);
+        requires(cameratarget);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        conveyorlow.hasBallEntered();
-        conveyorhigh.hasBallEntered();
-        shooter.hasBallEntered();
-
+        //shooter.shoot(RobotMap.KEY_TOP_SHOOT_RPS);
+        double d = cameratarget.getDistance();
+        shooter.shoot(shooter.inchesToRps(d));
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return shooter.isReady();
     }
 
     // Called once after isFinished returns true

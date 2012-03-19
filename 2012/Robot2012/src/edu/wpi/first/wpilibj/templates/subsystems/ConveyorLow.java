@@ -16,43 +16,92 @@ import edu.wpi.first.wpilibj.templates.RobotMap;
  * @author User
  */
 public class ConveyorLow extends Subsystem {
-    //Jaguar conveyjaglow = new Jaguar(RobotMap.CONVEYOR_LOW_PORT);
 
     Relay conveyrelaylow;
     DigitalInput lm;
     int counter;
     boolean previous;
+    Relay.Value relay_val = Relay.Value.kOff;
 
     public ConveyorLow() {
         conveyrelaylow = new Relay(RobotMap.CONVEYOR_LOW_PORT);
+        conveyrelaylow.setDirection(Relay.Direction.kBoth);
         lm = new DigitalInput(RobotMap.LM_LOW);
         counter = 0;
         previous = false;
     }
 
     public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
         setDefaultCommand(new ConveyorLowIdle());
+    }
+
+    public boolean hasBall() {
+        return lm.get();
     }
 
     public boolean hasBallEntered() {
         boolean b = lm.get();
-        SmartDashboard.putBoolean("low lm: ", b);
-        return b;
+        if (b && !previous) {
+            // ball just hit lim
+            previous = true;
+            return true;
+        } else if (b) {
+            // ball is hitting lim
+            return true;
+        }
+        // ball hasn't hit lim switch
+        return false;
+    }
+
+    public boolean hasBallExited() {
+        boolean b = lm.get();
+        if (!b && previous) {
+            // ball was pressing lim and has gone past lim
+            previous = false;
+            return true;
+        } else if (b) {
+            // ball is still pressing lim
+            return false;
+        }
+        // ball is still hitting lim switch or never entered?
+        return false;
+    }
+
+    public void incrCounter() {
+        counter++;
+        if (counter > 3) {
+            counter = 3;
+        }
+    }
+    public void decrCounter() {
+        counter--;
+        if (counter < 0) {
+            counter = 0;
+        }
+    }
+    public int getCounter() {
+        return counter;
     }
 
     public void idle() {
-        //conveyjaglow.set(0);
-        conveyrelaylow.set(Relay.Value.kOff);
+        relay_val = Relay.Value.kOff;
+        conveyrelaylow.set(relay_val);
     }
 
-    public void on() {
-        //conveyjaglow.set(1);
-        conveyrelaylow.set(Relay.Value.kForward);
+    public void forward() {
+        relay_val = Relay.Value.kForward;
+        conveyrelaylow.set(relay_val);
     }
 
     public void reverse() {
-        //conveyjaglow.set(-1);
-        conveyrelaylow.set(Relay.Value.kReverse);
+        relay_val = Relay.Value.kReverse;
+        conveyrelaylow.set(relay_val);
+    }
+
+    public void updateDash() {
+        SmartDashboard.putBoolean("LS_L", lm.get());
+        SmartDashboard.putInt("lowconveyor", RobotMap.relayValToInt(relay_val));
+        SmartDashboard.putInt("counter", counter);
+        SmartDashboard.putBoolean("previous", previous);
     }
 }

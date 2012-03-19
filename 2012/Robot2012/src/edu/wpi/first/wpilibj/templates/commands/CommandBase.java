@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.OI;
 import edu.wpi.first.wpilibj.templates.subsystems.BridgeArm;
-import edu.wpi.first.wpilibj.templates.subsystems.BridgeArmManual;
 import edu.wpi.first.wpilibj.templates.subsystems.CameraTarget;
 import edu.wpi.first.wpilibj.templates.subsystems.ConveyorHigh;
 import edu.wpi.first.wpilibj.templates.subsystems.ConveyorLow;
@@ -27,8 +26,7 @@ public abstract class CommandBase extends Command {
     public static CameraTarget cameratarget = new CameraTarget();
     public static ConveyorHigh conveyorhigh = new ConveyorHigh();
     public static BridgeArm bridgearm = new BridgeArm();
-    public static BridgeArmManual bridgearmmanual = new BridgeArmManual();
-
+    
     public static void init() {
         // This MUST be here. If the OI creates Commands (which it very likely
         // will), constructing it during the construction of CommandBase (from

@@ -4,52 +4,36 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /**
  *
- * @author User
+ * @author user
  */
-public class CollectBall extends CommandBase {
+public class CollectorIntakeBall extends CommandBase {
 
-    boolean wasPressed = false;
-    boolean whenReleased = false;
-
-    public CollectBall() {
+    public CollectorIntakeBall() {
         // Use requires() here to declare subsystem dependencies
         requires(conveyorlow);
-        wasPressed = false;
-        whenReleased = false;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        wasPressed = false;
-        whenReleased = false;
-        conveyorlow.on();
+        conveyorlow.forward();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-
-        boolean b = conveyorlow.hasBallEntered();
-        if (b == true) {
-            wasPressed = true;
-        }
-        if (wasPressed == true && b == false) {
-            whenReleased = true;
-        }
-        SmartDashboard.putBoolean("wasPressed: ", wasPressed);
-        SmartDashboard.putBoolean("whenReleased: ", whenReleased);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return whenReleased;
+        return conveyorlow.hasBall();
     }
 
     // Called once after isFinished returns true
     protected void end() {
+        if (conveyorlow.hasBall()) {
+            conveyorlow.incrCounter();
+        }
         conveyorlow.idle();
     }
 

@@ -16,7 +16,7 @@ public class BridgeArmMove extends CommandBase {
 
     public BridgeArmMove() {
         // Use requires() here to declare subsystem dependencies
-        requires(bridgearmmanual);
+        requires(bridgearm);
     }
 
     // Called just before this Command runs the first time
@@ -25,10 +25,7 @@ public class BridgeArmMove extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        if (oi.isArmLocked() == false) {
-            bridgearmmanual.move(oi.getArmStick());
-        }
-        bridgearmmanual.updateDashboard();
+        bridgearm.move(oi.getArmStick());
     }
 
     // Make this return true when this Command no longer needs to run execute()

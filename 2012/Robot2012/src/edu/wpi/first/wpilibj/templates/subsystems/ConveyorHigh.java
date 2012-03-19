@@ -20,38 +20,44 @@ public class ConveyorHigh extends Subsystem {
 
     Relay conveyrelayhigh;
     DigitalInput lm;
+    Relay.Value relay_val = Relay.Value.kOff;
 
     public ConveyorHigh() {
         conveyrelayhigh = new Relay(RobotMap.CONVYOR_HIGH_PORT);
+        conveyrelayhigh.setDirection(Relay.Direction.kBoth);
         lm = new DigitalInput(RobotMap.LM_MIDDLE);
-
     }
 
     public void initDefaultCommand() {
-        conveyrelayhigh.setDirection(Relay.Direction.kBoth);
+
         // Set the default command for a subsystem here.
         setDefaultCommand(new ConveyorHighIdle());
     }
 
     public void idle() {
-        //conveyjaghigh.set(0);
-        conveyrelayhigh.set(Relay.Value.kOff);
-
+        relay_val = Relay.Value.kOff;
+        conveyrelayhigh.set(relay_val);
     }
 
-    public boolean hasBallEntered() {
-        boolean b = lm.get();
-        SmartDashboard.putBoolean("middle lm: ", b);
-        return b;
+    public boolean hasBall() {
+        return lm.get();
     }
 
-    public void on() {
-        //conveyjaghigh.set(1);
-        conveyrelayhigh.set(Relay.Value.kReverse);
+    public void forward() {
+        relay_val = Relay.Value.kReverse;
+        conveyrelayhigh.set(relay_val);
     }
 
     public void reverse() {
-        //conveyjaghigh.set(-1);
-        conveyrelayhigh.set(Relay.Value.kForward);
+        relay_val = Relay.Value.kForward;
+        conveyrelayhigh.set(relay_val);
+    }
+
+    public void updateDash() {
+        // driver info
+        SmartDashboard.putInt("highconveyor", RobotMap.relayValToInt(relay_val));
+
+        // debug data
+        SmartDashboard.putBoolean("LS_M", lm.get());
     }
 }
