@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj.templates.commands.ShooterIdle;
 public class Shooter extends Subsystem {
 
     private static final double Kp = 1.0;
-    private static final double Ki = 0.0;
-    private static final double Kd = 0.0;
+    private static final double Ki = 1.0;
+    private static final double Kd = .2;
     SendablePIDController pid;
     Jaguar shootjag;
     DigitalInput lm;
@@ -45,8 +45,11 @@ public class Shooter extends Subsystem {
         c = new Counter(lt);
 
         pid = new SendablePIDController(Kp, Ki, Kd,
-                new ShooterCounter(), shootjag, maxPeriod);
+                new ShooterCounter(), shootjag);
+        SmartDashboard.putData("SH_PID", pid);
+        pid.setOutputRange(0.0, .8);
         pid.setSetpoint(0);
+        pid.setTolerance(10.0);
         pid.enable();
 
     }
@@ -61,7 +64,7 @@ public class Shooter extends Subsystem {
     }
 
     public void idle() {
-        shoot(0);
+        pid.setSetpoint(0);
     }
 
     public void stop() {
@@ -129,7 +132,7 @@ public class Shooter extends Subsystem {
         SmartDashboard.putBoolean("SH_PID_ontarget", pid.onTarget());
         SmartDashboard.putDouble("SH_PID_err", pid.getError());
         SmartDashboard.putDouble("SH_PID_out", RobotMap.roundtoTwo(pid.get()));
-        SmartDashboard.putData("SH_PID", pid);
+        // SmartDashboard.putData("SH_PID", pid);
     }
 
     public static double inchesToRps(double inches) {

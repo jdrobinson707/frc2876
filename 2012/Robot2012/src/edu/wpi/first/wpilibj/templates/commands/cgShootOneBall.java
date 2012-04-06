@@ -12,10 +12,13 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  */
 public class cgShootOneBall extends CommandGroup {
 
-    public cgShootOneBall() {
-        addParallel(new ShooterStart());
+    public cgShootOneBall(double rps) {
+        //addParallel(new ShooterStart());
+        addParallel(new VisionFilter());
+        //addParallel(new ShooterSet(.62));
+        addParallel(new ShooterRPS(rps));
         addSequential(new ShooterLoad());
-        addSequential(new ShooterFire());
+        addSequential(new ShooterFire(5));
         addSequential(new ShooterIdle());
     }
 }

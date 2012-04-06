@@ -33,8 +33,8 @@ public class Target {
     int boundingRectWidth;
     int boundingRectHeight;
     Preferences pfs = Preferences.getInstance();
-    int rectScoreThresh = 60;
-    int aspectScoreThresh = 2000;
+    int rectScoreThresh = 50;
+    int aspectScoreThresh = 0;
 
     public Target(ParticleAnalysisReport r, double theta) {
         this.r = r;
@@ -98,8 +98,9 @@ public class Target {
         str += " cm=(" + center_mass_x + "," + center_mass_y + ")";
         str += " turn="  + RobotMap.roundtoTwo(turnDegrees);
         str += " Rscore=" + rectScore + " Ascore=" + aspectScore;
+        str += " W:" + " distance=" + RobotMap.roundtoTwo(w_distance);
         if (debug) {
-            str += " W:" + " distance=" + RobotMap.roundtoTwo(w_distance);
+            
             str += " H:" + " distance=" + RobotMap.roundtoTwo(h_distance);
         }
         return str;

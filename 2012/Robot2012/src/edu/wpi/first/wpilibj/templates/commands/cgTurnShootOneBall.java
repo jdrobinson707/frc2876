@@ -14,6 +14,6 @@ public class cgTurnShootOneBall extends CommandGroup {
 
     public cgTurnShootOneBall() {
         addSequential(new VisionTurn());
-        addSequential(new cgShootOneBall());
+        addSequential(new cgShootOneBall(17.2));
     }
 }

@@ -55,11 +55,10 @@ public class RobotTemplate extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         //autonomousCommand.cancel();
-        CommandBase.shooter.stop();
-        CommandBase.conveyorhigh.idle();
-        CommandBase.conveyorlow.idle();
-        CommandBase.drive.init();
-
+//        CommandBase.shooter.stop();
+//        CommandBase.conveyorhigh.idle();
+//        CommandBase.conveyorlow.idle();
+//        CommandBase.drive.init();
     }
 
     /**
@@ -70,13 +69,26 @@ public class RobotTemplate extends IterativeRobot {
         updateDash();
 
     }
+    int dashctr = 0;
 
     public void updateDash() {
-        CommandBase.bridgearm.updateDash();
-        CommandBase.cameratarget.updateDash();
-        CommandBase.conveyorhigh.updateDash();
-        CommandBase.conveyorlow.updateDash();
-        CommandBase.drive.updateDash();
         CommandBase.shooter.updateDash();
+        if (CommandBase.oi.isDebugOn()) {
+            dashctr++;
+            if (dashctr % 10 == 0) {
+                CommandBase.conveyorhigh.updateDash();
+                CommandBase.conveyorlow.updateDash();
+            } else if (dashctr % 13 == 0) {
+            } else if (dashctr % 17 == 0) {
+                CommandBase.drive.updateDash();
+            }
+            SmartDashboard.putDouble("Arm Z", CommandBase.oi.getArmZ());
+
+            //CommandBase.bridgearm.updateDash();
+            //CommandBase.cameratarget.updateDash();
+
+//        SmartDashboard.putBoolean("Debug", CommandBase.oi.isDebugOn());
+//        SmartDashboard.putDouble("Drive Mode", CommandBase.oi.getDriveMode());
+        }
     }
 }

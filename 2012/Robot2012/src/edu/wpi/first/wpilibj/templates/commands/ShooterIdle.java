@@ -23,6 +23,7 @@ public class ShooterIdle extends CommandBase {
         // running at whatever speed we last set it to.
         // shooter.idle();
         shooter.idle();
+        shooter.stop();
     }
 
     // Called repeatedly when this Command is scheduled to run
