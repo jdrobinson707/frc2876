@@ -21,9 +21,9 @@ import edu.wpi.first.wpilibj.templates.commands.Drive;
  */
 public class DriveTrain extends Subsystem {
 
-    private static final double turnKp = 0.5;
-    private static final double turnKi = 1.0;
-    private static final double turnKd = 1.0;
+    private static final double turnKp = 5;
+    private static final double turnKi = 0;
+    private static final double turnKd = 0;
     RobotDrive drive;
     SendableGyro gyro;
     SendablePIDController turnPID;
@@ -39,16 +39,17 @@ public class DriveTrain extends Subsystem {
             public void pidWrite(double output) {
                 limitleft = output;
                 limitright = -output;
-                drive.tankDrive(output, -output);
-                //drive.tankDrive(-output, output);
+                //drive.tankDrive(output, -output);
+                drive.tankDrive(-output, output);
             }
         });
 
-        turnPID.setOutputRange(-.7, .7);
+        turnPID.setOutputRange(-.8, .8);
         // not implemented in wpilib code
         turnPID.setInputRange(-90, 90);
 
-        turnPID.setTolerance(10);
+        turnPID.setTolerance(5);
+        SmartDashboard.putData("T_PID", turnPID);
 
         limitleft = limitright = 0;
     }
@@ -85,7 +86,7 @@ public class DriveTrain extends Subsystem {
     }
 
     private double limitdrive(double joy, double last) {
-        double limit = .03;
+        double limit = .06;
         double change = joy - last;
         if (change > limit) {
             change = limit;
@@ -95,7 +96,7 @@ public class DriveTrain extends Subsystem {
         double newlimit = last + change;
         return newlimit;
     }
-    
+
     public void drive(double left, double right) {
         drive.tankDrive(left, right);
     }
@@ -105,8 +106,8 @@ public class DriveTrain extends Subsystem {
             drive.tankDrive(left.getY() * sense, right.getY() * sense);
         } else {
             // TODO scale drive so full power can't be hit.
-            limitleft = limitdrive(left.getY(), limitleft);
-            limitright = limitdrive(right.getY(), limitright);
+            limitleft = limitdrive(left.getY() / 1.5, limitleft);
+            limitright = limitdrive(right.getY() / 1.5, limitright);
             drive.tankDrive(limitleft * sense, limitright * sense);
         }
     }
@@ -124,7 +125,7 @@ public class DriveTrain extends Subsystem {
         SmartDashboard.putDouble("T_PID_error",
                 RobotMap.roundtoTwo(turnPID.getError()));
         SmartDashboard.putBoolean("T_PID_ontarget", turnPID.onTarget());
-        SmartDashboard.putData("T_PID", turnPID);
+
 
     }
 }

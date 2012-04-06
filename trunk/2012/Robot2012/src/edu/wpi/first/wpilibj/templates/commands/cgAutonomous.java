@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class cgAutonomous extends CommandGroup {
 
     public cgAutonomous() {
-        addSequential(new cgTurnShootTwoBall(), 14);
+        // addSequential(new cgTurnShootTwoBall(), 14);
+        addSequential(new VisionFilter());
+        addSequential(new cgShootTwoBall(17), 14);
     }
 }

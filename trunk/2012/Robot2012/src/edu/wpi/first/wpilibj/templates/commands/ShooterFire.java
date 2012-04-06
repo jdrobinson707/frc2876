@@ -9,17 +9,19 @@ package edu.wpi.first.wpilibj.templates.commands;
  * @author User
  */
 public class ShooterFire extends CommandBase {
-
-    public ShooterFire() {
+    double seconds;
+    public ShooterFire(double seconds) {
         // Use requires() here to declare subsystem dependencies
         requires(conveyorhigh);
         requires(conveyorlow);
+        this.seconds = seconds;
+
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
         conveyorhigh.forward();
-        setTimeout(4);
+        setTimeout(seconds);
     }
 
     // Called repeatedly when this Command is scheduled to run

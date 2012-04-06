@@ -4,26 +4,24 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
+
 /**
  *
- * @author user
+ * @author maciej
  */
-public class CollectorMoveBallUp extends CommandBase {
-
-    public CollectorMoveBallUp() {
+public class ShooterRPS extends CommandBase {
+    double rps;
+    public ShooterRPS(double rps) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(conveyorlow);
+        requires(shooter);
+        this.rps = rps;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        // only try to move a ball up the lower conveyor if there is
-        // space to do so.
-
-        //if (conveyorlow.hasBall() && conveyorlow.getCounter() == 1) {
-            conveyorlow.forward();
-        //}
+        shooter.start();
+        shooter.shoot(rps);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -32,12 +30,12 @@ public class CollectorMoveBallUp extends CommandBase {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return !conveyorlow.hasBall();
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-        conveyorlow.idle();
+        //shooter.shoot(0);
     }
 
     // Called when another command which requires one or more of the same

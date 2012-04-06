@@ -18,9 +18,11 @@ import edu.wpi.first.wpilibj.templates.commands.Drive;
 import edu.wpi.first.wpilibj.templates.commands.ShooterFire;
 import edu.wpi.first.wpilibj.templates.commands.ShooterIdle;
 import edu.wpi.first.wpilibj.templates.commands.ShooterLoad;
+import edu.wpi.first.wpilibj.templates.commands.ShooterRPS;
 import edu.wpi.first.wpilibj.templates.commands.ShooterSet;
 import edu.wpi.first.wpilibj.templates.commands.ShooterStart;
 import edu.wpi.first.wpilibj.templates.commands.VisionFilter;
+import edu.wpi.first.wpilibj.templates.commands.VisionIdle;
 import edu.wpi.first.wpilibj.templates.commands.VisionTurn;
 import edu.wpi.first.wpilibj.templates.commands.cgAutonomous;
 import edu.wpi.first.wpilibj.templates.commands.cgLoadCollector;
@@ -95,30 +97,53 @@ public class OI {
 
         lb3.whileHeld(new Drive(RobotMap.DRIVE_REVERSE));
 
-        initInternalButtons();
+        //armb1.whenPressed(new ShooterRPS(17));
+        armb1.whileHeld(new ConveyorHighReverse());
 
-        // armb1.whenPressed(new ShooterShoot(RobotMap.));
+        armb3.whenPressed(new cgLoadCollector());
+        armb2.whenPressed(new VisionTurn());
+        //armb4.whenPressed(new cgShootOneBall(.61));
+        armb4.whenPressed(new cgShootOneBall(17));
+        //armb5.whenPressed(new cgShootOneBall(19));
 
-        armb6.whenPressed(new ConveyorLowReverse());
-        armb7.whenPressed(new ConveyorLowIdle());
-        armb8.whenPressed(new ConveyorLowOn());
+        armb6.whenPressed(new VisionIdle());
+        armb7.whenPressed(new VisionIdle());
+        armb8.whenPressed(new VisionIdle());
+        armb9.whenPressed(new VisionIdle());
+        armb10.whenPressed(new VisionIdle());
+        armb11.whenPressed(new VisionIdle());
 
-        armb11.whenPressed(new ConveyorHighReverse());
-        armb10.whenPressed(new ConveyorHighIdle());
-        armb9.whenPressed(new ConveyorHighOn());
+//        armb9.whenPressed(new ShooterIdle());
+//        armb10.whenPressed(new ShooterIdle());
+//        armb11.whenPressed(new ShooterIdle());
 
-        armb1.whenPressed(new cgTurnShootOneBall());
 
-        armb2.whenPressed(new cgLoadCollector());
-        armb3.whenPressed(new ConveyorLowIdle());
+        lb6.whileHeld(new ConveyorLowOn());
+        lb7.whileHeld(new ConveyorLowReverse());
+        lb10.whileHeld(new ConveyorHighOn());
+        lb11.whileHeld(new ConveyorHighReverse());
+        
+        //        armb6.whenPressed(new ConveyorLowReverse());
+//        armb7.whenPressed(new ConveyorLowIdle());
+//        armb8.whenPressed(new ConveyorLowOn());
+//        armb11.whenPressed(new ConveyorHighReverse());
+//        armb10.whenPressed(new ConveyorHighIdle());
+//        armb9.whenPressed(new ConveyorHighOn());
 
-//        armb8.whenPressed(new CollectBall());
-//        armb9.whenPressed(new ShootOneBall(RobotMap.KEY_TOP_SHOOT_RPS));
-//        armb10.whenPressed(new AdjustTurn());
-//        armb11.whenPressed(new VisionFiltering());
-//
-//        rb10.whenPressed(new BridgeArmLower());
-//        rb11.whenPressed(new BridgeArmRaise());
+        //armb1.whenPressed(new cgTurnShootOneBall());
+
+
+        //rb10.whenPressed(new BridgeArmLower());
+        //rb11.whenPressed(new BridgeArmRaise());
+
+        //lb7.whenPressed(new cgShootOneBall());
+        //lb6.whenPressed(new cgShootTwoBall());
+
+//        lb11.whenPressed(new VisionTurn());
+//        lb10.whenPressed(new VisionFilter());
+//        lb9.whenPressed(new VisionIdle());
+        // initInternalButtons();
+
     }
 
     private void initInternalButtons() {
@@ -139,7 +164,7 @@ public class OI {
         SmartDashboard.putData("ShooterIdle", ibShooterIdle);
 
         ibShooterFire = new InternalButton();
-        ibShooterFire.whenPressed(new ShooterFire());
+        ibShooterFire.whenPressed(new ShooterFire(5));
         SmartDashboard.putData("ShooterFire", ibShooterFire);
 
         ibShooterLoad = new InternalButton();
@@ -175,17 +200,17 @@ public class OI {
         SmartDashboard.putData("LoadCollector", ibcgLoadCollector);
 
         ibcgShootOneBall = new InternalButton();
-        ibcgShootOneBall.whenPressed(new cgShootOneBall());
+        ibcgShootOneBall.whenPressed(new cgShootOneBall(17.2));
         SmartDashboard.putData("ShootOneBall", ibcgShootOneBall);
-        
+
         ibcgShootTwoBall = new InternalButton();
-        ibcgShootTwoBall.whenPressed(new cgShootTwoBall());
+        ibcgShootTwoBall.whenPressed(new cgShootTwoBall(17));
         SmartDashboard.putData("ShootTwoBall", ibcgShootTwoBall);
-        
+
         ibcgTurnShootOne = new InternalButton();
         ibcgTurnShootOne.whenPressed(new cgTurnShootOneBall());
         SmartDashboard.putData("TurnShootOne", ibcgTurnShootOne);
-        
+
         ibcgTurnShootTwo = new InternalButton();
         ibcgTurnShootTwo.whenPressed(new cgTurnShootTwoBall());
         SmartDashboard.putData("TurnShootTwo", ibcgTurnShootTwo);
@@ -209,5 +234,12 @@ public class OI {
 
     public boolean isDebugOn() {
         return rstick.getZ() > 0;
+    }
+
+    public double getDriveMode() {
+        if (lstick.getZ() < 0) {
+            return RobotMap.DRIVE_REVERSE;
+        }
+        return RobotMap.DRIVE_FORWARD;
     }
 }

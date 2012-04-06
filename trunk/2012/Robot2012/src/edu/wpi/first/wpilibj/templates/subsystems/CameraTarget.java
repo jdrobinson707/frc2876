@@ -33,12 +33,29 @@ public class CameraTarget extends Subsystem {
     public static final int BOT = 2;
     public static final int LEFT = 3;
     String angleHistory;
-    int rlow = 50;
+//    int rlow = 50;
+//    int rhigh = 255;
+//    int glow = 43;
+//    int ghigh = 255;
+//    int blow = 47;
+//    int bhigh = 255;
+
+    // arena vals
+    int rlow = 103;
     int rhigh = 255;
-    int glow = 43;
+    int glow = 150;
     int ghigh = 255;
-    int blow = 47;
+    int blow = 26;
     int bhigh = 255;
+
+    // practice area
+//    int rlow = 60;
+//    int rhigh = 255;
+//    int glow = 80;
+//    int ghigh = 255;
+//    int blow = 28;
+//    int bhigh = 255;
+    
     int VIEW_ANGLE = 54;
     AxisCamera camera;
     CriteriaCollection cc;
@@ -211,7 +228,7 @@ public class CameraTarget extends Subsystem {
     }
 
     private void printParticleReports(BinaryImage img) {
-        double pdelay = .2;
+        double pdelay = .1;
         try {
             ParticleAnalysisReport[] reports =
                     img.getOrderedParticleAnalysisReports();
@@ -222,8 +239,8 @@ public class CameraTarget extends Subsystem {
                 Timer.delay(pdelay);
                 System.out.println(" left=" + r.boundingRectLeft
                         + " top=" + r.boundingRectTop
-                        + " qual=" + RobotMap.roundtoTwo(r.particleQuality)
-                        + " %=" + RobotMap.roundtoTwo(r.particleToImagePercent));
+                        + " x=" + r.center_mass_x
+                        + " y=" + r.center_mass_y);
                 Timer.delay(pdelay);
             }
             System.out.println(img.getNumberParticles()
@@ -237,6 +254,8 @@ public class CameraTarget extends Subsystem {
     public boolean isFilterRunning() {
         return filter_running;
     }
+    int img_ctr = 0;
+    int MAX_SAVE = 5;
 
     public void findTargets(boolean saveImage) {
         filter_running = true;
@@ -256,6 +275,10 @@ public class CameraTarget extends Subsystem {
             VIEW_ANGLE = pfs.getInt("theta", 54);
 
             ColorImage image = camera.getImage();
+            if (saveImage && img_ctr < MAX_SAVE) {
+                image.write("/tmp/" + img_ctr + "_0raw-image.png");
+            }
+
             BinaryImage thresholdImage = image.thresholdHSL(rlow, rhigh,
                     glow, ghigh, blow, bhigh);
             if (saveImage) {
@@ -263,25 +286,25 @@ public class CameraTarget extends Subsystem {
                         + " G=" + glow + "," + ghigh
                         + " B=" + blow + "," + bhigh);
             }
-            if (saveImage) {
-                thresholdImage.write("/tmp/_1thresh-image.png");
+            if (saveImage && img_ctr < MAX_SAVE && img_ctr < 5) {
+                thresholdImage.write("/tmp/" + img_ctr + "1thresh-image.png");
             } // remove small artifacts
             BinaryImage bigObjectsImage = thresholdImage.removeSmallObjects(false, 1);
-            if (saveImage) {
-                bigObjectsImage.write("/tmp/_2big-image.png");
+            if (saveImage && img_ctr < MAX_SAVE) {
+                bigObjectsImage.write("/tmp/" + img_ctr + "2big-image.png");
             } // fill in occluded rectangles
             BinaryImage convexHullImage = bigObjectsImage.convexHull(false);
-            if (saveImage) {
-                convexHullImage.write("/tmp/_3convex-image.png");
+            if (saveImage && img_ctr < MAX_SAVE) {
+                convexHullImage.write("/tmp/" + img_ctr + "3convex-image.png");
             } // find filled in rectangles
             BinaryImage filteredImage = convexHullImage.particleFilter(cc);
-            if (saveImage) {
-                filteredImage.write("/tmp/_4filter-image.png");
+            if (saveImage && img_ctr < MAX_SAVE) {
+                filteredImage.write("/tmp/" + img_ctr + "4filter-image.png");
             }
             if (saveImage) {
                 printParticleReports(filteredImage);
             }
-
+            //img_ctr++;
             analyzeImage(filteredImage);
 
             filteredImage.free();
@@ -328,16 +351,17 @@ public class CameraTarget extends Subsystem {
     public double getTurnAmount() {
         Target t = getBestTarget();
         if (t == none) {
-            search_incr++;
-            if (search > 0) {
-                search = 25 * search_incr * -1;
-            } else {
-                search = 25 * search_incr;
-            }
-            if (search > 180) {
-                search = 0;
-            }
-            current_turn = search;
+            current_turn = 0;
+//            search_incr++;
+//            if (search > 0) {
+//                search = 25 * search_incr * -1;
+//            } else {
+//                search = 25 * search_incr;
+//            }
+//            if (search > 180) {
+//                search = 0;
+//            }
+//            current_turn = search;
         } else {
             search_incr = 0;
             current_turn = getBestTarget().getTurnDegrees();

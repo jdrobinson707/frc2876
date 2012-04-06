@@ -9,40 +9,49 @@ package edu.wpi.first.wpilibj.templates.commands;
  * @author user
  */
 public class VisionTurn extends CommandBase {
+
     double angle, lastAngle;
     boolean onTarget = false;
 
     public VisionTurn() {
         requires(drive);
         requires(cameratarget);
-        angle = cameratarget.getTurnAmount();
-        lastAngle = angle;
+            // angle = cameratarget.getTurnAmount();
+        //lastAngle = angle;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        drive.startTurn(angle);
+
         cameratarget.resetLastAngle();
+        cameratarget.findTargets(oi.isDebugOn());
+        angle = cameratarget.getTurnAmount();
+        drive.startTurn(angle);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        if (drive.isTurnFinished()) {
-            cameratarget.findTargets(oi.isDebugOn());
-            angle = cameratarget.getTurnAmount();
-            if (Math.abs(angle - lastAngle) < 5) {
-                onTarget = true;
-            } else {
-                cameratarget.addLastAngle(angle);
-                drive.startTurn(angle);
-                lastAngle = angle;
-            }
-        }
+//        if (onTarget == false && drive.isTurnFinished()) {
+//            cameratarget.findTargets(oi.isDebugOn());
+//            angle = cameratarget.getTurnAmount();
+//            double diff = Math.abs(angle - lastAngle);
+//            System.out.println("angle=" + angle + " lastAngle="
+//                    + lastAngle
+//                    + " diff=" + diff + " ontarget=" + onTarget);
+//            if (diff < 10) {
+//                onTarget = true;
+//            } else {
+//                cameratarget.addLastAngle(angle);
+//                drive.startTurn(angle);
+//                lastAngle = angle;
+//            }
+//        }
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return onTarget;
+        // return onTarget;
+        return drive.isTurnFinished();
     }
 
     // Called once after isFinished returns true

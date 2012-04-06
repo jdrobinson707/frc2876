@@ -21,22 +21,24 @@ public class ShooterSet extends CommandBase {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+        
         shooter.set(speed);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        double z = oi.getArmZ();
-        z = RobotMap.roundtoTwo(z);
-        z += 1;
-        z = z / 2;
-        shooter.set(z);
-        speed = z;
+//        double z = oi.getArmZ();
+//        z = RobotMap.roundtoTwo(z);
+//        z += 1;
+//        z = z / 2;
+//        shooter.set(z);
+//        speed = z;
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return (speed < .1);
+        //return (speed < .1);
+        return false;
     }
 
     // Called once after isFinished returns true

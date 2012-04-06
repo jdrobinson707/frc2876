@@ -57,7 +57,8 @@ public class BridgeArm extends Subsystem {
         // if (pot.pidGet() > (RobotMap.BRIDGE_ARM_DOWN_LIMIT - 5)
         //     && pot.pidGet() < (RobotMap.BRIDGE_ARM_UP_LIMIT + 5)) {
 
-        pid.disable();
+        // pid.disable();
+        
         jag.set(-speed);
 
     }
@@ -77,7 +78,8 @@ public class BridgeArm extends Subsystem {
     }
 
     public void idle() {
-        pid.disable();
+        // pid.disable();
+        jag.set(0);
     }
 
     public boolean hasFinished(boolean debug) {
