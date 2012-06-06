@@ -33,21 +33,32 @@ public class CameraTarget extends Subsystem {
     public static final int BOT = 2;
     public static final int LEFT = 3;
     String angleHistory;
+    // bhs vals
 //    int rlow = 50;
-//    int rhigh = 255;
 //    int glow = 43;
-//    int ghigh = 255;
 //    int blow = 47;
-//    int bhigh = 255;
-
-    // arena vals
-    int rlow = 103;
-    int rhigh = 255;
-    int glow = 150;
+    int rlow = 70;
+    int glow = 40;
+    int blow = 25;
     int ghigh = 255;
-    int blow = 26;
+    int rhigh = 255;
     int bhigh = 255;
 
+// This worked at 7pm on a sunny day (lights off)
+//    int rlow = 10;
+//    int glow = 40;
+//    int blow = 25;
+//    int ghigh = 120;
+//    int rhigh = 255;
+////    int bhigh = 255;
+
+    // arena vals
+//    int rlow = 103;
+//    int rhigh = 255;
+//    int glow = 150;
+//    int ghigh = 255;
+//    int blow = 26;
+//    int bhigh = 255;
     // practice area
 //    int rlow = 60;
 //    int rhigh = 255;
@@ -55,7 +66,6 @@ public class CameraTarget extends Subsystem {
 //    int ghigh = 255;
 //    int blow = 28;
 //    int bhigh = 255;
-    
     int VIEW_ANGLE = 54;
     AxisCamera camera;
     CriteriaCollection cc;
@@ -101,12 +111,12 @@ public class CameraTarget extends Subsystem {
     public void updateDash() {
         boolean debug = CommandBase.oi.isDebugOn();
 
-        SmartDashboard.putInt("h_low", rlow);
-        SmartDashboard.putInt("h_high", rhigh);
-        SmartDashboard.putInt("s_low", glow);
-        SmartDashboard.putInt("s_high", ghigh);
-        SmartDashboard.putInt("l_low", blow);
-        SmartDashboard.putInt("l_high", bhigh);
+//        SmartDashboard.putInt("h_low", rlow);
+//        SmartDashboard.putInt("h_high", rhigh);
+//        SmartDashboard.putInt("s_low", glow);
+//        SmartDashboard.putInt("s_high", ghigh);
+//        SmartDashboard.putInt("l_low", blow);
+//        SmartDashboard.putInt("l_high", bhigh);
 
         // SmartDashboard.putInt("THETA", VIEW_ANGLE);
 
@@ -116,21 +126,23 @@ public class CameraTarget extends Subsystem {
         SmartDashboard.putString(pos[LEFT], sorted[LEFT].getDashString(debug));
         SmartDashboard.putDouble("TURN", current_turn);
         SmartDashboard.putDouble("DIST", RobotMap.roundtoTwo(getDistance()));
-        String target_widget = "";
-        if (sorted[TOP] != none) {
-            target_widget += "1";
-        }
-        if (sorted[LEFT] != none) {
-            target_widget += "2";
-        }
-        if (sorted[BOT] != none) {
-            target_widget += "3";
-        }
-        if (sorted[RIGHT] != none) {
-            target_widget += "4";
-        }
-        SmartDashboard.putString("targets", target_widget);
-        SmartDashboard.putString("angleHist", angleHistory);
+        SmartDashboard.putDouble("DIST_FT", RobotMap.roundtoTwo(getDistance()/12));
+        
+//        String target_widget = "";
+//        if (sorted[TOP] != none) {
+//            target_widget += "1";
+//        }
+//        if (sorted[LEFT] != none) {
+//            target_widget += "2";
+//        }
+//        if (sorted[BOT] != none) {
+//            target_widget += "3";
+//        }
+//        if (sorted[RIGHT] != none) {
+//            target_widget += "4";
+//        }
+//        SmartDashboard.putString("targets", target_widget);
+//        SmartDashboard.putString("angleHist", angleHistory);
     }
 
     public void resetLastAngle() {

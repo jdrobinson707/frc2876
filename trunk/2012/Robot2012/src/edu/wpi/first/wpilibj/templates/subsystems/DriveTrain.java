@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.templates.commands.Drive;
 public class DriveTrain extends Subsystem {
 
     private static final double turnKp = 5;
-    private static final double turnKi = 0;
+    private static final double turnKi = 2;
     private static final double turnKd = 0;
     RobotDrive drive;
     SendableGyro gyro;
@@ -71,6 +71,13 @@ public class DriveTrain extends Subsystem {
                 + RobotMap.roundtoTwo(gyro.getAngle())
                 + " to setpoint " + degrees);
     }
+
+    public void setTurnSetPoint(double degrees)
+    {
+        gyro.reset();
+        turnPID.setSetpoint(degrees);
+    }
+
 
     public boolean isTurnFinished() {
         System.out.println("is turn done: " + turnPID.onTarget()

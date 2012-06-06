@@ -33,8 +33,9 @@ public class Target {
     int boundingRectWidth;
     int boundingRectHeight;
     Preferences pfs = Preferences.getInstance();
-    int rectScoreThresh = 50;
-    int aspectScoreThresh = 0;
+    //int rectScoreThresh = 75;
+    int aspectScoreThresh = 900;
+    int rectScoreThresh = 60;
 
     public Target(ParticleAnalysisReport r, double theta) {
         this.r = r;

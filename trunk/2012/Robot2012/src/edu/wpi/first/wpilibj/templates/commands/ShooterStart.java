@@ -4,7 +4,7 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
-import edu.wpi.first.wpilibj.templates.RobotMap;
+import edu.wpi.first.wpilibj.templates.subsystems.Shooter;
 
 /**
  *
@@ -21,7 +21,10 @@ public class ShooterStart extends CommandBase {
     protected void initialize() {
         //shooter.shoot(RobotMap.KEY_TOP_SHOOT_RPS);
         double d = cameratarget.getDistance();
-        shooter.shoot(shooter.inchesToRps(d));
+        double rps = Shooter.inchesToRps(d);
+        System.out.println("distance " + d + "  rps " + rps);
+        shooter.start();
+        shooter.shoot(rps);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -30,7 +33,8 @@ public class ShooterStart extends CommandBase {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return shooter.isReady();
+        //return shooter.isReady();
+        return false;
     }
 
     // Called once after isFinished returns true

@@ -46,6 +46,7 @@ public class BridgeArm extends Subsystem {
 
         pid.setTolerance(10);
         pid.setOutputRange(-0.3, 0.3);
+        SmartDashboard.putData("BR_PID", pid);
     }
 
     public void move(double speed) {
@@ -79,7 +80,7 @@ public class BridgeArm extends Subsystem {
 
     public void idle() {
         // pid.disable();
-        jag.set(0);
+        //jag.set(0);
     }
 
     public boolean hasFinished(boolean debug) {
@@ -103,7 +104,7 @@ public class BridgeArm extends Subsystem {
         SmartDashboard.putDouble("A", RobotMap.roundtoTwo(pot.getVoltage()));
 
         // This is all debug data
-        SmartDashboard.putData("BR_PID", pid);
+        // SmartDashboard.putData("BR_PID", pid);
         SmartDashboard.putBoolean("BR_PID_en", pid.isEnable());
                 SmartDashboard.putBoolean("BR_PID_ontarget", pid.onTarget());
         SmartDashboard.putDouble("BR_PID_out", RobotMap.roundtoTwo(pid.get()));
