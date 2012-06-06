@@ -16,7 +16,8 @@ public class cgShootOneBall extends CommandGroup {
         //addParallel(new ShooterStart());
         addParallel(new VisionFilter());
         //addParallel(new ShooterSet(.62));
-        addParallel(new ShooterRPS(rps));
+        //addParallel(new ShooterRPS(rps));
+        addParallel(new ShooterStart());
         addSequential(new ShooterLoad());
         addSequential(new ShooterFire(5));
         addSequential(new ShooterIdle());

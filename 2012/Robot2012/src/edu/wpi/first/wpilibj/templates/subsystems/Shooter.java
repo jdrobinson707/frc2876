@@ -136,13 +136,27 @@ public class Shooter extends Subsystem {
     }
 
     public static double inchesToRps(double inches) {
+
+        
+        // TODO ERIC
+        // Fill in this function to convert inches to rps.
+        // We have been using 17 for shooting from top of key which is...?
+        // I don't remember, maybe 10 or 15 ft? Anyhoo... start with setting
+        // up the robot at a distance that is top of key and 17 works.
+        // Then fill in or add the if/else stmts to adjust rps to any ranges.
+        // OR you can make a function like you suggested.
+        // Just remember that before you fire a ball you need to press
+        // the 'aim or 2' button to acquire an image.
+        // If the shooter fails to shoot a ball use the trigger to
+        // reverse the upper conveyor and lower the ball so you can shoot again.
+
         double rps = 0;
         if (inches > 0 && inches <= 24) {
             rps = 15;
         } else if (inches > 24 && inches <= 120) {
             rps = 17;
         } else if (inches > 120) {
-            rps = 20;
+            rps = 19;
         }
         return rps;
     }

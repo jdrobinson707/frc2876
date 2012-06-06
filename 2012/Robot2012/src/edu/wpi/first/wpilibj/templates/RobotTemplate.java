@@ -84,7 +84,7 @@ public class RobotTemplate extends IterativeRobot {
             }
             SmartDashboard.putDouble("Arm Z", CommandBase.oi.getArmZ());
 
-            //CommandBase.bridgearm.updateDash();
+            CommandBase.bridgearm.updateDash();
             //CommandBase.cameratarget.updateDash();
 
 //        SmartDashboard.putBoolean("Debug", CommandBase.oi.isDebugOn());
