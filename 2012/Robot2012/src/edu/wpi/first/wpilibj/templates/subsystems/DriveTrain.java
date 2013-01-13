@@ -4,13 +4,13 @@
  */
 package edu.wpi.first.wpilibj.templates.subsystems;
 
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableGyro;
-import edu.wpi.first.wpilibj.smartdashboard.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.templates.commands.Drive;
@@ -25,16 +25,16 @@ public class DriveTrain extends Subsystem {
     private static final double turnKi = 2;
     private static final double turnKd = 0;
     RobotDrive drive;
-    SendableGyro gyro;
-    SendablePIDController turnPID;
+    Gyro gyro;
+    PIDController turnPID;
     public double limitleft, limitright;
 
     // Initialize your subsystem here
     public DriveTrain() {
         drive = new RobotDrive(RobotMap.LEFT_DRIVE_MOTOR_PORT, RobotMap.RIGHT_DRIVE_MOTOR_PORT);
         drive.setSafetyEnabled(false);
-        gyro = new SendableGyro(RobotMap.GYRO_PORT);
-        turnPID = new SendablePIDController(turnKp, turnKi, turnKd, gyro, new PIDOutput() {
+        gyro = new Gyro(RobotMap.GYRO_PORT);
+        turnPID = new PIDController(turnKp, turnKi, turnKd, gyro, new PIDOutput() {
 
             public void pidWrite(double output) {
                 limitleft = output;

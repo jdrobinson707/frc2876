@@ -78,7 +78,7 @@ public class CameraTarget extends Subsystem {
     double search_incr = 0;
 
     public CameraTarget() {
-        super("CameraTarget");
+        //super("CameraTarget");
 
         camera = AxisCamera.getInstance();
 

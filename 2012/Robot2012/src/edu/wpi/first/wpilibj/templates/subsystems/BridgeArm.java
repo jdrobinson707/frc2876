@@ -6,10 +6,10 @@ package edu.wpi.first.wpilibj.templates.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.templates.commands.BridgeArmMove;
@@ -25,7 +25,7 @@ public class BridgeArm extends Subsystem {
     private static double bridgeKp = 1.0;
     private static double bridgeKi = 0.0;
     private static double bridgeKd = 0.0;
-    SendablePIDController pid;
+    PIDController pid;
 
     // TODO
     // Need to find the pot voltages for arm raised and arm lowered.
@@ -36,7 +36,7 @@ public class BridgeArm extends Subsystem {
         jag = new Jaguar(RobotMap.BRIDGE_ARM_PORT);
         pot = new AnalogChannel(RobotMap.PONTENTIOMETER_PORT);
 
-        pid = new SendablePIDController(bridgeKp, bridgeKi, bridgeKd,
+        pid = new PIDController(bridgeKp, bridgeKi, bridgeKd,
                 pot, new PIDOutput() {
 
             public void pidWrite(double output) {
