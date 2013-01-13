@@ -7,9 +7,9 @@ package edu.wpi.first.wpilibj.templates.subsystems;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.templates.commands.ShooterIdle;
@@ -23,7 +23,7 @@ public class Shooter extends Subsystem {
     private static final double Kp = 1.0;
     private static final double Ki = 1.0;
     private static final double Kd = .2;
-    SendablePIDController pid;
+    PIDController pid;
     Jaguar shootjag;
     DigitalInput lm;
     DigitalInput lt;
@@ -44,7 +44,7 @@ public class Shooter extends Subsystem {
         lt = new DigitalInput(RobotMap.LINE_TRACKER_PORT);
         c = new Counter(lt);
 
-        pid = new SendablePIDController(Kp, Ki, Kd,
+        pid = new PIDController(Kp, Ki, Kd,
                 new ShooterCounter(), shootjag);
         SmartDashboard.putData("SH_PID", pid);
         pid.setOutputRange(0.0, .8);
