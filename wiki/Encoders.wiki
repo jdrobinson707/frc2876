@@ -1,9 +1,8 @@
 http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e59ac&t=112700&highlight=encoders
-
+{{{
  //DIO Port of Encoder
 	public static final int rightDriveEncoderChannelA = 3;
 	public static final int rightDriveEncoderChannelB = 4;
-
 
 	//Wheel Radius
 	public static final int driveWheelRadius=2;//wheel radius in inches
@@ -15,8 +14,6 @@ http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e5
 	public static final int driveEncoderMinPeriod=10;
         public static final boolean rightDriveTrainEncoderReverse=false;
 
-
-
 	//declare sensors
 	Encoder rightEncoder;
 
@@ -26,3 +23,4 @@ http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e5
     	rightEncoder.setMaxPeriod(driveEncoderMinPeriod);//min period before reported stopped
     	rightEncoder.setMinRate(driveEncoderMinRate);//min rate before reported stopped
     	rightEncoder.start();
+}}}
