@@ -1,0 +1,28 @@
+http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e59ac&t=112700&highlight=encoders
+
+ //DIO Port of Encoder
+	public static final int rightDriveEncoderChannelA = 3;
+	public static final int rightDriveEncoderChannelB = 4;
+
+
+	//Wheel Radius
+	public static final int driveWheelRadius=2;//wheel radius in inches
+	public static final int pulsePerRotation = 360; //encoder pulse per rotation
+	public static final double gearRatio = 1/1; //ratio between wheel and encoder
+	public static final double driveEncoderPulsePerRot= pulsePerRotation*gearRatio; //pulse per rotation * gear ratio
+	public static final double driveEncoderDistPerTick=(Math.PI*2*driveWheelRadius)/driveEncoderPulsePerRot;
+	public static final int driveEncoderMinRate=10; 
+	public static final int driveEncoderMinPeriod=10;
+        public static final boolean rightDriveTrainEncoderReverse=false;
+
+
+
+	//declare sensors
+	Encoder rightEncoder;
+
+         //instantiate encoder
+        rightEncoder = new Encoder(rightDriveEncoderChannelA, rightDriveEncoderChannelB, rightDriveTrainEncoderReverse, CounterBase.EncodingType.k4X);
+    	rightEncoder.setDistancePerPulse(driveEencoderDistPerTick);
+    	rightEncoder.setMaxPeriod(driveEncoderMinPeriod);//min period before reported stopped
+    	rightEncoder.setMinRate(driveEncoderMinRate);//min rate before reported stopped
+    	rightEncoder.start();
