@@ -3,6 +3,7 @@ package org.usfirst.frc2876.Robot2013;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.buttons.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc2876.Robot2013.commands.FindTargets;
 import org.usfirst.frc2876.Robot2013.commands.Shoot;
 import org.usfirst.frc2876.Robot2013.commands.ShooterIdle;
 /**
@@ -108,13 +109,16 @@ public class OI {
         
         joy2Button2 = new JoystickButton(joystick2, 1);
         joy2Button2.whenPressed(new ShooterIdle());
+        
         joy2Trigger = new JoystickButton(joystick2, 1);
         joy2Trigger.whenPressed(new Shoot());
+        
         joystick1 = new Joystick(1);
         
         joy1Button6 = new JoystickButton(joystick1, 1);
         
         joy1Button5 = new JoystickButton(joystick1, 1);
+        joy1Button5.whenPressed(new FindTargets());
         
         joy1Button4 = new JoystickButton(joystick1, 1);
         

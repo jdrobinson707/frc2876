@@ -72,4 +72,8 @@ public class RobotMap {
         DRIVETRAIN_LEFTENCODER.start();
         
     }
+    
+     public static double roundtoTwo(double num) {
+        return Math.floor(num * 100.0) / 100.0;
+    }
 }
