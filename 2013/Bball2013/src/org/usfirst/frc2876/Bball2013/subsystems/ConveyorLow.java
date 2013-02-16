@@ -77,14 +77,14 @@ public class ConveyorLow extends Subsystem {
     }
     public void idle() {
         relay_val = Relay.Value.kOff;
-        conveyorLowRelay.set(relay_val);
+        //conveyorLowRelay.set(relay_val);
     }
     public void forward() {
         relay_val = Relay.Value.kForward;
-        conveyorLowRelay.set(relay_val);
+        //conveyorLowRelay.set(relay_val);
     }
     public void reverse() {
         relay_val = Relay.Value.kReverse;
-        conveyorLowRelay.set(relay_val);
+        //conveyorLowRelay.set(relay_val);
     }
 }
