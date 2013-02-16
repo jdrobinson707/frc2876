@@ -41,9 +41,9 @@ public class DriveTrain extends Subsystem {
     }
     public void drive(Joystick left,Joystick right ){
         
-        //leftDriveJaguar.set(left.getY());
-        //rightDriveJaguar.set(right.getY());
         robotDrive2.tankDrive(left, right);
     }
+    
+       
                 
     }
