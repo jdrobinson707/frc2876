@@ -13,7 +13,7 @@ import org.usfirst.frc2876.Bball2013.Robot;
  */
 public class TurnRobot extends Command {
     
-    double offset = 0.0;
+    double offset = 90.0;
     
     public TurnRobot() {
         // Use requires() here to declare subsystem dependencies
@@ -23,7 +23,7 @@ public class TurnRobot extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        offset = Robot.vision2013.getTurnOff();
+        //offset = Robot.vision2013.getTurnOff();
         //System.out.println("Offset - " + offset);
         //Robot.driveTrain.resetGyro();
 
