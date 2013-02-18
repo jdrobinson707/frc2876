@@ -58,9 +58,6 @@ public class RobotMap {
         //DRIVETRAIN_LEFTENCODER.setPIDSourceParameter(PIDSourceParameter.kRate);
         
         DRIVETRAIN_RIGHTENCODER = new Encoder(1, 3, 1, 4, false, EncodingType.k4X);
-
-
-
 	DRIVETRAIN_RIGHTENCODER.setMinRate(10);
         DRIVETRAIN_RIGHTENCODER.setMaxPeriod(10);
         DRIVETRAIN_RIGHTENCODER.start();
@@ -69,9 +66,6 @@ public class RobotMap {
         //DRIVETRAIN_RIGHTENCODER.setDistancePerPulse(1.0);
         //DRIVETRAIN_RIGHTENCODER.setPIDSourceParameter(PIDSourceParameter.kRate);
         
-        
-
-
         DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 4);
 	LiveWindow.addActuator("DriveTrain", "LeftDrive Jaguar", DRIVETRAIN_LEFTDRIVE_JAGUAR);
         
