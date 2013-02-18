@@ -91,7 +91,7 @@ public class Vision extends Subsystem {
         setDefaultCommand(new VisionIdle());
     }
     
-    public void findTargets() {
+    public void findTargets(boolean targetlevel) {
             
             try {
                 ColorImage image = camera.getImage(); // comment if using stored images
@@ -112,8 +112,8 @@ public class Vision extends Subsystem {
                     scores[i] = new Scores();
 
                     scores[i].rectangularity = scoreRectangularity(report);
-                    scores[i].aspectRatioOuter = scoreAspectRatio(filteredImage, report, i, true);
-                    scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false);
+                    scores[i].aspectRatioOuter = scoreAspectRatio(filteredImage, report, i, true, targetlevel);
+                    scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false, targetlevel);
                     scores[i].xEdge = scoreXEdge(thresholdImage, report);
                     scores[i].yEdge = scoreYEdge(thresholdImage, report);
 
@@ -189,20 +189,26 @@ public class Vision extends Subsystem {
      * with sides x and y where particle area= x*y and particle perimeter= 2x+2y
      *
      * @param image The image containing the particle to score, needed to
-     * performa additional measurements
+     * perform additional measurements
      * @param report The Particle Analysis Report for the particle, used for the
      * width, height, and particle number
      * @param outer	Indicates whether the particle aspect ratio should be
      * compared to the ratio for the inner target or the outer
      * @return The aspect ratio score (0-100)
      */
-    public double scoreAspectRatio(BinaryImage image, ParticleAnalysisReport report, int particleNumber, boolean outer) throws NIVisionException {
+    public double scoreAspectRatio(BinaryImage image, ParticleAnalysisReport report, int particleNumber, boolean outer, boolean targetlevel) throws NIVisionException {
         double rectLong, rectShort, aspectRatio, idealAspectRatio;
 
         rectLong = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_LONG_SIDE);
         rectShort = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE);
-        idealAspectRatio = outer ? (62 / 29) : (62 / 20);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
-
+        if(targetlevel){
+            idealAspectRatio = outer ? (62 / 20) : (54 / 12);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
+                            //the above ration dimensions are for the 3 pt goal -Eric
+        }
+        else{
+            idealAspectRatio = outer ? (62 / 29) : (54 / 21);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
+                            //the above ratio dimensions are for the 2 pt goals -Eric
+        }
         //Divide width by height to measure aspect ratio
         if (report.boundingRectWidth > report.boundingRectHeight) {
             //particle is wider than it is tall, divide long by short

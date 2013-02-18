@@ -48,7 +48,7 @@ public class RobotMap {
 
         
         
-        DRIVETRAIN_LEFTENCODER = new Encoder(1, 1, 1, 2, true, EncodingType.k4X);
+        DRIVETRAIN_LEFTENCODER = new Encoder(1, 3, 1, 4, true, EncodingType.k4X);
 	DRIVETRAIN_LEFTENCODER.setMinRate(10);
         DRIVETRAIN_LEFTENCODER.setMaxPeriod(10);
         DRIVETRAIN_LEFTENCODER.start();
@@ -57,7 +57,7 @@ public class RobotMap {
         //DRIVETRAIN_LEFTENCODER.setDistancePerPulse(1.0);
         //DRIVETRAIN_LEFTENCODER.setPIDSourceParameter(PIDSourceParameter.kRate);
         
-        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 3, 1, 4, false, EncodingType.k4X);
+        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 1, 1, 2, false, EncodingType.k4X);
 	DRIVETRAIN_RIGHTENCODER.setMinRate(10);
         DRIVETRAIN_RIGHTENCODER.setMaxPeriod(10);
         DRIVETRAIN_RIGHTENCODER.start();

@@ -26,7 +26,10 @@ public class FindTargets extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        Robot.vision.findTargets();
+        //finds 3 pt. targets:
+        Robot.vision.findTargets(true);
+        //finds 2 pt. targets:
+        Robot.vision.findTargets(false);
     }
 
     // Make this return true when this Command no longer needs to run execute()

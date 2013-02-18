@@ -35,15 +35,19 @@ public class Shooter extends Subsystem {
 	
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
+        
     }
     public void startShooter()
     {
         shootingJaguar.set(1);
     }
-     public void jaguarAngle(Joystick shooterangle )
+     public void jaguarAngle(double speed)
     {
-        shootingAngleJaguar.set(shooterangle.getY());
+        shootingAngleJaguar.set(speed);
     }
+     public void endjaguarAngle(){
+         shootingAngleJaguar.set(0);
+     }
      public void endShooter()
     {
         shootingJaguar.set(0);

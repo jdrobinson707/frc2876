@@ -1,38 +1,33 @@
+
+import edu.wpi.first.wpilibj.command.Command;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.usfirst.frc2876.Robot2013.commands;
-import edu.wpi.first.wpilibj.command.Command;
-import org.usfirst.frc2876.Robot2013.Robot;
+
 /**
  *
- * @author Administrator
+ * @author Student
  */
-public class TurnRobot extends Command {
-    double degrees;
-    public TurnRobot(double deg) {
+public class Find2PtTarget extends Command {
+    
+    public Find2PtTarget() {
         // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis)
-         requires(Robot.driveTrain);
-         degrees = deg;
-         
+        // eg. requires(chassis);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.driveTrain.initTurnPID();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-       
-        
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.driveTrain.isTurnDone();
+        return false;
     }
 
     // Called once after isFinished returns true
