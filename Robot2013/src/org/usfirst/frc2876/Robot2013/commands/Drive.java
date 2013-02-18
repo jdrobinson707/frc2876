@@ -27,7 +27,11 @@ public class  Drive extends Command {
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        Robot.driveTrain.drive(Robot.oi.getJoystick1(), Robot.oi.getJoystick2());
+        Robot.driveTrain.drive(Robot.oi.joystick2, Robot.oi.joystick1);
+        Robot.driveTrain.getLeftEncoder();
+        Robot.driveTrain.getRightEncoder();
+        Robot.driveTrain.getLeftEncoderDistance();
+        Robot.driveTrain.getRightEncoderDistance();
         Robot.driveTrain.getLeftEncoder();
         Robot.driveTrain.getRightEncoder();
         Robot.driveTrain.getLeftEncoderDistance();
@@ -39,6 +43,8 @@ public class  Drive extends Command {
     }
     // Called once after isFinished returns true
     protected void end() {
+        Robot.driveTrain.stopEncoder(Robot.driveTrain.rightEncoder);
+        Robot.driveTrain.stopEncoder(Robot.driveTrain.leftEncoder);
     }
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run

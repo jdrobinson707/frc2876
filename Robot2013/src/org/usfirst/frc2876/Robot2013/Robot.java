@@ -92,9 +92,9 @@ public class Robot extends IterativeRobot {
         Scheduler.getInstance().run();
 	LiveWindow.run();
     }
+
     
     public void testPeriodic() {
         LiveWindow.run();
     }
-
 }
