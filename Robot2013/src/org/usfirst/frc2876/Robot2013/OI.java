@@ -3,7 +3,18 @@ package org.usfirst.frc2876.Robot2013;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.buttons.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc2876.Robot2013.commands.*;
+
+import org.usfirst.frc2876.Robot2013.commands.AutoTurnShootCG;
+import org.usfirst.frc2876.Robot2013.commands.DriveForward;
+import org.usfirst.frc2876.Robot2013.commands.DriveForwardStraight;
+import org.usfirst.frc2876.Robot2013.commands.Find2PtTarget;
+import org.usfirst.frc2876.Robot2013.commands.Find3PtTarget;
+import org.usfirst.frc2876.Robot2013.commands.Shoot;
+import org.usfirst.frc2876.Robot2013.commands.ShootIdle;
+import org.usfirst.frc2876.Robot2013.commands.TurnRobot;
+import org.usfirst.frc2876.Robot2013.commands.TurnRobotVision;
+import org.usfirst.frc2876.Robot2013.commands.VisionIdle;
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -47,7 +58,7 @@ public class OI {
         SmartDashboard.putData("DriveAmount", armB7);
 
         armB1.whenPressed(new Shoot());
-        armB2.whenPressed(new ShooterIdle());
+        armB2.whenPressed(new ShootIdle());
         armB3.whenPressed(new AutoTurnShootCG());
         armB4.whenPressed(new DriveForward(24));
         armB5.whenPressed(new DriveForwardStraight(24));

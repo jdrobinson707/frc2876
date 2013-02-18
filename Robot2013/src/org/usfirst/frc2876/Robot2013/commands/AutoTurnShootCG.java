@@ -32,5 +32,7 @@ public class AutoTurnShootCG extends CommandGroup {
         addSequential(new FindTargets());
         addSequential(new TurnRobotVision());
         addSequential(new Shoot());
+        //we need a limit switch or something here to stop the shooter
+        addSequential(new ShootIdle());
     }
 }

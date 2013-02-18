@@ -5,8 +5,8 @@ import org.usfirst.frc2876.Robot2013.Robot;
 /**
  *
  */
-public class  ShooterIdle extends Command {
-    public ShooterIdle() {
+public class  ShootIdle extends Command {
+    public ShootIdle() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
 	

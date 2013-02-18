@@ -40,6 +40,7 @@ public class Vision extends Subsystem {
     final int X_EDGE_LIMIT = 40;
     final int Y_EDGE_LIMIT = 60;
     final int X_IMAGE_RES = 320;          //X Image resolution in pixels, should be 160, 320 or 640
+//    final double VIEW_ANGLE  = 67.0;
     final double VIEW_ANGLE = 43.5;       //Axis 206 camera
 //    final double VIEW_ANGLE = 48;       //Axis M1011 camera
 
@@ -52,7 +53,8 @@ public class Vision extends Subsystem {
     int shigh = 255;
     int vlow = 61;
     int vhigh = 255;
-    public static final int THETA = 54;
+    //public static final int THETA = 54;
+    public static final int THETA = 67;
     final int imageWidth = 320;
     public double turnDegrees = 0.0;
         
@@ -157,8 +159,9 @@ public class Vision extends Subsystem {
         //using the smaller of the estimated rectangle short side and the bounding rectangle height results in better performance
         //on skewed rectangles
         height = Math.min(report.boundingRectHeight, rectShort);
-        targetHeight = outer ? 29 : 21;
-
+        //targetHeight = outer ? 29 : 21;
+        targetHeight = outer ? 62 : 54;
+        
         return X_IMAGE_RES * targetHeight / (height * 12 * 2 * Math.tan(VIEW_ANGLE * Math.PI / (180 * 2)));
     }
 
