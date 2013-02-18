@@ -3,11 +3,15 @@ package org.usfirst.frc2876.Robot2013;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.buttons.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc2876.Robot2013.commands.AutoTurnShootCG;
 import org.usfirst.frc2876.Robot2013.commands.DriveForward;
+import org.usfirst.frc2876.Robot2013.commands.DriveForwardStraight;
+import org.usfirst.frc2876.Robot2013.commands.Find2PtTarget;
 import org.usfirst.frc2876.Robot2013.commands.FindTargets;
 import org.usfirst.frc2876.Robot2013.commands.MoveShooter;
 import org.usfirst.frc2876.Robot2013.commands.Shoot;
 import org.usfirst.frc2876.Robot2013.commands.ShooterIdle;
+import org.usfirst.frc2876.Robot2013.commands.TurnRobot;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -58,6 +62,11 @@ public class OI {
     public JoystickButton joy1Button4;
     public JoystickButton joy1Button5;
     public JoystickButton joy1Button6;
+    public JoystickButton joy1Button7;
+    public JoystickButton joy1Button8;
+    public JoystickButton joy1Button9;
+    public JoystickButton joy1Button10;
+    public JoystickButton joy1Button11;
     public Joystick joystick1;              //armstick
     public JoystickButton joy2Trigger;
     public JoystickButton joy2Button2;
@@ -117,7 +126,23 @@ public class OI {
         //
         joystick1 = new Joystick(1);        //armstick
         
+        joy1Button11 = new JoystickButton(joystick1, 1);
+        
+        
+        joy1Button10 = new JoystickButton(joystick1, 1);
+        
+        
+        joy1Button9 = new JoystickButton(joystick1, 1);
+        joy1Button9.whenPressed(new AutoTurnShootCG());
+        
+        joy1Button8 = new JoystickButton(joystick1, 1);
+        joy1Button8.whenPressed(new TurnRobot());
+        
+        joy1Button7 = new JoystickButton(joystick1, 1);
+        joy1Button7.whenPressed(new Find2PtTarget());
+        
         joy1Button6 = new JoystickButton(joystick1, 1);
+        joy1Button6.whenPressed(new DriveForwardStraight());
         
         joy1Button5 = new JoystickButton(joystick1, 1);
         joy1Button5.whenPressed(new FindTargets());

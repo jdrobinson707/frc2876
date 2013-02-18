@@ -118,7 +118,25 @@ public class DriveTrain extends Subsystem {
         gyro.reset();
         turnPID.setSetpoint(degrees);
     }
+    
+    //is the below method even needed? I am unsure whether or not the PID class already handles this
+    //I am calling turn() in TurnRobot.java and TurnRobotVision.java
+    //-Eric
+    public void turn() {
+        double turnOutput = turnPID.get();
+        double turn = turnPID.get();
+         robotDrive2.arcadeDrive(turnOutput, turn);
+    }    
 
+    public double getGyro() {
+        SmartDashboard.putNumber("gyro: ", gyro.getAngle());
+        return gyro.getAngle();
+    }
+    
+//    public void stopGyro() {
+//        gyro.;
+//    }  
+    
     public boolean isTurnDone() {
         System.out.println("is turn done: " + turnPID.onTarget()
                 + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
@@ -133,7 +151,6 @@ public class DriveTrain extends Subsystem {
     }
 
     public void drive(Joystick left, Joystick right) {
-
         robotDrive2.tankDrive(left.getY(), -right.getY());
     }
 
@@ -215,8 +232,8 @@ public class DriveTrain extends Subsystem {
 
     public void driveDistance() {
         double dOutput = dPID.get();
-        double turn = turnPID.get();
-         robotDrive2.arcadeDrive(dOutput, turn);
+        //double turn = turnPID.get();
+        robotDrive2.arcadeDrive(dOutput, dOutput);
     }    
     
     // Call this func from initialize in a command

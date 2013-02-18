@@ -11,23 +11,24 @@ import org.usfirst.frc2876.Robot2013.Robot;
  */
 public class TurnRobot extends Command {
     double degrees;
-    public TurnRobot(double deg) {
+    public TurnRobot() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis)
          requires(Robot.driveTrain);
-         degrees = deg;
+         degrees = 30;
          
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
         Robot.driveTrain.initTurnPID();
+        Robot.driveTrain.setTurn(degrees);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-       
-        
+       Robot.driveTrain.turn();
+       Robot.driveTrain.getGyro();
     }
 
     // Make this return true when this Command no longer needs to run execute()

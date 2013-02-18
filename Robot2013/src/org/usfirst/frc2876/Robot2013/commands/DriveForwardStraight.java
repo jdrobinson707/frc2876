@@ -22,7 +22,8 @@ public class DriveForwardStraight extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        //Robot.driveTrain.s();
+        Robot.driveTrain.startEncoder(Robot.driveTrain.rightEncoder);
+        Robot.driveTrain.startEncoder(Robot.driveTrain.leftEncoder);
         Robot.driveTrain.initDPID();
         Robot.driveTrain.initTurnPID();
         Robot.driveTrain.setDriveDistanceStraight(dist);
@@ -31,6 +32,15 @@ public class DriveForwardStraight extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
         Robot.driveTrain.driveDistanceStraight();
+        
+        Robot.driveTrain.getLeftEncoder();
+        Robot.driveTrain.getRightEncoder();
+        Robot.driveTrain.getLeftEncoderDistance();
+        Robot.driveTrain.getRightEncoderDistance();
+        Robot.driveTrain.getLeftEncoder();
+        Robot.driveTrain.getRightEncoder();
+        Robot.driveTrain.getLeftEncoderDistance();
+        Robot.driveTrain.getRightEncoderDistance();
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -40,6 +50,8 @@ public class DriveForwardStraight extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
+        Robot.driveTrain.stopEncoder(Robot.driveTrain.rightEncoder);
+        Robot.driveTrain.stopEncoder(Robot.driveTrain.leftEncoder);
     }
 
     // Called when another command which requires one or more of the same
