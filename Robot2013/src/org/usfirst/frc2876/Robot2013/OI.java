@@ -59,7 +59,7 @@ public class OI {
         armB8.whenPressed(new TurnRobot(90));
         armB9.whenPressed(new TurnRobotVision());
         armB10.whenPressed(new VisionIdle());
-        armB11.whenPressed(new AutoAdjustShooter());
+        armB11.whenPressed(new AdjustShooterVision());
     }
     
     public void joystickInit() {

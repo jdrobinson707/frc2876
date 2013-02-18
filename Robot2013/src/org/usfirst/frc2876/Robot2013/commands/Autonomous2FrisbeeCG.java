@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  *
  * @author Student
  */
-public class AutoTurnShootCG extends CommandGroup {
+public class Autonomous2FrisbeeCG extends CommandGroup {
     
-    public AutoTurnShootCG() {
+    public Autonomous2FrisbeeCG() {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());

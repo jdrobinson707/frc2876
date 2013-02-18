@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  *
  * @author Student
  */
-public class AutoTurnShootCG extends CommandGroup {
+public class Autonomous3FrisbeeCG extends CommandGroup {
     
-    public AutoTurnShootCG() {
+    public Autonomous3FrisbeeCG() {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -29,6 +29,9 @@ public class AutoTurnShootCG extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
+        addSequential(new TurnRobot(45));
+        addSequential(new DriveForwardStraight(40));
+        addSequential(new TurnRobot(-45));
         addSequential(new FindTargets());
         addSequential(new TurnRobotVision());
         addSequential(new AdjustShooterVision());

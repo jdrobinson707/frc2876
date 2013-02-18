@@ -11,10 +11,10 @@ import org.usfirst.frc2876.Robot2013.Robot;
  *
  * @author Gilad
  */
-public class AutoAdjustShooter extends Command {
+public class AdjustShooterVision extends Command {
     
     double volts = 0.0;
-    public AutoAdjustShooter() {
+    public AdjustShooterVision() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.shooter);
         volts = Robot.vision.getShooterOff();
