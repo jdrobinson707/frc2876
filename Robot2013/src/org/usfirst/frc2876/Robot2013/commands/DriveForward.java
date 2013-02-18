@@ -13,11 +13,11 @@ import org.usfirst.frc2876.Robot2013.Robot;
  */
 public class DriveForward extends Command {
     double dist;
-    public DriveForward() {
+    public DriveForward(double d) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
         requires(Robot.driveTrain);
-        dist = 24;
+        dist = d;
     }
 
     // Called just before this Command runs the first time

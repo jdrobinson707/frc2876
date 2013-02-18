@@ -11,12 +11,11 @@ import org.usfirst.frc2876.Robot2013.Robot;
  */
 public class TurnRobot extends Command {
     double degrees;
-    public TurnRobot() {
+    public TurnRobot(double d) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis)
          requires(Robot.driveTrain);
-         degrees = 30;
-         
+         degrees = d;
     }
 
     // Called just before this Command runs the first time
