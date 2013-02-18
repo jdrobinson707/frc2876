@@ -53,10 +53,17 @@ public class Vision extends Subsystem {
     int shigh = 255;
     int vlow = 61;
     int vhigh = 255;
+
+    public static final int THETAX = 67; //field of view horizontal
+    public static final int THETAY = 50; //field of view vertical
+
     //public static final int THETA = 54;
-    public static final int THETA = 67;
+    //public static final int THETA = 67;
+
     final int imageWidth = 320;
+    final int imageHeight = 240;
     public double turnDegrees = 0.0;
+    public double shooterAngleDegrees = 0.0;
         
     public class Scores {
         double rectangularity;
@@ -169,16 +176,36 @@ public class Vision extends Subsystem {
         return turnDegrees;
     }
     
+    public double getShooterOff() {
+        double shooterAngleVoltage = (shooterAngleDegrees * RobotMap.MAXVOLT) / 360;
+        return shooterAngleVoltage; 
+    }
+    
     private void calcAim(ParticleAnalysisReport report) {
         try {
-            double degPerPixel = imageWidth / THETA;
+            double degPerPixel = imageWidth / THETAX;
             double imgCenter = imageWidth / 2;
 
             double delta = report.center_mass_x - imgCenter;
             turnDegrees = delta / degPerPixel;
             turnDegrees = RobotMap.roundtoTwo(turnDegrees);
-            System.out.println("degrees off: " + turnDegrees);
-            SmartDashboard.putDouble("degrees off", turnDegrees);
+            System.out.println("turn degrees off: " + turnDegrees);
+            SmartDashboard.putNumber("Turn degrees off", turnDegrees);
+        } catch (ArithmeticException ex) {
+            // System.out.println(ex);
+        }
+    }
+    
+    private void calcShooterAngle(ParticleAnalysisReport report) {   //calculates the vertical angle off
+        try {
+            double degPerPixel = imageHeight / THETAY;
+            double imgCenter = imageHeight / 2;
+
+            double delta = report.center_mass_y - imgCenter;
+            shooterAngleDegrees = delta / degPerPixel;
+            shooterAngleDegrees = RobotMap.roundtoTwo(shooterAngleDegrees);
+            System.out.println("shooter degrees off: " + shooterAngleDegrees);
+            SmartDashboard.putNumber("Shooter degrees off", shooterAngleDegrees);
         } catch (ArithmeticException ex) {
             // System.out.println(ex);
         }
