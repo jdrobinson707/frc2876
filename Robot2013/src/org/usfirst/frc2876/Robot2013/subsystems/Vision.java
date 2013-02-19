@@ -24,7 +24,7 @@ import org.usfirst.frc2876.Robot2013.commands.VisionIdle;
  * @author Student
  */
 public class Vision extends Subsystem {
-    
+
     final int XMAXSIZE = 24;
     final int XMINSIZE = 24;
     final int YMAXSIZE = 24;
@@ -43,7 +43,6 @@ public class Vision extends Subsystem {
 //    final double VIEW_ANGLE  = 67.0;
     final double VIEW_ANGLE = 43.5;       //Axis 206 camera
 //    final double VIEW_ANGLE = 48;       //Axis M1011 camera
-
     AxisCamera camera;          // the axis camera object (connected to the switch)
     CriteriaCollection cc;      // the criteria for doing the particle filter operation
     Preferences prefs;
@@ -53,134 +52,131 @@ public class Vision extends Subsystem {
     int shigh = 255;
     int vlow = 61;
     int vhigh = 255;
-
     public static final int THETAX = 67; //field of view horizontal
     public static final int THETAY = 50; //field of view vertical
-
     //public static final int THETA = 54;
     //public static final int THETA = 67;
-
     final int imageWidth = 320;
     final int imageHeight = 240;
     public double turnDegrees = 0.0;
     public double shooterAngleDegrees = 0.0;
-        
+
     public class Scores {
+
         double rectangularity;
         double aspectRatioInner;
         double aspectRatioOuter;
         double xEdge;
         double yEdge;
     }
-    
-    public Vision(){
+
+    public Vision() {
         camera = AxisCamera.getInstance();  // get an instance of the camera
         prefs = Preferences.getInstance();
         cc = new CriteriaCollection();      // create the criteria for the particle filter
         cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, 500, 65535, false);
     }
-    
+
     public void cameraInit() {
-        
+
         hlow = prefs.getInt("hlow", 0);
         hhigh = prefs.getInt("hhigh", 0);
         slow = prefs.getInt("slow", 0);
         shigh = prefs.getInt("shigh", 0);
         vlow = prefs.getInt("vlow", 0);
         vhigh = prefs.getInt("vhigh", 0);
-        
+
         System.out.println(hlow + " - " + hhigh);
         System.out.println(slow + " - " + shigh);
         System.out.println(vlow + " -  " + vhigh);
         //sunny Saturday afternoon
         //103 - 165, 61 - 255, 65 - 255
     }
-    
+
     public void initDefaultCommand() {
         setDefaultCommand(new VisionIdle());
     }
-    
+
     public void findTargets(boolean targetlevel) {
-            
-            try {
-                ColorImage image = camera.getImage(); // comment if using stored images
 
-                //ColorImage image;                           // next 2 lines read image from flash on cRIO
-                //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
-                BinaryImage thresholdImage = image.thresholdHSV(hlow, hhigh, slow, shigh, vlow, vhigh);   // keep only red objects
-                thresholdImage.write("/threshold.bmp");
-                BinaryImage convexHullImage = thresholdImage.convexHull(false);          // fill in occluded rectangles
-                convexHullImage.write("/convexHull.bmp");
-                BinaryImage filteredImage = convexHullImage.particleFilter(cc);           // filter out small particles
-                filteredImage.write("/filteredImage.bmp");
+        try {
+            ColorImage image = camera.getImage(); // comment if using stored images
 
-                //iterate through each particle and score to see if it is a target
-                Scores scores[] = new Scores[filteredImage.getNumberParticles()];
-                for (int i = 0; i < scores.length; i++) {
-                    ParticleAnalysisReport report = filteredImage.getParticleAnalysisReport(i);
-                    scores[i] = new Scores();
+            //ColorImage image;                           // next 2 lines read image from flash on cRIO
+            //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
+            BinaryImage thresholdImage = image.thresholdHSV(hlow, hhigh, slow, shigh, vlow, vhigh);   // keep only red objects
+            thresholdImage.write("/threshold.bmp");
+            BinaryImage convexHullImage = thresholdImage.convexHull(false);          // fill in occluded rectangles
+            convexHullImage.write("/convexHull.bmp");
+            BinaryImage filteredImage = convexHullImage.particleFilter(cc);           // filter out small particles
+            filteredImage.write("/filteredImage.bmp");
 
-                    scores[i].rectangularity = scoreRectangularity(report);
-                    scores[i].aspectRatioOuter = scoreAspectRatio(filteredImage, report, i, true, targetlevel);
-                    scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false, targetlevel);
-                    scores[i].xEdge = scoreXEdge(thresholdImage, report);
-                    scores[i].yEdge = scoreYEdge(thresholdImage, report);
+            //iterate through each particle and score to see if it is a target
+            Scores scores[] = new Scores[filteredImage.getNumberParticles()];
+            for (int i = 0; i < scores.length; i++) {
+                ParticleAnalysisReport report = filteredImage.getParticleAnalysisReport(i);
+                scores[i] = new Scores();
 
-                    if (scoreCompare(scores[i], false)) {
-                        System.out.println("particle: " + i + "is a High Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
-                        System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
-                        calcAim(report);
-                    } else if (scoreCompare(scores[i], true)) {
-                        System.out.println("particle: " + i + "is a Middle Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
-                        System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
-                    } else {
-                        System.out.println("particle: " + i + "is not a goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
-                    }
-                    System.out.println("rect: " + scores[i].rectangularity + "ARinner: " + scores[i].aspectRatioInner);
-                    System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
+                scores[i].rectangularity = scoreRectangularity(report);
+                scores[i].aspectRatioOuter = scoreAspectRatio(filteredImage, report, i, true, targetlevel);
+                scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false, targetlevel);
+                scores[i].xEdge = scoreXEdge(thresholdImage, report);
+                scores[i].yEdge = scoreYEdge(thresholdImage, report);
+
+                if (scoreCompare(scores[i], false)) {
+                    System.out.println("particle: " + i + "is a High Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
+                    calcAim(report);
+                } else if (scoreCompare(scores[i], true)) {
+                    System.out.println("particle: " + i + "is a Middle Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
+                } else {
+                    System.out.println("particle: " + i + "is not a goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
                 }
-
-                /**
-                 * all images in Java must be freed after they are used since
-                 * they are allocated out of C data structures. Not calling
-                 * free() will cause the memory to accumulate over each pass of
-                 * this loop.
-                 */
-                filteredImage.free();
-                convexHullImage.free();
-                thresholdImage.free();
-                image.free();
-                Timer.delay(1);
-            } catch (AxisCameraException ex) {        // this is needed if the camera.getImage() is called
-                ex.printStackTrace();
-            } catch (NIVisionException ex) {
-                ex.printStackTrace();
+                System.out.println("rect: " + scores[i].rectangularity + "ARinner: " + scores[i].aspectRatioInner);
+                System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
             }
+
+            /**
+             * all images in Java must be freed after they are used since they
+             * are allocated out of C data structures. Not calling free() will
+             * cause the memory to accumulate over each pass of this loop.
+             */
+            filteredImage.free();
+            convexHullImage.free();
+            thresholdImage.free();
+            image.free();
+            Timer.delay(1);
+        } catch (AxisCameraException ex) {        // this is needed if the camera.getImage() is called
+            ex.printStackTrace();
+        } catch (NIVisionException ex) {
+            ex.printStackTrace();
+        }
     }
-    
+
     double computeDistance(BinaryImage image, ParticleAnalysisReport report, int particleNumber, boolean outer) throws NIVisionException {
         double rectShort, height;
         int targetHeight;
-        
+
         rectShort = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE);
         //using the smaller of the estimated rectangle short side and the bounding rectangle height results in better performance
         //on skewed rectangles
         height = Math.min(report.boundingRectHeight, rectShort);
         //targetHeight = outer ? 29 : 21;
         targetHeight = outer ? 62 : 54;
-        
+
         return X_IMAGE_RES * targetHeight / (height * 12 * 2 * Math.tan(VIEW_ANGLE * Math.PI / (180 * 2)));
     }
 
     public double getTurnOff() {
         return turnDegrees;
     }
-    
+
     public double getShooterOff() {
         double shooterAngleVoltage = (shooterAngleDegrees * RobotMap.MAXVOLT) / 360;
-        return shooterAngleVoltage; 
+        return shooterAngleVoltage;
     }
-    
+
     private void calcAim(ParticleAnalysisReport report) {
         try {
             double degPerPixel = imageWidth / THETAX;
@@ -195,7 +191,7 @@ public class Vision extends Subsystem {
             // System.out.println(ex);
         }
     }
-    
+
     private void calcShooterAngle(ParticleAnalysisReport report) {   //calculates the vertical angle off
         try {
             double degPerPixel = imageHeight / THETAY;
@@ -210,7 +206,7 @@ public class Vision extends Subsystem {
             // System.out.println(ex);
         }
     }
-    
+
     /**
      * Computes a score (0-100) comparing the aspect ratio to the ideal aspect
      * ratio for the target. This method uses the equivalent rectangle sides to
@@ -231,13 +227,12 @@ public class Vision extends Subsystem {
 
         rectLong = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_LONG_SIDE);
         rectShort = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE);
-        if(targetlevel){
+        if (targetlevel) {
             idealAspectRatio = outer ? (62 / 20) : (54 / 12);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
-                            //the above ration dimensions are for the 3 pt goal -Eric
-        }
-        else{
+            //the above ration dimensions are for the 3 pt goal -Eric
+        } else {
             idealAspectRatio = outer ? (62 / 29) : (54 / 21);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
-                            //the above ratio dimensions are for the 2 pt goals -Eric
+            //the above ratio dimensions are for the 2 pt goals -Eric
         }
         //Divide width by height to measure aspect ratio
         if (report.boundingRectWidth > report.boundingRectHeight) {

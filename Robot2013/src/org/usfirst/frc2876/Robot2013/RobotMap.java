@@ -49,6 +49,7 @@ public class RobotMap {
         DRIVETRAIN_GYRO.setSensitivity(0.007);
         
         SHOOTER_POT = new AnalogChannel(2, 1); // Plug in the right ports
+        LiveWindow.addActuator("Shooter", "Potentiometer", SHOOTER_POT);
         
         DRIVETRAIN_LEFTENCODER = new Encoder(1, 3, 1, 4, true, EncodingType.k4X);
 	DRIVETRAIN_LEFTENCODER.setMinRate(10);

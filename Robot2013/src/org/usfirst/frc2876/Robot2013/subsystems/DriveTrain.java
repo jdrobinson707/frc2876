@@ -34,8 +34,6 @@ public class DriveTrain extends Subsystem {
     public static final double GEAR_RATIO = 42 / 39;
     public static final double DRIVE_ENCODER_PULSE_PER_ROT = PULSE_PER_ROTATION * GEAR_RATIO; //pulse per rotation * gear ratio
     public static final double DRIVE_ENCODER_DIST_PER_TICK = ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
-    
-    
     // Turn PID controller variables
     private static final double turnKp = 0.1;
     private static final double turnKi = 0;
@@ -46,8 +44,6 @@ public class DriveTrain extends Subsystem {
     // It will just calculate error and come up with the output value
     // that should be sent to jaguars to turn.
     boolean turnPIDOutputEnabled = false;
-    
-    
     // Distance PID controller variables
     private static final double dKp = 0.1;
     private static final double dKi = 0;
@@ -59,8 +55,7 @@ public class DriveTrain extends Subsystem {
     // that should be sent to jaguars to drive.
     boolean dPIDOutputEnabled = false;
 
-    
-    public void DriveTrain() {
+    public DriveTrain() {
 
         rightEncoder.setMaxPeriod(DRIVE_ENCODER_MIN_PERIOD);
         rightEncoder.setMinRate(DRIVE_ENCODER_MIN_RATE);
@@ -70,10 +65,13 @@ public class DriveTrain extends Subsystem {
 
         leftEncoder.setDistancePerPulse(DRIVE_ENCODER_DIST_PER_TICK);
         rightEncoder.setDistancePerPulse(DRIVE_ENCODER_DIST_PER_TICK * 1.6);
-        
+
         startEncoder(leftEncoder);
         startEncoder(rightEncoder);
-           
+        
+        initDPID();
+        initTurnPID();
+
     }
 
     // Put methods for controlling this subsystem
@@ -93,14 +91,14 @@ public class DriveTrain extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
 
-    public void initTurnPID() {
+    private void initTurnPID() {
         turnPID = new PIDController(turnKp, turnKi, turnKd, turnKf, gyro, new PIDOutput() {
             public void pidWrite(double output) {
                 if (turnPIDOutputEnabled) {
-                    robotDrive2.tankDrive(output, output);
+                    robotDrive2.tankDrive(-output, output);
                 }
             }
-        });  
+        });
         gyro.reset();
         turnPID.setOutputRange(-1, 1);
         turnPID.setInputRange(-90, 90);
@@ -118,36 +116,25 @@ public class DriveTrain extends Subsystem {
         gyro.reset();
         turnPID.setSetpoint(degrees);
     }
-    
-    //is the below method even needed? I am unsure whether or not the PID class already handles this
-    //I am calling turn() in TurnRobot.java and TurnRobotVision.java
-    //-Eric
-    public void turn() {
-        double turnOutput = turnPID.get();
-        double turn = turnPID.get();
-         robotDrive2.arcadeDrive(turnOutput, turn);
-    }    
 
-    public double getGyro() {
-        SmartDashboard.putNumber("gyro: ", gyro.getAngle());
-        return gyro.getAngle();
-    }
-    
-//    public void stopGyro() {
-//        gyro.;
-//    }  
-    
+
+//    public double getGyro() {
+//        SmartDashboard.putNumber("gyro: ", gyro.getAngle());
+//        return gyro.getAngle();
+//    }
+
     public boolean isTurnDone() {
-        System.out.println("is turn done: " + turnPID.onTarget()
-                + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
-                + " out:" + RobotMap.roundtoTwo(turnPID.get())
-                + " err:" + RobotMap.roundtoTwo(turnPID.getError()));
+//        System.out.println("is turn done: " + turnPID.onTarget()
+//                + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
+//                + " out:" + RobotMap.roundtoTwo(turnPID.get())
+//                + " err:" + RobotMap.roundtoTwo(turnPID.getError()));
 
         return turnPID.onTarget();
     }
 
     public void endTurn() {
-        turnPID.disable();
+        // turnPID.disable();
+        turnPIDOutputEnabled = false;
     }
 
     public void drive(Joystick left, Joystick right) {
@@ -198,7 +185,7 @@ public class DriveTrain extends Subsystem {
         }
     }
 
-    public void initDPID() {
+    private void initDPID() {
         // Encoders can measure distance or rate of rotation.
         // We want distance from the drive train encoders so need
         // to configure encoders to give us distance when using PID.
@@ -230,12 +217,11 @@ public class DriveTrain extends Subsystem {
         dPID.setSetpoint(inches);
     }
 
-    public void driveDistance() {
-        double dOutput = dPID.get();
-        //double turn = turnPID.get();
-        robotDrive2.arcadeDrive(dOutput, dOutput);
-    }    
-    
+//    public void driveDistance() {
+//        double dOutput = dPID.get();
+//        robotDrive2.tankDrive(dOutput, dOutput);
+//    }
+
     // Call this func from initialize in a command
     public void setDriveDistanceStraight(double inches) {
         turnPIDOutputEnabled = false;
@@ -258,5 +244,9 @@ public class DriveTrain extends Subsystem {
     // Call this func from isFinished in a command
     public boolean isDistanceDone() {
         return dPID.onTarget();
+    }
+    
+    public void endDistance() {
+        dPIDOutputEnabled = false;
     }
 }
