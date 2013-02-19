@@ -80,7 +80,9 @@ public class OI {
         SmartDashboard.putData("Adjust Shooter w/ Vision", armB11);
 
         leftB1.whenPressed(new LoadShooter());
+        SmartDashboard.putData("Load Shooter", leftB1);
         leftB2.whenPressed(new LoadShooterIdle());
+        SmartDashboard.putData("Load Shooter Idle", leftB2);
     }
 
     public void joystickInit() {

@@ -53,7 +53,7 @@ public class Vision extends Subsystem {
     int vhigh = 255;
     public static final int THETAX = 67; //field of view horizontal
     public static final int THETAY = 50; //field of view vertical
-    //public static final int THETA = 54;
+    public static final int THETA = 47;
     //public static final int THETA = 67;
     final int imageWidth = 320;
     final int imageHeight = 240;
@@ -79,12 +79,12 @@ public class Vision extends Subsystem {
 
     public void cameraInit() {
 
-        hlow = prefs.getInt("hlow", 0);
-        hhigh = prefs.getInt("hhigh", 0);
-        slow = prefs.getInt("slow", 0);
-        shigh = prefs.getInt("shigh", 0);
-        vlow = prefs.getInt("vlow", 0);
-        vhigh = prefs.getInt("vhigh", 0);
+        hlow = prefs.getInt("hlow", 81);
+        hhigh = prefs.getInt("hhigh", 255);
+        slow = prefs.getInt("slow", 118);
+        shigh = prefs.getInt("shigh", 255);
+        vlow = prefs.getInt("vlow", 24);
+        vhigh = prefs.getInt("vhigh", 255);
 
         System.out.println(hlow + " - " + hhigh);
         System.out.println(slow + " - " + shigh);
@@ -194,7 +194,7 @@ public class Vision extends Subsystem {
 
     private void calcAim(ParticleAnalysisReport report) {
         try {
-            double degPerPixel = imageWidth / THETAX;
+            double degPerPixel = imageWidth / THETA;
             double imgCenter = imageWidth / 2;
 
             double delta = report.center_mass_x - imgCenter;

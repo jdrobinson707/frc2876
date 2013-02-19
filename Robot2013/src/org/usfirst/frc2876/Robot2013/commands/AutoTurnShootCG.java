@@ -31,19 +31,19 @@ public class AutoTurnShootCG extends CommandGroup {
         // arm.
         //
         // use camera to find target
-        addSequential(new FindTargets(find3ptr));
+        addSequential(new Find2PtTarget());
         // turn robot to aim at target
         addSequential(new TurnRobotVision());
         // start the shooter wheel
-        addParallel(new Shoot());
+        addSequential(new Shoot());
         // at the same time shooter starts adjust the angle of the shooter
-        addSequential(new AdjustShooterVision());
+        //addSequential(new AdjustShooterVision());
         // Need to add command to active thingy that will push frisbee into
         // shooter.
 
         //we need a way to stop the shooter when it is done shooting frisbee.
         // probably use a timer since we have no way to detect if  
         // we have any frisbees loaded.
-        addSequential(new ShootIdle());
+        //addSequential(new ShootIdle());
     }
 }
