@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  * @author Student
  */
 public class AutoTurnShootCG extends CommandGroup {
-    
-    public AutoTurnShootCG() {
+
+    public AutoTurnShootCG(boolean find3ptr) {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -29,11 +29,21 @@ public class AutoTurnShootCG extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-        addSequential(new FindTargets());
+        //
+        // use camera to find target
+        addSequential(new FindTargets(find3ptr));
+        // turn robot to aim at target
         addSequential(new TurnRobotVision());
+        // start the shooter wheel
+        addParallel(new Shoot());
+        // at the same time shooter starts adjust the angle of the shooter
         addSequential(new AdjustShooterVision());
-        addSequential(new Shoot());
-        //we need a limit switch or something here to stop the shooter
+        // Need to add command to active thingy that will push frisbee into
+        // shooter.
+
+        //we need a way to stop the shooter when it is done shooting frisbee.
+        // probably use a timer since we have no way to detect if  
+        // we have any frisbees loaded.
         addSequential(new ShootIdle());
     }
 }

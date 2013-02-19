@@ -138,7 +138,11 @@ public class DriveTrain extends Subsystem {
     }
 
     public void drive(Joystick left, Joystick right) {
-        robotDrive2.tankDrive(left.getY(), -right.getY());
+        robotDrive2.tankDrive(left, right);
+    }
+    
+    public void driveSmooth(Joystick left, Joystick right) {
+        robotDrive2.tankDrive(left, right, true);
     }
 
     public void startEncoder(Encoder encoder) {

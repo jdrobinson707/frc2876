@@ -32,11 +32,8 @@ public class Autonomous3FrisbeeCG extends CommandGroup {
         addSequential(new TurnRobot(45));
         addSequential(new DriveForwardStraight(40));
         addSequential(new TurnRobot(-45));
-        addSequential(new FindTargets());
-        addSequential(new TurnRobotVision());
-        addSequential(new AdjustShooterVision());
-        addSequential(new Shoot());
-        //we need a limit switch or something here to stop the shooter
-        addSequential(new ShootIdle());
+        
+        addSequential(new AutoTurnShootCG(true));
+        
     }
 }

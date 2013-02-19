@@ -12,11 +12,13 @@ import org.usfirst.frc2876.Robot2013.Robot;
  * @author Student
  */
 public class FindTargets extends Command {
+    boolean find3ptr;
     
-    public FindTargets() {
+    public FindTargets(boolean find3ptr) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
         requires(Robot.vision);
+        this.find3ptr = find3ptr;
     }
 
     // Called just before this Command runs the first time
@@ -27,14 +29,12 @@ public class FindTargets extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
         //finds 3 pt. targets:
-        Robot.vision.findTargets(true);
-        //finds 2 pt. targets:
-        Robot.vision.findTargets(false);
+        Robot.vision.findTargets(find3ptr);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once after isFinished returns true

@@ -51,7 +51,7 @@ public class OI {
 
         armB1.whenPressed(new Shoot());
         armB2.whenPressed(new ShootIdle());
-        armB3.whenPressed(new AutoTurnShootCG());
+        armB3.whenPressed(new AutoTurnShootCG(true));
         armB4.whenPressed(new DriveForward(24));
         armB5.whenPressed(new DriveForwardStraight(24));
         armB6.whenPressed(new Find2PtTarget());
