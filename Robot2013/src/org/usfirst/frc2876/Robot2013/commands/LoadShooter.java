@@ -11,32 +11,31 @@ import org.usfirst.frc2876.Robot2013.Robot;
  *
  * @author Student
  */
-public class Find3PtTarget extends Command {
+public class LoadShooter extends Command {
     
-    public Find3PtTarget() {
+    public LoadShooter() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(Robot.vision);
+        requires(Robot.shooter);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.vision.cameraInit();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        //finds 3 pt. targets:
-        Robot.vision.findTargets(true);
+        Robot.shooter.startFeeder();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+        Robot.shooter.endFeeder();
     }
 
     // Called when another command which requires one or more of the same

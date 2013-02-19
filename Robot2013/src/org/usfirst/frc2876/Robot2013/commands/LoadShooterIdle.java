@@ -5,34 +5,30 @@
 package org.usfirst.frc2876.Robot2013.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.usfirst.frc2876.Robot2013.Robot;
 
 /**
  *
  * @author Student
  */
-public class Find3PtTarget extends Command {
+public class LoadShooterIdle extends Command {
     
-    public Find3PtTarget() {
+    public LoadShooterIdle() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(Robot.vision);
+        //requires()
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.vision.cameraInit();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        //finds 3 pt. targets:
-        Robot.vision.findTargets(true);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return false;
     }
 
     // Called once after isFinished returns true

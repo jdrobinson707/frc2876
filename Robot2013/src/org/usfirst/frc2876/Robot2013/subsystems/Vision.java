@@ -40,9 +40,8 @@ public class Vision extends Subsystem {
     final int X_EDGE_LIMIT = 40;
     final int Y_EDGE_LIMIT = 60;
     final int X_IMAGE_RES = 320;          //X Image resolution in pixels, should be 160, 320 or 640
-//    final double VIEW_ANGLE  = 67.0;
-    final double VIEW_ANGLE = 43.5;       //Axis 206 camera
-//    final double VIEW_ANGLE = 48;       //Axis M1011 camera
+    //final double VIEW_ANGLE = 54.0;       //Axis 206 camera
+    final double VIEW_ANGLE = 47;       //Axis M1011 camera
     AxisCamera camera;          // the axis camera object (connected to the switch)
     CriteriaCollection cc;      // the criteria for doing the particle filter operation
     Preferences prefs;
@@ -60,6 +59,7 @@ public class Vision extends Subsystem {
     final int imageHeight = 240;
     public double turnDegrees = 0.0;
     public double shooterAngleDegrees = 0.0;
+    public double distanceToTarget;
 
     public class Scores {
 
@@ -97,7 +97,7 @@ public class Vision extends Subsystem {
         setDefaultCommand(new VisionIdle());
     }
 
-    public void findTargets(boolean targetlevel) {
+    public void findTargets(boolean threepointer) {
 
         try {
             ColorImage image = camera.getImage(); // comment if using stored images
@@ -118,21 +118,32 @@ public class Vision extends Subsystem {
                 scores[i] = new Scores();
 
                 scores[i].rectangularity = scoreRectangularity(report);
-                scores[i].aspectRatioOuter = scoreAspectRatio(filteredImage, report, i, true, targetlevel);
-                scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false, targetlevel);
+                scores[i].aspectRatioOuter = scoreAspectRatio(filteredImage, report, i, true, threepointer);
+                scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false, threepointer);
                 scores[i].xEdge = scoreXEdge(thresholdImage, report);
                 scores[i].yEdge = scoreYEdge(thresholdImage, report);
 
-                if (scoreCompare(scores[i], false)) {
-                    System.out.println("particle: " + i + "is a High Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
-                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
+
+                if (scoreCompare(scores[i], !threepointer)) {
+                    System.out.println("particle: " + i + "is a 3 Point Target  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
                     calcAim(report);
-                } else if (scoreCompare(scores[i], true)) {
-                    System.out.println("particle: " + i + "is a Middle Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
-                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
+                    distanceToTarget = computeDistance(thresholdImage, report, i, false);
+                    System.out.println("Distance: " + distanceToTarget + "  Angle:" + turnDegrees);
+                    SmartDashboard.putNumber("Distance to Target", distanceToTarget);
+                    SmartDashboard.putNumber("TurnDegrees", turnDegrees);
                 } else {
                     System.out.println("particle: " + i + "is not a goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
                 }
+//                if (scoreCompare(scores[i], false)) {
+//                    System.out.println("particle: " + i + "is a 3 Point Target  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+//                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
+//                    calcAim(report);
+//                } else if (scoreCompare(scores[i], true)) {
+//                    System.out.println("particle: " + i + "is a 2 Point Target  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+//                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
+//                } else {
+//                    System.out.println("particle: " + i + "is not a goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+//                }
                 System.out.println("rect: " + scores[i].rectangularity + "ARinner: " + scores[i].aspectRatioInner);
                 System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
             }
@@ -146,7 +157,7 @@ public class Vision extends Subsystem {
             convexHullImage.free();
             thresholdImage.free();
             image.free();
-            Timer.delay(1);
+            //Timer.delay(1);
         } catch (AxisCameraException ex) {        // this is needed if the camera.getImage() is called
             ex.printStackTrace();
         } catch (NIVisionException ex) {
@@ -172,6 +183,10 @@ public class Vision extends Subsystem {
         return turnDegrees;
     }
 
+    public double getDistanceToTarget() {
+        return distanceToTarget;
+    }
+
     public double getShooterOff() {
         double shooterAngleVoltage = (shooterAngleDegrees * RobotMap.MAXVOLT) / 360;
         return shooterAngleVoltage;
@@ -185,8 +200,6 @@ public class Vision extends Subsystem {
             double delta = report.center_mass_x - imgCenter;
             turnDegrees = delta / degPerPixel;
             turnDegrees = RobotMap.roundtoTwo(turnDegrees);
-            System.out.println("turn degrees off: " + turnDegrees);
-            SmartDashboard.putNumber("Turn degrees off", turnDegrees);
         } catch (ArithmeticException ex) {
             // System.out.println(ex);
         }
@@ -250,16 +263,16 @@ public class Vision extends Subsystem {
      * appears to be a target
      *
      * @param scores The structure containing the scores to compare
-     * @param outer True if the particle should be treated as an outer target,
-     * false to treat it as a center target
+     * @param outer True if the particle should be treated as an 2 point target,
+     * false to treat it as a 3 point target
      *
      * @return True if the particle meets all limits, false otherwise
      */
-    boolean scoreCompare(Scores scores, boolean outer) {
+    boolean scoreCompare(Scores scores, boolean twopointer) {
         boolean isTarget = true;
 
         isTarget &= scores.rectangularity > RECTANGULARITY_LIMIT;
-        if (outer) {
+        if (twopointer) {
             isTarget &= scores.aspectRatioOuter > ASPECT_RATIO_LIMIT;
         } else {
             isTarget &= scores.aspectRatioInner > ASPECT_RATIO_LIMIT;
