@@ -79,11 +79,11 @@ public class Vision extends Subsystem {
 
     public void cameraInit() {
 
-        hlow = prefs.getInt("hlow", 81);
+        hlow = prefs.getInt("hlow", 24);
         hhigh = prefs.getInt("hhigh", 255);
-        slow = prefs.getInt("slow", 118);
+        slow = prefs.getInt("slow", 117);
         shigh = prefs.getInt("shigh", 255);
-        vlow = prefs.getInt("vlow", 24);
+        vlow = prefs.getInt("vlow", 17);
         vhigh = prefs.getInt("vhigh", 255);
 
         System.out.println(hlow + " - " + hhigh);

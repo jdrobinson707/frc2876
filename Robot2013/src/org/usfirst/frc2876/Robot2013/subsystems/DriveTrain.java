@@ -103,11 +103,11 @@ public class DriveTrain extends Subsystem {
         turnPID.setOutputRange(-0.8, 0.8);
         //turnPID.setInputRange(-90, 90);
         turnPID.setPercentTolerance(10);
-        turnPID.setContinuous();
+        //turnPID.setContinuous();
         //turnPID.enable();
         LiveWindow.addActuator("DriveTrain", "turnPID", turnPID);
         // turnPID.reset();
-        turnPID.setSetpoint(0);
+        //turnPID.setSetpoint(0);
     }
 
     public void setTurn(double degrees) {
@@ -127,14 +127,18 @@ public class DriveTrain extends Subsystem {
 //                + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
 //                + " out:" + RobotMap.roundtoTwo(turnPID.get())
 //                + " err:" + RobotMap.roundtoTwo(turnPID.getError()));
-
-        return turnPID.onTarget();
+        SmartDashboard.putNumber("turnPID Error", turnPID.getError());
+        SmartDashboard.putBoolean("is turnPID ontarget", turnPID.onTarget());
+        //return turnPID.onTarget();
+        return (Math.abs(turnPID.getError()) < 2);
     }
 
     public void endTurn() {
-         turnPID.disable();
+        turnPID.reset();
         turnPIDOutputEnabled = false;
-        
+        robotDrive2.tankDrive(0, 0);
+        SmartDashboard.putNumber("turnPID Error", turnPID.getError());
+        SmartDashboard.putBoolean("is turnPID ontarget", turnPID.onTarget());
     }
 
     public void drive(Joystick left, Joystick right) {
@@ -264,11 +268,15 @@ public class DriveTrain extends Subsystem {
     public boolean isDistanceDone() {
         SmartDashboard.putNumber("dPID Error", dPID.getError());
         SmartDashboard.putBoolean("is dPID ontarget", dPID.onTarget());
-        return dPID.onTarget();
+        //return dPID.onTarget();
+        return (Math.abs(dPID.getError()) < 2);
     }
 
     public void endDistance() {
         dPIDOutputEnabled = false;
-        dPID.disable();
+        dPID.reset();
+        robotDrive2.tankDrive(0, 0);
+        SmartDashboard.putNumber("dPID Error", dPID.getError());
+        SmartDashboard.putBoolean("is dPID ontarget", dPID.onTarget());
     }
 }

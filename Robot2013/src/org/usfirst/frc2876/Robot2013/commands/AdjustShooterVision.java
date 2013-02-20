@@ -16,13 +16,15 @@ public class AdjustShooterVision extends Command {
     double volts = 0.0;
     public AdjustShooterVision() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.shooter);
+        Robot.angleShooter.potInit();
+        requires(Robot.angleShooter);
+        requires(Robot.vision);
         volts = Robot.vision.getShooterOff();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.shooter.setPotSetpoint(volts);
+        Robot.angleShooter.setPotSetpoint(volts);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -32,12 +34,12 @@ public class AdjustShooterVision extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.shooter.isFinishedAdjustingShooter();
+        return Robot.angleShooter.lmtest() || Robot.angleShooter.isFinishedAdjustingShooter();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-        Robot.shooter.endShooterPID();
+        Robot.angleShooter.endShooterPID();
     }
 
     // Called when another command which requires one or more of the same
