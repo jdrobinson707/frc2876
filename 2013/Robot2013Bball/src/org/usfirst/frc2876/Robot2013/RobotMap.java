@@ -67,7 +67,6 @@ public class RobotMap {
         DRIVETRAIN_LEFTENCODER.setMaxPeriod(10);
         DRIVETRAIN_LEFTENCODER.start();
         LiveWindow.addSensor("DriveTrain", "leftEncoder", DRIVETRAIN_LEFTENCODER);
-        //LiveWindow.addSensor("DriveTrain", "leftEncoder", DRIVETRAIN_LEFTENCODER);
         //DRIVETRAIN_LEFTENCODER.setDistancePerPulse(1.0);
         //DRIVETRAIN_LEFTENCODER.setPIDSourceParameter(PIDSourceParameter.kRate);
         
@@ -76,7 +75,6 @@ public class RobotMap {
         DRIVETRAIN_RIGHTENCODER.setMaxPeriod(10);
         DRIVETRAIN_RIGHTENCODER.start();
         LiveWindow.addSensor("DriveTrain", "rightEncoder", DRIVETRAIN_RIGHTENCODER);
-        //LiveWindow.addSensor("DriveTrain", "rightEncoder", DRIVETRAIN_RIGHTENCODER);
         //DRIVETRAIN_RIGHTENCODER.setDistancePerPulse(1.0);
         //DRIVETRAIN_RIGHTENCODER.setPIDSourceParameter(PIDSourceParameter.kRate);
         
