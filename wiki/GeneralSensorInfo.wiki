@@ -1,0 +1,9 @@
+General Sensor Information
+
+
+Advice using sensors
+http://www.chiefdelphi.com/forums/showthread.php?t=114466
+Some useful posts in this thread: 3, 6, 7
+
+How to use a PNP, NPN, inductive sensor
+http://www.chiefdelphi.com/forums/showthread.php?t=103308
