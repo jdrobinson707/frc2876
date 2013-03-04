@@ -39,3 +39,7 @@ http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e5
 	public static final int pulsePerRotation = 360; //encoder pulse per rotation
 	public static final double gearRatio = 26/12; //ratio between wheel and 
 }}}
+
+
+How to use getRate and setDistancePerPulse
+http://www.chiefdelphi.com/forums/showthread.php?t=114522
