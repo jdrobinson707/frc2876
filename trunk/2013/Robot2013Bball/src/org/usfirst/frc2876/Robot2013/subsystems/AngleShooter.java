@@ -27,8 +27,10 @@ public class AngleShooter extends Subsystem {
     DigitalInput highlm = RobotMap.HIGH_LM;
     AnalogChannel ac = RobotMap.SHOOTER_POT;
     Jaguar shootingAngleJaguar = RobotMap.SHOOTER_SHOOTINGANGLE_JAGUAR;
-    final double LOW_LIMIT = 1.032;
-    final double HIGH_LIMIT = .636;
+   // final double LOW_LIMIT = 1.032;
+    //final double HIGH_LIMIT = .636;
+     final double LOW_LIMIT = 0.87;
+    final double HIGH_LIMIT = 4.0;
     PIDController scPID;
 
     public void initDefaultCommand() {
@@ -47,7 +49,7 @@ public class AngleShooter extends Subsystem {
             }
         });
         scPID.setPercentTolerance(5.0);
-        scPID.setOutputRange(-.5, .5);
+        scPID.setOutputRange(-.2, .2);
         //scPID.setInputRange(HIGH_LIMIT, LOW_LIMIT);
         //scPID.enable();
         LiveWindow.addActuator("AngleShooter", "angle PID", scPID);
