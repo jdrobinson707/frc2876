@@ -27,3 +27,6 @@ if(output==0) {
   output=truncate(ave+1-0.03);
 }
 }}}
+
+= How to detect a motor has stalled =
+http://www.chiefdelphi.com/forums/showthread.php?t=114680
