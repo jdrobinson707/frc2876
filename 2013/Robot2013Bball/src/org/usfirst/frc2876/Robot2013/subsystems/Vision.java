@@ -29,12 +29,17 @@ public class Vision extends Subsystem {
     final int XMINSIZE = 24;
     final int YMAXSIZE = 24;
     final int YMINSIZE = 48;
-    final double xMax[] = {1, 1, 1, 1, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, 1, 1, 1, 1};
-    final double xMin[] = {.4, .6, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, 0.6, 0};
-    final double yMax[] = {1, 1, 1, 1, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, 1, 1, 1, 1};
-    final double yMin[] = {.4, .6, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05,
-        .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05,
-        .05, .05, .6, 0};
+    final double xMax[] = {1, 1, 1, 1, .5, .5, .5, .5, .5, .5, .5, .5, .5,
+			   .5, .5, .5, .5, .5, .5, .5, 1, 1, 1, 1};
+    final double xMin[] = {.4, .6, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1,
+			   .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, 0.6, 0};
+    final double yMax[] = {1, 1, 1, 1, .5, .5, .5, .5, .5, .5, .5, .5, .5,
+			   .5, .5, .5, .5, .5, .5, .5, 1, 1, 1, 1};
+    final double yMin[] = {.4, .6, .05, .05, .05, .05, .05, .05, .05, .05,
+			   .05, .05, .05, .05, .05, .05, .05, .05, .05, .05,
+			   .05, .05, .05, .05, .05, .05, .05, .05, .05, .05,
+			   .05, .05, .05, .05, .05, .05, .05, .05, .05, .05,
+			   .05, .05, .05, .05, .05, .05, .6, 0};
     final int RECTANGULARITY_LIMIT = 60;
     final int ASPECT_RATIO_LIMIT = 75;
     final int X_EDGE_LIMIT = 40;
@@ -58,7 +63,7 @@ public class Vision extends Subsystem {
     final int imageWidth = 320;
     final int imageHeight = 240;
     public double turnDegrees = 0.0;
-    public double shooterAngleDegrees = 0.0;
+    public double shooterAngleDegrees = 0;
     public double distanceToTarget;
 
     public class Scores {
@@ -187,9 +192,10 @@ public class Vision extends Subsystem {
         return distanceToTarget;
     }
 
-    public double getShooterOff() {
-        double shooterAngleVoltage = (shooterAngleDegrees * RobotMap.MAXVOLT) / 360;
-        return shooterAngleVoltage;
+    public int getShooterOff() {
+        //int shooterAngle = (shooterAngleDegrees * RobotMap.MAXVOLT) / 360;
+        int shooterAngle = 400;
+        return shooterAngle;
     }
 
     private void calcAim(ParticleAnalysisReport report) {
