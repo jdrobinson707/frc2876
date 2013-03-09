@@ -44,43 +44,29 @@ public class OI {
     public OI() {
         joystickInit();
 
+        SmartDashboard.putData("AngleShooterPID", new AdjustShooterAngle(0));
+        SmartDashboard.putData("DriveForward", new DriveForward(35));
+        SmartDashboard.putData("TurnRobot90", new TurnRobot(90));
+        SmartDashboard.putData("DriveStraight", new DriveForwardStraight(70));
+        
         armB1.whenPressed(new Shoot());
-        SmartDashboard.putData("Shooter Shoot", armB1);
-
         armB2.whenPressed(new ShootIdle());
-        SmartDashboard.putData("Shooter Idle", armB2);
-
         //armB3.whenPressed(new AutoTurnShootCG(true));
-        //SmartDashboard.putData("Auto Turn & Shoot", armB3);
         armB3.whenPressed(new Drive());
-        SmartDashboard.putData("Drive", armB3);
         //armB5.whenPressed(new DriveForwardStraight(1));
-        //SmartDashboard.putData("Drive Straight", armB5);
 
         // broken button
         //armB4.whenPressed(new DriveForward(24)); 
-        //SmartDashboard.putData("VisionTurn", armB4); 
 
         armB6.whenPressed(new Find2PtTarget());
-        SmartDashboard.putData("Find 2 Pt.", armB6);
-
         armB7.whenPressed(new Find3PtTarget());
-        SmartDashboard.putData("Find 3 Pt.", armB7);
-
         armB8.whenPressed(new TurnRobot(90));
-        SmartDashboard.putData("Turn Robot", armB8);
-
         armB9.whenPressed(new TurnRobotVision());
-        SmartDashboard.putData("Turn Robot w/ Vision", armB9);
-
         armB10.whenPressed(new VisionIdle());
-        SmartDashboard.putData("Vision Idle", armB10);
-
         armB11.whenPressed(new AdjustShooterVision());
-        SmartDashboard.putData("Adjust Shooter w/ Vision", armB11);
     }
 
-    public void joystickInit() {
+     final void joystickInit() {
         leftStick = new Joystick(1);
         rightStick = new Joystick(2);
         armStick = new Joystick(3);

@@ -22,9 +22,13 @@ public class DriveForward extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+        Robot.driveTrain.leftEncoder.reset();
+        Robot.driveTrain.rightEncoder.reset();
         Robot.driveTrain.startEncoder(Robot.driveTrain.rightEncoder);
         Robot.driveTrain.startEncoder(Robot.driveTrain.leftEncoder);
-        Robot.driveTrain.setDriveDistance(dist);
+         double z = Robot.oi.getRightStick().getZ();
+        z = (((z + 1) / 2) * 1000)+25;
+        Robot.driveTrain.setDriveDistance(z);
     }
 
     // Called repeatedly when this Command is scheduled to run

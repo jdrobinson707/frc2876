@@ -71,7 +71,6 @@ public class DriveTrain extends Subsystem {
 
         initDPID();
         initTurnPID();
-
     }
 
     // Put methods for controlling this subsystem
@@ -96,41 +95,36 @@ public class DriveTrain extends Subsystem {
             public void pidWrite(double output) {
                 if (turnPIDOutputEnabled) {
                     robotDrive2.tankDrive(output, -output);
+                    SmartDashboard.putNumber("turnPID L output", output);
+                    SmartDashboard.putNumber("turnPID R output", -output);
                 }
             }
         });
-        gyro.reset();
+        
         turnPID.setOutputRange(-0.8, 0.8);
-        //turnPID.setInputRange(-90, 90);
-        turnPID.setPercentTolerance(10);
-        //turnPID.setContinuous();
-        //turnPID.enable();
+        turnPID.setPercentTolerance(20);
         LiveWindow.addActuator("DriveTrain", "turnPID", turnPID);
-        // turnPID.reset();
-        //turnPID.setSetpoint(0);
     }
 
     public void setTurn(double degrees) {
         turnPIDOutputEnabled = true;
         dPIDOutputEnabled = false;
         gyro.reset();
+        
+        turnPID.reset();
         turnPID.setSetpoint(degrees);
         turnPID.enable();
+        SmartDashboard.putNumber("turnPID setpoint", turnPID.getSetpoint());
     }
-
-//    public double getGyro() {
-//        SmartDashboard.putNumber("gyro: ", gyro.getAngle());
-//        return gyro.getAngle();
-//    }
     public boolean isTurnDone() {
 //        System.out.println("is turn done: " + turnPID.onTarget()
 //                + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
 //                + " out:" + RobotMap.roundtoTwo(turnPID.get())
 //                + " err:" + RobotMap.roundtoTwo(turnPID.getError()));
         SmartDashboard.putNumber("turnPID Error", turnPID.getError());
-        SmartDashboard.putBoolean("is turnPID ontarget", turnPID.onTarget());
+        SmartDashboard.putBoolean("turnPID ontarget", turnPID.onTarget());
         //return turnPID.onTarget();
-        return (Math.abs(turnPID.getError()) < 2);
+        return (Math.abs(turnPID.getError()) < 8);
     }
 
     public void endTurn() {
@@ -139,18 +133,19 @@ public class DriveTrain extends Subsystem {
         robotDrive2.tankDrive(0, 0);
         SmartDashboard.putNumber("turnPID Error", turnPID.getError());
         SmartDashboard.putBoolean("is turnPID ontarget", turnPID.onTarget());
+	updateDashboard();
     }
 
     public void drive(Joystick left, Joystick right) {
         robotDrive2.tankDrive(left.getY(), right.getY());
         SmartDashboard.putNumber("leftEnc", leftEncoder.getDistance());
         SmartDashboard.putNumber("rightEnc", rightEncoder.getDistance());
-
+        SmartDashboard.putNumber("jagL", leftDriveJaguar.get());
+        SmartDashboard.putNumber("jagR", rightDriveJaguar.get());
     }
 
     public void driveSmooth(Joystick left, Joystick right) {
         robotDrive2.tankDrive(left, right, true);
-
     }
 
     public void startEncoder(Encoder encoder) {
@@ -163,22 +158,18 @@ public class DriveTrain extends Subsystem {
     }
 
     public double getLeftEncoder() {
-        SmartDashboard.putNumber("left encoder: ", leftEncoder.getRaw());
         return leftEncoder.getRaw();
     }
 
     public double getRightEncoder() {
-        SmartDashboard.putNumber("right encoder: ", rightEncoder.getRaw());
         return rightEncoder.getRaw();
     }
 
     public double getLeftEncoderDistance() {
-        SmartDashboard.putNumber("left encoder distance: ", leftEncoder.getDistance());
         return leftEncoder.getDistance();
     }
 
     public double getRightEncoderDistance() {
-        SmartDashboard.putNumber("right encoder distance: ", rightEncoder.getDistance());
         return rightEncoder.getDistance();
     }
 
@@ -191,7 +182,10 @@ public class DriveTrain extends Subsystem {
         public double pidGet() {
             double r = rightEncoder.getDistance();
             double l = leftEncoder.getDistance();
-            double avg = (r + l) / 2;
+            //double avg = (r + l) / 2;
+            // Since only one encoder is working using avg throws 
+            // off distance alot. Just use working one for now.
+            double avg = r;
             SmartDashboard.putNumber("AvgEnc", avg);
             return avg;
         }
@@ -216,10 +210,10 @@ public class DriveTrain extends Subsystem {
         // 10 ft and starts to drift left, we need to be able to turn
         // it right. If the outputs are at 1,1 for jaguars it is hard
         // to use the turnPID to correct the drift.
-        dPID.setOutputRange(-.8, .8);
+        //dPID.setOutputRange(-.8, .8);
+        dPID.setOutputRange(-.5, .5);
         dPID.setPercentTolerance(5);
-        dPID.setSetpoint(0);
-        //dPID.enable();
+
         LiveWindow.addActuator("DriveTrain", "dPID", dPID);
     }
 
@@ -227,26 +221,35 @@ public class DriveTrain extends Subsystem {
     public void setDriveDistance(double inches) {
         turnPIDOutputEnabled = false;
         dPIDOutputEnabled = true;
+        leftEncoder.reset();
+        rightEncoder.reset();
+        leftEncoder.start();
+        rightEncoder.start();
         dPID.setSetpoint(inches);
+        dPID.enable();
+        SmartDashboard.putNumber("dPID setpoint", dPID.getSetpoint());
+        SmartDashboard.putNumber("turnPID setpoint", turnPID.getSetpoint());
     }
 
-//    public void driveDistance() {
-//        double dOutput = dPID.get();
-//        robotDrive2.tankDrive(dOutput, dOutput);
-//    }
     // Call this func from initialize in a command
     public void setDriveDistanceStraight(double inches) {
         turnPIDOutputEnabled = false;
         dPIDOutputEnabled = false;
+        //
         leftEncoder.reset();
         rightEncoder.reset();
-
+        leftEncoder.start();
+        rightEncoder.start();
+        dPID.setSetpoint(inches);
+        //
         gyro.reset();
         turnPID.setSetpoint(0);
-        dPID.setSetpoint(inches);
+        //
+        turnPID.enable();
         dPID.enable();
-        SmartDashboard.putNumber("Distance Setpoint", dPID.getSetpoint());
-        SmartDashboard.putNumber("Turning Setpoint", turnPID.getSetpoint());
+        //
+        SmartDashboard.putNumber("dPID setpoint", dPID.getSetpoint());
+        SmartDashboard.putNumber("turnPID setpoint", turnPID.getSetpoint());
     }
 
     // Call this func from execute in a command
@@ -255,19 +258,15 @@ public class DriveTrain extends Subsystem {
         double turn = turnPID.get();
         // Which one of these drive methods will work better?
         // What happens if dOutput + turn > 1 or dOutput - turn < -1?
-        // robotDrive2.arcadeDrive(dOutput, turn);
+         robotDrive2.arcadeDrive(dOutput, turn);
         //robotDrive2.tankDrive(dOutput - turn, dOutput + turn);
-        robotDrive2.tankDrive(dOutput, dOutput);
-        SmartDashboard.putNumber("dOutput", dOutput);
-        SmartDashboard.putNumber("turn", turn);
-        SmartDashboard.putNumber("leftEnc", leftEncoder.getDistance());
-        SmartDashboard.putNumber("rightEnc", rightEncoder.getDistance());
+        //robotDrive2.tankDrive(dOutput, dOutput);
     }
 
     // Call this func from isFinished in a command
     public boolean isDistanceDone() {
         SmartDashboard.putNumber("dPID Error", dPID.getError());
-        SmartDashboard.putBoolean("is dPID ontarget", dPID.onTarget());
+        SmartDashboard.putBoolean("dPID ontarget", dPID.onTarget());
         //return dPID.onTarget();
         return (Math.abs(dPID.getError()) < 2);
     }
@@ -277,6 +276,21 @@ public class DriveTrain extends Subsystem {
         dPID.reset();
         robotDrive2.tankDrive(0, 0);
         SmartDashboard.putNumber("dPID Error", dPID.getError());
-        SmartDashboard.putBoolean("is dPID ontarget", dPID.onTarget());
+        SmartDashboard.putBoolean("dPID ontarget", dPID.onTarget());
+	updateDashboard();
+    }
+
+    public void updateDashboard() {
+        SmartDashboard.putNumber("jagL", leftDriveJaguar.get());
+        SmartDashboard.putNumber("jagR", rightDriveJaguar.get());
+        SmartDashboard.putNumber("leftEnc", leftEncoder.getDistance());
+        SmartDashboard.putNumber("rightEnc", rightEncoder.getDistance());
+        SmartDashboard.putNumber("dPID Output", dPID.get());
+        //
+        SmartDashboard.putNumber("turnPID Output", turnPID.get());
+        SmartDashboard.putNumber("gyro pidGet", gyro.pidGet());
+        //
+        SmartDashboard.putBoolean("turnPID enabled", turnPID.isEnable());
+        SmartDashboard.putBoolean("dPID enabled", dPID.isEnable());
     }
 }

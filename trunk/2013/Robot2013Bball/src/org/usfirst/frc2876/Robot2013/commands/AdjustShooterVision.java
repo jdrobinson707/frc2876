@@ -13,18 +13,17 @@ import org.usfirst.frc2876.Robot2013.Robot;
  */
 public class AdjustShooterVision extends Command {
     
-    double volts = 0.0;
+    int setpoint = 0;
     public AdjustShooterVision() {
         // Use requires() here to declare subsystem dependencies
-        Robot.angleShooter.potInit();
         requires(Robot.angleShooter);
         requires(Robot.vision);
-        volts = Robot.vision.getShooterOff();
+        setpoint = Robot.vision.getShooterOff();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.angleShooter.setPotSetpoint(volts);
+        Robot.angleShooter.setPotSetpoint(setpoint);
     }
 
     // Called repeatedly when this Command is scheduled to run

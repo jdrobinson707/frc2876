@@ -33,42 +33,47 @@ public class AngleShooter extends Subsystem {
     final double HIGH_LIMIT = 4.0;
     PIDController scPID;
 
+    public AngleShooter() {
+        potInit();
+    }
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new MySpecialCommand());
-        //setDefaultCommand(new AdjustShooterAngle(ac.pidGet()));
-        // setDefaultCommand(new AngleShooterIdle());
-        //setDefaultCommand(new AdjustShooterAngle(0.934));
         setDefaultCommand(new AngleShooterJoystick());
     }
 
-    public void potInit() {
+    final void potInit() {
         scPID = new PIDController(.01, 0, 0, ac, new PIDOutput() {
             public void pidWrite(double output) {
                 shootingAngleJaguar.set(-output);
+                //shootingAngleJaguar.set(output);
             }
         });
         scPID.setPercentTolerance(5.0);
+        //scPID.setOutputRange(-.5, .5);
         scPID.setOutputRange(-.2, .2);
-        //scPID.setInputRange(HIGH_LIMIT, LOW_LIMIT);
-        //scPID.enable();
         LiveWindow.addActuator("AngleShooter", "angle PID", scPID);
 
     }
 
-    public void setPotSetpoint(double v) {
-        scPID.setSetpoint(v);
+    public void enable() {
+        scPID.enable();
+    }
+    
+    public void setPotSetpoint(int i) {
+        scPID.setSetpoint(i);
+        SmartDashboard.putNumber("anglePID setpoint", scPID.getSetpoint());
     }
 
     public boolean isFinishedAdjustingShooter() {
-        SmartDashboard.putNumber("angle shooter PID Error", scPID.getError());
-        SmartDashboard.putBoolean("is angle shooter PID ontarget", scPID.onTarget());
-        //eturn scPID.onTarget();
+        SmartDashboard.putNumber("anglePID Error", scPID.getError());
+        SmartDashboard.putBoolean("anglePID ontarget", scPID.onTarget());
+        //return scPID.onTarget();
         return (Math.abs(scPID.getError()) < 2);
     }
 
     public void endShooterPID() {
-        //scPID.reset();
+        scPID.reset();
+        scPID.disable();
         shootingAngleJaguar.set(0);
     }
 
@@ -88,10 +93,10 @@ public class AngleShooter extends Subsystem {
     }
     
     public void updateDashboard() {
-        SmartDashboard.putBoolean("lowlm", lowlm.get());
-        SmartDashboard.putBoolean("highlm", highlm.get());
-        SmartDashboard.putNumber("angleJag", shootingAngleJaguar.get());
-        SmartDashboard.putNumber("anglePot", ac.getVoltage());
+        SmartDashboard.putBoolean("angleShooter lowlm", lowlm.get());
+        SmartDashboard.putBoolean("angleShooter highlm", highlm.get());
+        SmartDashboard.putNumber("angleShooter jag", shootingAngleJaguar.get());
+        SmartDashboard.putNumber("angleShooter pidGet", ac.pidGet());
     }
 
     public boolean lmtest() {
