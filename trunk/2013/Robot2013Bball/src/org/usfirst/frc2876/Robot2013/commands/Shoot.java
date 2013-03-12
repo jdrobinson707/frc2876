@@ -44,28 +44,7 @@ public class Shoot extends Command {
     int feeds = 0;
 
     protected void execute() {
-        double currenttimeshoot = timerend.get();
-//        SmartDashboard.putNumber("shoot timer", currenttimeshoot);
-//        if (Robot.shooter.isFeederOn() == true) {
-//            if (currenttimeshoot >= 1) {
-//                Robot.shooter.endFeeder();
-//                feeds++;
-//                timerend.stop();
-//                timerend.reset();
-//                timerend.start();
-//            }
-//        } else {
-//            if (currenttimeshoot >= 1) {
-//                Robot.shooter.startFeeder();
-//                feeds++;
-//                timerend.stop();
-//                timerend.reset();
-//                timerend.start();
-//            }
-//        }
-//        if (feeds > 4) {
-//            isdone = true;
-//        }
+        SmartDashboard.putNumber("FPGATimestamp", Timer.getFPGATimestamp());
 
         if (Robot.shooter.isFeederOn() == false && timerend.get() >= 2) {
             Robot.shooter.startFeeder();
