@@ -37,7 +37,9 @@ public class DriveForwardStraight extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        
+        // call isTurnDone just to get dashboard to update.
+        // dont care about return value.
+        boolean b = Robot.driveTrain.isTurnDone();
         return Robot.driveTrain.isDistanceDone();
     }
 

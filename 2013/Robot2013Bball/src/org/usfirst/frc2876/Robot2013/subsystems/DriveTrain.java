@@ -32,8 +32,10 @@ public class DriveTrain extends Subsystem {
     public static final double DRIVE_WHEEL_RADIUS = 3.7;
     public static final int PULSE_PER_ROTATION = 360;
     public static final double GEAR_RATIO = 42 / 39;
-    public static final double DRIVE_ENCODER_PULSE_PER_ROT = PULSE_PER_ROTATION * GEAR_RATIO; //pulse per rotation * gear ratio
-    public static final double DRIVE_ENCODER_DIST_PER_TICK = ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
+    public static final double DRIVE_ENCODER_PULSE_PER_ROT =
+            PULSE_PER_ROTATION * GEAR_RATIO;
+    public static final double DRIVE_ENCODER_DIST_PER_TICK =
+            ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
     // Turn PID controller variables
     private static final double turnKp = 0.100;
     private static final double turnKi = 0.000;
@@ -54,6 +56,7 @@ public class DriveTrain extends Subsystem {
     // It will just calculate error and come up with the output value
     // that should be sent to jaguars to drive.
     boolean dPIDOutputEnabled = false;
+    Preferences prefs;
 
     public DriveTrain() {
 
@@ -90,6 +93,31 @@ public class DriveTrain extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
 
+    public void resetSensors() {
+        System.out.println("gyro " + gyro.getAngle());
+        gyro.reset();
+        leftEncoder.reset();
+        rightEncoder.reset();
+        turnPID.reset();
+        dPID.reset();
+    }
+
+    void updateTurnPID() {
+        prefs = Preferences.getInstance();
+        double kp = prefs.getDouble("tkp", turnKp);
+        double ki = prefs.getDouble("tki", turnKi);
+        double kd = prefs.getDouble("tkd", turnKd);
+        turnPID.setPID(kp, ki, kd);
+    }
+
+    void updatedPID() {
+        prefs = Preferences.getInstance();
+        double kp = prefs.getDouble("dkp", dKp);
+        double ki = prefs.getDouble("dki", dKi);
+        double kd = prefs.getDouble("dkd", dKd);
+        turnPID.setPID(kp, ki, kd);
+    }
+
     private void initTurnPID() {
         turnPID = new PIDController(turnKp, turnKi, turnKd, turnKf, gyro, new PIDOutput() {
             public void pidWrite(double output) {
@@ -98,11 +126,13 @@ public class DriveTrain extends Subsystem {
                     SmartDashboard.putNumber("turnPID L output", output);
                     SmartDashboard.putNumber("turnPID R output", -output);
                 }
+                SmartDashboard.putNumber("turnPID Error", turnPID.getError());
+                SmartDashboard.putBoolean("turnPID ontarget", turnPID.onTarget());
             }
         });
-        
+
         turnPID.setOutputRange(-0.8, 0.8);
-        turnPID.setPercentTolerance(20);
+        turnPID.setPercentTolerance(5);
         LiveWindow.addActuator("DriveTrain", "turnPID", turnPID);
     }
 
@@ -110,12 +140,17 @@ public class DriveTrain extends Subsystem {
         turnPIDOutputEnabled = true;
         dPIDOutputEnabled = false;
         gyro.reset();
-        
+        updateTurnPID();
         turnPID.reset();
         turnPID.setSetpoint(degrees);
+
         turnPID.enable();
+
         SmartDashboard.putNumber("turnPID setpoint", turnPID.getSetpoint());
+        System.out.println("tkp " + turnPID.getP()
+                + " tki " + turnPID.getI() + " tkd " + turnPID.getD());
     }
+
     public boolean isTurnDone() {
 //        System.out.println("is turn done: " + turnPID.onTarget()
 //                + " deg:" + RobotMap.roundtoTwo(gyro.getAngle())
@@ -133,7 +168,7 @@ public class DriveTrain extends Subsystem {
         robotDrive2.tankDrive(0, 0);
         SmartDashboard.putNumber("turnPID Error", turnPID.getError());
         SmartDashboard.putBoolean("is turnPID ontarget", turnPID.onTarget());
-	updateDashboard();
+        //updateDashboard();
     }
 
     public void drive(Joystick left, Joystick right) {
@@ -225,10 +260,14 @@ public class DriveTrain extends Subsystem {
         rightEncoder.reset();
         leftEncoder.start();
         rightEncoder.start();
+        dPID.reset();
+        updatedPID();
         dPID.setSetpoint(inches);
         dPID.enable();
         SmartDashboard.putNumber("dPID setpoint", dPID.getSetpoint());
         SmartDashboard.putNumber("turnPID setpoint", turnPID.getSetpoint());
+        System.out.println("dkp " + dPID.getP()
+                + " dki " + dPID.getI() + " dkd " + dPID.getD());
     }
 
     // Call this func from initialize in a command
@@ -240,9 +279,13 @@ public class DriveTrain extends Subsystem {
         rightEncoder.reset();
         leftEncoder.start();
         rightEncoder.start();
+        dPID.reset();
         dPID.setSetpoint(inches);
+        updatedPID();
         //
         gyro.reset();
+        updateTurnPID();
+        turnPID.reset();
         turnPID.setSetpoint(0);
         //
         turnPID.enable();
@@ -250,6 +293,8 @@ public class DriveTrain extends Subsystem {
         //
         SmartDashboard.putNumber("dPID setpoint", dPID.getSetpoint());
         SmartDashboard.putNumber("turnPID setpoint", turnPID.getSetpoint());
+        System.out.println("dkp " + dPID.getP()
+                + " dki " + dPID.getI() + " dkd " + dPID.getD());
     }
 
     // Call this func from execute in a command
@@ -258,7 +303,7 @@ public class DriveTrain extends Subsystem {
         double turn = turnPID.get();
         // Which one of these drive methods will work better?
         // What happens if dOutput + turn > 1 or dOutput - turn < -1?
-         robotDrive2.arcadeDrive(dOutput, turn);
+        robotDrive2.arcadeDrive(dOutput, turn);
         //robotDrive2.tankDrive(dOutput - turn, dOutput + turn);
         //robotDrive2.tankDrive(dOutput, dOutput);
     }
@@ -268,7 +313,7 @@ public class DriveTrain extends Subsystem {
         SmartDashboard.putNumber("dPID Error", dPID.getError());
         SmartDashboard.putBoolean("dPID ontarget", dPID.onTarget());
         //return dPID.onTarget();
-        return (Math.abs(dPID.getError()) < 2);
+        return (Math.abs(dPID.getError()) < 10);
     }
 
     public void endDistance() {
@@ -277,7 +322,7 @@ public class DriveTrain extends Subsystem {
         robotDrive2.tankDrive(0, 0);
         SmartDashboard.putNumber("dPID Error", dPID.getError());
         SmartDashboard.putBoolean("dPID ontarget", dPID.onTarget());
-	updateDashboard();
+        //updateDashboard();
     }
 
     public void updateDashboard() {

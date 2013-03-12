@@ -48,6 +48,8 @@ public class OI {
         SmartDashboard.putData("DriveForward", new DriveForward(35));
         SmartDashboard.putData("TurnRobot90", new TurnRobot(90));
         SmartDashboard.putData("DriveStraight", new DriveForwardStraight(70));
+        SmartDashboard.putData("ShooterDelay", new ShootDelay());
+        SmartDashboard.putData("Shoot", new Shoot());
         
         armB1.whenPressed(new Shoot());
         armB2.whenPressed(new ShootIdle());

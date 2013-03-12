@@ -49,7 +49,10 @@ public class Shooter extends Subsystem {
     }
 
     public void startShooter() {
-        shootingJaguar.set(1);
+        //shootingJaguar.set(1);
+        // when using bball shooter wheel, spin at very low speed
+        // to keep shooter quiet.
+        shootingJaguar.set(.15);
     }
     
     public void startFeeder(){
