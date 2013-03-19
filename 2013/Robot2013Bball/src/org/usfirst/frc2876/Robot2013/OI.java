@@ -44,26 +44,27 @@ public class OI {
     public OI() {
         joystickInit();
 
-        SmartDashboard.putData("AngleShooterPID", new AdjustShooterAngle(0));
-        SmartDashboard.putData("DriveForward", new DriveForward(35));
-        SmartDashboard.putData("TurnRobot90", new TurnRobot(90));
-        SmartDashboard.putData("DriveStraight", new DriveForwardStraight(70));
         SmartDashboard.putData("ShooterDelay", new ShootDelay());
         SmartDashboard.putData("Shoot", new Shoot());
         
+        SmartDashboard.putData("AngleShooterPID", new AdjustShooterAngle(0));
+        SmartDashboard.putData("AngleShooterPIDOn", new AngleShooterPIDOn());
+        SmartDashboard.putData("AngleShooterPIDOff", new AngleShooterPIDOff());
+        
+        SmartDashboard.putData("DriveForward", new DriveForward(35));
+        SmartDashboard.putData("TurnRobot90", new TurnRobot(90));
+        SmartDashboard.putData("DriveStraight", new DriveForwardStraight(70));
+        
         armB1.whenPressed(new Shoot());
         armB2.whenPressed(new ShootIdle());
-        //armB3.whenPressed(new AutoTurnShootCG(true));
-        armB3.whenPressed(new Drive());
-        //armB5.whenPressed(new DriveForwardStraight(1));
-
-        // broken button
-        //armB4.whenPressed(new DriveForward(24)); 
+        armB3.whenPressed(new ShootDelay());
+        armB8.whenPressed(new AngleShooterPIDOn());
+        armB9.whenPressed(new AngleShooterPIDOff());
+        
+        
 
         armB6.whenPressed(new Find2PtTarget());
         armB7.whenPressed(new Find3PtTarget());
-        armB8.whenPressed(new TurnRobot(90));
-        armB9.whenPressed(new TurnRobotVision());
         armB10.whenPressed(new VisionIdle());
         armB11.whenPressed(new AdjustShooterVision());
     }

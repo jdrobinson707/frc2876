@@ -29,6 +29,7 @@ public class ShootDelay extends Command {
     protected void initialize() {
         isdone = false;
         startTime = Timer.getFPGATimestamp();
+        Robot.shooter.endFeeder();
         Robot.shooter.startShooter();
     }
 
@@ -37,6 +38,7 @@ public class ShootDelay extends Command {
         double now = Timer.getFPGATimestamp();
         double currentTime = now - startTime;
         SmartDashboard.putNumber("Timer", currentTime);
+
         if (currentTime >= 2 && currentTime < 3) {
             Robot.shooter.startFeeder();
         } else if (currentTime >= 3 && currentTime < 4) {
@@ -63,7 +65,10 @@ public class ShootDelay extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
-        Robot.shooter.endShooter();
+        // Don't turn the shooter off here. The feeder might be loading
+        // a frisbee at the same time so we need to let shooter run.
+        // Turn off shooter in ShooterIdle
+        //Robot.shooter.endShooter();
         Robot.shooter.endFeeder();
         SmartDashboard.putBoolean("isFeederOn", Robot.shooter.isFeederOn());
     }
