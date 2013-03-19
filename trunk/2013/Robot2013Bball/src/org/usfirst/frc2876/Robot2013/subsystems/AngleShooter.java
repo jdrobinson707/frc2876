@@ -27,15 +27,16 @@ public class AngleShooter extends Subsystem {
     DigitalInput highlm = RobotMap.HIGH_LM;
     AnalogChannel ac = RobotMap.SHOOTER_POT;
     Jaguar shootingAngleJaguar = RobotMap.SHOOTER_SHOOTINGANGLE_JAGUAR;
-   // final double LOW_LIMIT = 1.032;
+    // final double LOW_LIMIT = 1.032;
     //final double HIGH_LIMIT = .636;
-     final double LOW_LIMIT = 0.87;
+    final double LOW_LIMIT = 0.87;
     final double HIGH_LIMIT = 4.0;
     PIDController scPID;
 
     public AngleShooter() {
         potInit();
     }
+
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         setDefaultCommand(new AngleShooterJoystick());
@@ -44,8 +45,16 @@ public class AngleShooter extends Subsystem {
     final void potInit() {
         scPID = new PIDController(.01, 0, 0, ac, new PIDOutput() {
             public void pidWrite(double output) {
-                shootingAngleJaguar.set(-output);
-                //shootingAngleJaguar.set(output);
+                if (lowlm.get()) {
+                    scPID.disable();
+                    SmartDashboard.putString("angle LM", "LOW HIT");
+                } else if (highlm.get()) {
+                    scPID.disable();
+                    SmartDashboard.putString("angle LM", "HIGH HIT");
+                } else {
+                    shootingAngleJaguar.set(-output);
+                    //shootingAngleJaguar.set(output);
+                }
             }
         });
         scPID.setPercentTolerance(5.0);
@@ -55,10 +64,6 @@ public class AngleShooter extends Subsystem {
 
     }
 
-    public void enable() {
-        scPID.enable();
-    }
-    
     public void setPotSetpoint(int i) {
         scPID.setSetpoint(i);
         SmartDashboard.putNumber("anglePID setpoint", scPID.getSetpoint());
@@ -71,6 +76,15 @@ public class AngleShooter extends Subsystem {
         return (Math.abs(scPID.getError()) < 2);
     }
 
+    public boolean isShooterPIDOn() {
+        return scPID.isEnable();
+    }
+
+    public void startShooterPID() {
+        SmartDashboard.putString("angle LM", "OK");
+        scPID.enable();
+    }
+
     public void endShooterPID() {
         scPID.reset();
         scPID.disable();
@@ -78,12 +92,11 @@ public class AngleShooter extends Subsystem {
     }
 
     public void jaguarAngle(double speed) {
-        if(highlm.get() && speed > 0){
+        if (highlm.get() && speed > 0) {
             shootingAngleJaguar.set(0);
-        }
-        if(lowlm.get() && speed < 0){
+        } else if (lowlm.get() && speed < 0) {
             shootingAngleJaguar.set(0);
-        }else{
+        } else {
             shootingAngleJaguar.set(speed);
         }
     }
@@ -91,12 +104,13 @@ public class AngleShooter extends Subsystem {
     public void endjaguarAngle() {
         shootingAngleJaguar.set(0);
     }
-    
+
     public void updateDashboard() {
         SmartDashboard.putBoolean("angleShooter lowlm", lowlm.get());
         SmartDashboard.putBoolean("angleShooter highlm", highlm.get());
         SmartDashboard.putNumber("angleShooter jag", shootingAngleJaguar.get());
         SmartDashboard.putNumber("angleShooter pidGet", ac.pidGet());
+        SmartDashboard.putBoolean("angleShooter isPIDOn", scPID.isEnable());
     }
 
     public boolean lmtest() {

@@ -11,12 +11,11 @@ import org.usfirst.frc2876.Robot2013.Robot;
  */
 public class Shoot extends Command {
 
-    Timer timerend;
     boolean isdone;
+    double startTime;
 
     public Shoot() {
 
-        timerend = new Timer();
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
 
@@ -34,9 +33,9 @@ public class Shoot extends Command {
 
     protected void initialize() {
 
-        timerend.reset();
-        timerend.start();
+        startTime = Timer.getFPGATimestamp();
         isdone = false;
+        Robot.shooter.endFeeder();
         Robot.shooter.startShooter();
 
     }
@@ -44,22 +43,15 @@ public class Shoot extends Command {
     int feeds = 0;
 
     protected void execute() {
-        SmartDashboard.putNumber("FPGATimestamp", Timer.getFPGATimestamp());
+        double now = Timer.getFPGATimestamp();
+        double currentTime = now - startTime;
+        SmartDashboard.putNumber("Timer", currentTime);
 
-        if (Robot.shooter.isFeederOn() == false && timerend.get() >= 2) {
+        if (currentTime >= 2) {
             Robot.shooter.startFeeder();
-            timerend.stop();
-            timerend.reset();
-            timerend.start();
         }
-        if (Robot.shooter.isFeederOn() && timerend.get() >= 8) {
+        if (currentTime >= 8) {
             isdone = true;
-        }
-        if (Robot.shooter.isFeederOn()) {
-            Robot.shooter.endFeeder();
-           
-        } else {
-            Robot.shooter.startFeeder();
         }
         SmartDashboard.putBoolean("isFeederOn", Robot.shooter.isFeederOn());
     }
@@ -71,7 +63,10 @@ public class Shoot extends Command {
     // Called once after isFinished returns true
 
     protected void end() {
-        Robot.shooter.endShooter();
+        // Don't turn the shooter off here. The feeder might be loading
+        // a frisbee at the same time so we need to let shooter run.
+        // Turn off shooter in ShooterIdle
+        //Robot.shooter.endShooter();
         Robot.shooter.endFeeder();
         SmartDashboard.putBoolean("isFeederOn", Robot.shooter.isFeederOn());
     }
