@@ -58,15 +58,18 @@ public class OI {
         armB1.whenPressed(new Shoot());
         armB2.whenPressed(new ShootIdle());
         armB3.whenPressed(new ShootDelay());
+        armB4.whenPressed(new AutoTurnCG(true)); //two pt
+        armB5.whenPressed(new AutoTurnCG(false)); // three pt
+        
         armB8.whenPressed(new AngleShooterPIDOn());
         armB9.whenPressed(new AngleShooterPIDOff());
         
         
 
-        armB6.whenPressed(new Find2PtTarget());
-        armB7.whenPressed(new Find3PtTarget());
-        armB10.whenPressed(new VisionIdle());
-        armB11.whenPressed(new AdjustShooterVision());
+        //armB6.whenPressed(new Find2PtTarget());
+        //armB7.whenPressed(new Find3PtTarget());
+        //armB10.whenPressed(new VisionIdle());
+        //armB11.whenPressed(new AdjustShooterVision());
     }
 
      final void joystickInit() {

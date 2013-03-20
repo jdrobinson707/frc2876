@@ -29,11 +29,15 @@ public class Autonomous3FrisbeeCG extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-        addSequential(new TurnRobot(45));
-        addSequential(new DriveForwardStraight(40));
-        addSequential(new TurnRobot(-45));
+        //addSequential(new TurnRobot(45));
+        //addSequential(new DriveForwardStraight(40));
+        //addSequential(new TurnRobot(-45));
         
-        addSequential(new AutoTurnShootCG(true));
+        addSequential(new Find3PtTarget());
+        // turn robot to aim at target
+        addSequential(new TurnRobotVision());
+        // start the shooter wheel
+        addSequential(new ShootDelay());
         
     }
 }

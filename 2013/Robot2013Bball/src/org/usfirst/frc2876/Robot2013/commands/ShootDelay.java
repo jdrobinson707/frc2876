@@ -52,6 +52,10 @@ public class ShootDelay extends Command {
         } else if (currentTime >= 7 && currentTime < 8) {
             Robot.shooter.endFeeder();
         } else if (currentTime >= 8 && currentTime < 9) {
+            Robot.shooter.startFeeder();
+        } else if (currentTime >= 9 && currentTime < 10) {
+            Robot.shooter.endFeeder();
+        } else if (currentTime >= 10 && currentTime < 11){
             isdone = true;
         }
         SmartDashboard.putBoolean("isFeederOn", Robot.shooter.isFeederOn());
