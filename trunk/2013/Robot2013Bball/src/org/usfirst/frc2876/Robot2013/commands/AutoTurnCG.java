@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  *
  * @author Student
  */
-public class AutoTurnShootCG extends CommandGroup {
+public class AutoTurnCG extends CommandGroup {
 
-    public AutoTurnShootCG(boolean find3ptr) {
+    public AutoTurnCG(boolean two) {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -31,11 +31,13 @@ public class AutoTurnShootCG extends CommandGroup {
         // arm.
         //
         // use camera to find target
-        addSequential(new Find2PtTarget());
+        if (two)
+            addSequential(new Find2PtTarget());
+        else
+            addSequential(new Find3PtTarget());
         // turn robot to aim at target
         addSequential(new TurnRobotVision());
         // start the shooter wheel
-        addSequential(new Shoot());
         // at the same time shooter starts adjust the angle of the shooter
         //addSequential(new AdjustShooterVision());
         // Need to add command to active thingy that will push frisbee into

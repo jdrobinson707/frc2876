@@ -26,7 +26,6 @@ import org.usfirst.frc2876.Robot2013.subsystems.*;
  */
 public class Robot extends IterativeRobot {
 
-    SendableChooser autoChooser;
     Command autonomousCommand;
     public static OI oi;
     // The following variables are automatically assigned by
@@ -83,16 +82,17 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putData(driveTrain);
         SmartDashboard.putData(vision);
 
-        setupAutoChooser();
+        testDs();
+        //setupAutoChooser();
     }
 
     public void setupAutoChooser() {
-        System.out.println("setting up autochooser");
-        autoChooser = new SendableChooser();
-        autoChooser.addDefault("AutoTurnShoot", new AutoTurnShootCG(true));
-        autoChooser.addObject("Auto0", new cgAuto0());
-        autoChooser.addObject("Auto1", new cgAuto1());
-        SmartDashboard.putData("autonomous chooser", autoChooser);
+        //System.out.println("setting up autochooser");
+        //autoChooser = new SendableChooser();
+        //autoChooser.addDefault("AutoTurnShoot", new AutoTurnShootCG(true));
+        //autoChooser.addObject("Auto0", new cgAuto0());
+        //autoChooser.addObject("Auto1", new cgAuto1());
+        //SmartDashboard.putData("autonomous chooser", autoChooser);
     }
 
     public void testDs() {
@@ -105,7 +105,7 @@ public class Robot extends IterativeRobot {
 
         // Set the digital outputs on driver station.  Every time 
         // auto mode is enabled the even/odd outputs will toggle.
-        boolean dioVal = ds.getDigitalOut(0);
+        /*boolean dioVal = ds.getDigitalOut(0);
         for (int i = 1; i <= 8; i++) {
             if (i % 2 == 0) {
                 ds.setDigitalOut(i, !dioVal);
@@ -113,14 +113,20 @@ public class Robot extends IterativeRobot {
                 ds.setDigitalOut(i, dioVal);
             }
             System.out.println("Digital Output " + i + " " + ds.getDigitalOut(i));
+        }*/
+        boolean s = ds.getDigitalIn(0);
+        if (s) {
+            autonomousCommand = new Autonomous2FrisbeeCG(); //goes for 2 pt targets
         }
-
+        else {
+            autonomousCommand = new Autonomous3FrisbeeCG(); //goes for 3 pt targets   
+        }
     }
 
     public void autonomousInit() {
-        testDs();
+        //testDs();
         // schedule the autonomous command (example)
-        if (autoChooser != null) {
+        /*if (autoChooser != null) {
             autonomousCommand = (Command) autoChooser.getSelected();
             if (autonomousCommand != null) {
                 System.out.println("Running auto " + autonomousCommand.getName());
@@ -130,7 +136,9 @@ public class Robot extends IterativeRobot {
             }
         } else {
             System.out.println("autochooser is null");
-        }
+        }*/
+        
+        autonomousCommand.start();
     }
 
     /**
