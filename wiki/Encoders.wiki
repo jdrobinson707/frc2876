@@ -1,3 +1,7 @@
+=General Info about Encoders=
+http://www.anaheimautomation.com/manuals/forms/encoder-guide.php
+
+=Wiring US Digital E4P=
 http://www.chiefdelphi.com/forums/showthread.php?t=112180&highlight=wiring+encoders
 {{{
 orange- 5V
@@ -5,6 +9,12 @@ blue- chanle A
 black- GND
 yellow - chanle B
 }}}
+
+=How to use getRate and setDistancePerPulse=
+
+http://www.chiefdelphi.com/forums/showthread.php?t=114522
+
+Sample code showing how to use encoders
 
 http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e59ac&t=112700&highlight=encoders
 {{{
@@ -40,6 +50,3 @@ http://www.chiefdelphi.com/forums/showthread.php?s=d40395438fb7b7ebafa4defd0c6e5
 	public static final double gearRatio = 26/12; //ratio between wheel and 
 }}}
 
-
-How to use getRate and setDistancePerPulse
-http://www.chiefdelphi.com/forums/showthread.php?t=114522
