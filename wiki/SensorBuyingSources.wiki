@@ -10,7 +10,7 @@ Pots
  * [http://www.digikey.com/product-search/en?pv1=112&pv1175=17&k=bourns+6639&mnonly=0&newproducts=0&ColumnSort=0&page=1&quantity=0&ptm=0&fid=0&pageSize=25 Bourns 6639 Series Potentiometer]
 
 Encoders
- * Greyhill 63R encoders
+ * [http://www.digikey.com/catalog/en/partgroup/63r/11554 Greyhill 63R encoders]
  * http://www.usdigital.com/products/en...otary/shaft/H5
 
 Range
