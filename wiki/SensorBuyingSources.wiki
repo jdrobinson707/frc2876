@@ -6,6 +6,7 @@ List of info about where to buy sensors and electrical parts.
 
 
 Pots
+ * Radio Shack. Use 10kOhm linear ones.
  * http://celesco.com/stringpots/
  * [http://www.digikey.com/product-search/en?pv1=112&pv1175=17&k=bourns+6639&mnonly=0&newproducts=0&ColumnSort=0&page=1&quantity=0&ptm=0&fid=0&pageSize=25 Bourns 6639 Series Potentiometer]
 
