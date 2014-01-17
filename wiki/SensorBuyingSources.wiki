@@ -20,5 +20,6 @@ Optical
  * [http://www.bannerengineering.com/en-US/support/partref/61633 Banner's WorldBeam QS18 Series]
 
 Other
+ * PWM connectors/wires http://www.hansenhobbies.com/products/connectors/
  * http://www.digikey.com/product-search/en?lang=en&site=us&KeyWords=opb819z&x=10&y=13
 see http://www.chiefdelphi.com/forums/showpost.php?p=1287233&postcount=4 for details how it can be used.
