@@ -1,0 +1,52 @@
+package edu.wpi.first.wpilibj.templates;
+
+import edu.wpi.first.wpilibj.CounterBase;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+
+/**
+ * The RobotMap is a mapping from the ports sensors and actuators are wired into
+ * to a variable name. This provides flexibility changing wiring, makes checking
+ * the wiring easier and significantly reduces the number of magic numbers
+ * floating around.
+ */
+public class RobotMap {
+    // For example to map the left and right motors, you could define the
+    // following variables to use with your drivetrain subsystem.
+    public static final int JOYSTICK_LEFT = 1;
+    public static final int JOYSTICK_RIGHT = 2;
+    public static final int DRIVEMODE_TANK = 0;
+    public static final int DRIVEMODE_ARCADE = 1;
+    
+    public static Jaguar DRIVETRAIN_LEFTDRIVE_JAGUAR;
+    public static Jaguar DRIVETRAIN_RIGHTDRIVE_JAGUAR;
+    public static RobotDrive DRIVETRAIN_ROBOT_DRIVE_2;
+    public static Encoder DRIVETRAIN_LEFTENCODER;
+    public static Encoder DRIVETRAIN_RIGHTENCODER;
+    public static Gyro DRIVETRAIN_GYRO;
+    
+    // If you are using multiple modules, make sure to define both the port
+    // number and the module. For example you with a rangefinder:
+    // public static final int rangefinderPort = 1;
+    // public static final int rangefinderModule = 1;
+    public static void init() {
+        DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 4);
+        DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 3);
+        
+        DRIVETRAIN_LEFTENCODER = new Encoder(1, 3, 1, 4, true, CounterBase.EncodingType.k4X);
+        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 1, 1, 2, false, CounterBase.EncodingType.k4X);
+        
+        DRIVETRAIN_GYRO = new Gyro(1, 1);
+        DRIVETRAIN_GYRO.setSensitivity(0.007);
+        
+        DRIVETRAIN_ROBOT_DRIVE_2 = new RobotDrive(DRIVETRAIN_LEFTDRIVE_JAGUAR, DRIVETRAIN_RIGHTDRIVE_JAGUAR);
+        DRIVETRAIN_ROBOT_DRIVE_2.setSafetyEnabled(false);
+        DRIVETRAIN_ROBOT_DRIVE_2.setExpiration(0.1);
+        DRIVETRAIN_ROBOT_DRIVE_2.setSensitivity(0.5);
+        DRIVETRAIN_ROBOT_DRIVE_2.setMaxOutput(1.0);
+    }
+    
+}
