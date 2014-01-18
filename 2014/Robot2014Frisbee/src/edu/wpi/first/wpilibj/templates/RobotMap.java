@@ -33,14 +33,14 @@ public class RobotMap {
     // public static final int rangefinderPort = 1;
     // public static final int rangefinderModule = 1;
     public static void init() {
-        DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 4);
-        DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 3);
+        DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 1); //old 1,4
+        DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 2); //old 1,3
         
-        DRIVETRAIN_LEFTENCODER = new Encoder(1, 3, 1, 4, true, CounterBase.EncodingType.k4X);
-        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 1, 1, 2, false, CounterBase.EncodingType.k4X);
+        DRIVETRAIN_LEFTENCODER = new Encoder(1, 14, 1, 13, true, CounterBase.EncodingType.k4X); //1,3,1,4
+        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 12, 1, 11, false, CounterBase.EncodingType.k4X);  //1,1,1,2
         
-        DRIVETRAIN_GYRO = new Gyro(1, 1);
-        DRIVETRAIN_GYRO.setSensitivity(0.007);
+        //DRIVETRAIN_GYRO = new Gyro(1, 1);
+        //DRIVETRAIN_GYRO.setSensitivity(0.007);
         
         DRIVETRAIN_ROBOT_DRIVE_2 = new RobotDrive(DRIVETRAIN_LEFTDRIVE_JAGUAR, DRIVETRAIN_RIGHTDRIVE_JAGUAR);
         DRIVETRAIN_ROBOT_DRIVE_2.setSafetyEnabled(false);
