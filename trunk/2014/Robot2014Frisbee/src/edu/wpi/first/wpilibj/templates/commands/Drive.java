@@ -34,8 +34,8 @@ public class Drive extends CommandBase {
         else
             driveTrain.driveXboxArcade(-oi.getXboxLeftY() *.8, -oi.getXboxLeftX() *.8);
 
-        System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
-        System.out.println("Gyro Angle: "+driveTrain.gyro.getAngle());        
+        //System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
+        //System.out.println("Gyro Angle: "+driveTrain.gyro.getAngle());        
     }
 
     // Make this return true when this Command no longer needs to run execute()

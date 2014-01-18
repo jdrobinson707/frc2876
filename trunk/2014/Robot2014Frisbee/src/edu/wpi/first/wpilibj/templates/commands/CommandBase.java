@@ -26,6 +26,7 @@ public abstract class CommandBase extends Command {
         oi = new OI();
         driveTrain = new DriveTrain();
         // Show what command your subsystem is running on the SmartDashboard
+        SmartDashboard.putData(driveTrain);
     }
 
     public CommandBase(String name) {
