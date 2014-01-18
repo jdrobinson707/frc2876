@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 import edu.wpi.first.wpilibj.templates.commands.Drive;
 import edu.wpi.first.wpilibj.templates.subsystems.DriveTrain;
@@ -62,6 +63,7 @@ public class RobotTemplate extends IterativeRobot {
         //if (autonomousCommand != null) {
         //    autonomousCommand.cancel();
         //}
+        SmartDashboard.putNumber("Drive State", CommandBase.oi.getDriveState());
     }
 
     /**
