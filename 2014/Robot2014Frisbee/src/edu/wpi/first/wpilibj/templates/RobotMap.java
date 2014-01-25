@@ -36,8 +36,8 @@ public class RobotMap {
         DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 1); //old 1,4
         DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 2); //old 1,3
         
-        DRIVETRAIN_LEFTENCODER = new Encoder(1, 14, 1, 13, true, CounterBase.EncodingType.k4X); //1,3,1,4
-        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 12, 1, 11, false, CounterBase.EncodingType.k4X);  //1,1,1,2
+        DRIVETRAIN_LEFTENCODER = new Encoder(1, 12, 1, 11, true, CounterBase.EncodingType.k4X); //1,3,1,4
+        DRIVETRAIN_RIGHTENCODER = new Encoder(1, 14, 1, 13, false, CounterBase.EncodingType.k4X);  //1,1,1,2
         
         //DRIVETRAIN_GYRO = new Gyro(1, 1);
         //DRIVETRAIN_GYRO.setSensitivity(0.007);

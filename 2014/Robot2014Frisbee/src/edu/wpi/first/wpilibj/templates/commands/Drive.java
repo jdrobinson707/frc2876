@@ -6,6 +6,7 @@
 package edu.wpi.first.wpilibj.templates.commands;
 
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -32,9 +33,12 @@ public class Drive extends CommandBase {
         if (driveState == 0) 
             driveTrain.driveXboxTank(-oi.getXboxLeftY() *.8, -oi.getXboxRightY() *.8);
         else
-            driveTrain.driveXboxArcade(-oi.getXboxLeftY() *.8, -oi.getXboxLeftX() *.8);
+            driveTrain.driveXboxArcade(-oi.getXboxLeftY() *.8, -oi.getXboxRightX() *.8);
 
-        //System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
+        SmartDashboard.putDouble("Left Encoder Distance", driveTrain.leftEncoder.getDistance());
+        SmartDashboard.putDouble("Right Encoder Distance", driveTrain.rightEncoder.getDistance());
+        
+        System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
         //System.out.println("Gyro Angle: "+driveTrain.gyro.getAngle());        
     }
 
