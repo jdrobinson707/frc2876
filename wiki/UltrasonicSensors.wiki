@@ -1,0 +1,8 @@
+#Info about wiring/programming ultrasonic senors
+
+
+= Maxbotix sensors =
+
+ * how to wire up maxbotix sensor: http://maxbotix.com/articles/016.htm
+ * how to use analog voltage to get distance: http://maxbotix.com/articles/032.htm
+ * All kinds of other tutorials about using sensor: http://maxbotix.com/tutorials.htm
