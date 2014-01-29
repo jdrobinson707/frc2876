@@ -1,5 +1,6 @@
 #Info about wiring/programming ultrasonic senors
 
+WPILIB screensteps info about using ultrasonic sensors: http://wpilib.screenstepslive.com/s/3120/m/7912/l/85774-measuring-robot-distance-to-a-surface-using-ultrasonic-sensors
 
 = Maxbotix sensors =
 
