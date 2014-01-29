@@ -16,3 +16,6 @@ info about using ultrasonic sensors: http://wpilib.screenstepslive.com/s/3120/m/
  * http://www.chiefdelphi.com/forums/showthread.php?t=124650&highlight=ultrasonic
  * http://www.chiefdelphi.com/forums/showthread.php?t=112520&highlight=maxbotix
  * analog signal noisy? http://www.chiefdelphi.com/forums/subscription.php?do=addsubscription&t=124634
+
+= Ultrasonic code examples =
+ * Team 2876 sample code:  https://code.google.com/p/frc2876/source/browse/#svn%2Ftrunk%2FUltrasonicDemo
