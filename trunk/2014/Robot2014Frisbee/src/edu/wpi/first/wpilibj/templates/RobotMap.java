@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -21,8 +24,8 @@ public class RobotMap {
     public static final int DRIVEMODE_TANK = 0;
     public static final int DRIVEMODE_ARCADE = 1;
     
-    public static Jaguar DRIVETRAIN_LEFTDRIVE_JAGUAR;
-    public static Jaguar DRIVETRAIN_RIGHTDRIVE_JAGUAR;
+    public static Talon DRIVETRAIN_LEFTDRIVE_TALON;
+    public static Talon DRIVETRAIN_RIGHTDRIVE_TALON;
     public static RobotDrive DRIVETRAIN_ROBOT_DRIVE_2;
     public static Encoder DRIVETRAIN_LEFTENCODER;
     public static Encoder DRIVETRAIN_RIGHTENCODER;
@@ -35,23 +38,27 @@ public class RobotMap {
     // public static final int rangefinderPort = 1;
     // public static final int rangefinderModule = 1;
     public static void init() {
-        DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 3);
-        DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 4); 
+        DRIVETRAIN_LEFTDRIVE_TALON = new Talon(1, 1); //old 1,4
+        DRIVETRAIN_RIGHTDRIVE_TALON = new Talon(1, 2); //old 1,3
+
         
         DRIVETRAIN_LEFTENCODER = new Encoder(1, 12, 1, 11, true, CounterBase.EncodingType.k4X); //1,3,1,4
         DRIVETRAIN_RIGHTENCODER = new Encoder(1, 14, 1, 13, false, CounterBase.EncodingType.k4X);  //1,1,1,2
-        
+
+        DRIVETRAIN_GYRO = new Gyro(1, 1);
+        DRIVETRAIN_GYRO.setSensitivity(0.007);
+
         DRIVETRAIN_FRONTSONAR = new AnalogChannel(1,6);
         DRIVETRAIN_SIDESONAR = new AnalogChannel(1,7);
+
         
-        //DRIVETRAIN_GYRO = new Gyro(1, 1);
-        //DRIVETRAIN_GYRO.setSensitivity(0.007);
-        
-        DRIVETRAIN_ROBOT_DRIVE_2 = new RobotDrive(DRIVETRAIN_LEFTDRIVE_JAGUAR, DRIVETRAIN_RIGHTDRIVE_JAGUAR);
+        DRIVETRAIN_ROBOT_DRIVE_2 = new RobotDrive(DRIVETRAIN_LEFTDRIVE_TALON, DRIVETRAIN_RIGHTDRIVE_TALON);
         DRIVETRAIN_ROBOT_DRIVE_2.setSafetyEnabled(false);
         DRIVETRAIN_ROBOT_DRIVE_2.setExpiration(0.1);
         DRIVETRAIN_ROBOT_DRIVE_2.setSensitivity(0.5);
         DRIVETRAIN_ROBOT_DRIVE_2.setMaxOutput(1.0);
+        
+        
     }
     
 }
