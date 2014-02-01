@@ -1,11 +1,11 @@
 package edu.wpi.first.wpilibj.templates;
 
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -26,6 +26,8 @@ public class RobotMap {
     public static RobotDrive DRIVETRAIN_ROBOT_DRIVE_2;
     public static Encoder DRIVETRAIN_LEFTENCODER;
     public static Encoder DRIVETRAIN_RIGHTENCODER;
+    public static AnalogChannel DRIVETRAIN_FRONTSONAR;
+    public static AnalogChannel DRIVETRAIN_SIDESONAR; 
     public static Gyro DRIVETRAIN_GYRO;
     
     // If you are using multiple modules, make sure to define both the port
@@ -33,11 +35,14 @@ public class RobotMap {
     // public static final int rangefinderPort = 1;
     // public static final int rangefinderModule = 1;
     public static void init() {
-        DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 1); //old 1,4
-        DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 2); //old 1,3
+        DRIVETRAIN_LEFTDRIVE_JAGUAR = new Jaguar(1, 3);
+        DRIVETRAIN_RIGHTDRIVE_JAGUAR = new Jaguar(1, 4); 
         
         DRIVETRAIN_LEFTENCODER = new Encoder(1, 12, 1, 11, true, CounterBase.EncodingType.k4X); //1,3,1,4
         DRIVETRAIN_RIGHTENCODER = new Encoder(1, 14, 1, 13, false, CounterBase.EncodingType.k4X);  //1,1,1,2
+        
+        DRIVETRAIN_FRONTSONAR = new AnalogChannel(1,6);
+        DRIVETRAIN_SIDESONAR = new AnalogChannel(1,7);
         
         //DRIVETRAIN_GYRO = new Gyro(1, 1);
         //DRIVETRAIN_GYRO.setSensitivity(0.007);

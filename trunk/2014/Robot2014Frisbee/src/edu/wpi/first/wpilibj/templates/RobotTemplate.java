@@ -12,9 +12,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.templates.commands.AutonomousSideDrive;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
-import edu.wpi.first.wpilibj.templates.commands.Drive;
 import edu.wpi.first.wpilibj.templates.subsystems.DriveTrain;
+import edu.wpi.first.wpilibj.templates.subsystems.Vision;
 
 
 /**
@@ -27,7 +28,10 @@ import edu.wpi.first.wpilibj.templates.subsystems.DriveTrain;
 public class RobotTemplate extends IterativeRobot {
 
     Command autonomousCommand;
-    
+
+    public static DriveTrain driveTrain;
+    public static Vision vision;
+    public static OI oi;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -35,15 +39,22 @@ public class RobotTemplate extends IterativeRobot {
     public void robotInit() {
         RobotMap.init();
         // instantiate the command used for the autonomous period
-        //autonomousCommand = new Drive();
+        
         
         // Initialize all subsystems
         CommandBase.init();
+        //driveTrain = new DriveTrain();
+        //vision = new Vision();
+        //oi = new OI();
+        
+        //autonomousCommand = new AutonomousSideDrive();
     }
-
+    
     public void autonomousInit() {
         // schedule the autonomous command (example)
         //autonomousCommand.start();
+        autonomousCommand = new AutonomousSideDrive();
+        autonomousCommand.start();
     }
 
     /**
@@ -51,6 +62,7 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
+        //autonomousCommand.run();
     }
 
     public void teleopInit() {

@@ -5,15 +5,16 @@
  */
 package edu.wpi.first.wpilibj.templates.commands;
 
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  * @author mentor
  */
-public class Drive extends CommandBase {
+public class Picture extends CommandBase {
     
-    public Drive() {
+    public Picture() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
         requires(driveTrain);
@@ -36,10 +37,6 @@ public class Drive extends CommandBase {
 
         SmartDashboard.putNumber("Left Encoder Distance", driveTrain.leftEncoder.getDistance());
         SmartDashboard.putNumber("Right Encoder Distance", driveTrain.rightEncoder.getDistance());
-        SmartDashboard.putNumber("Front Sonar Distance", driveTrain.getFrontSonarDist());
-        SmartDashboard.putNumber("Side Sonar Distance", driveTrain.getSideSonarDist());  
-        
-
         
         //System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
         //System.out.println("Gyro Angle: "+driveTrain.gyro.getAngle());        
