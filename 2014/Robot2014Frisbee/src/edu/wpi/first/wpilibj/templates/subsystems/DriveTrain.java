@@ -8,14 +8,20 @@ package edu.wpi.first.wpilibj.templates.subsystems;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.templates.commands.Drive;
@@ -29,23 +35,22 @@ public class DriveTrain extends Subsystem {
     // here. Call these from Commands.
 
     RobotDrive robotDrive2 = RobotMap.DRIVETRAIN_ROBOT_DRIVE_2;
-    Jaguar rightDriveJaguar = RobotMap.DRIVETRAIN_RIGHTDRIVE_JAGUAR;
-    Jaguar leftDriveJaguar = RobotMap.DRIVETRAIN_LEFTDRIVE_JAGUAR;
+    Talon rightDriveTalon = RobotMap.DRIVETRAIN_RIGHTDRIVE_TALON;
+    Talon leftDriveTalon = RobotMap.DRIVETRAIN_LEFTDRIVE_TALON;
     public Encoder leftEncoder = RobotMap.DRIVETRAIN_LEFTENCODER;
     public Encoder rightEncoder = RobotMap.DRIVETRAIN_RIGHTENCODER;
     public AnalogChannel frontSonar = RobotMap.DRIVETRAIN_FRONTSONAR;
     public AnalogChannel sideSonar = RobotMap.DRIVETRAIN_SIDESONAR;
     public Gyro gyro = RobotMap.DRIVETRAIN_GYRO;
+    
+    
 
-    private static final int DRIVE_ENCODER_MIN_RATE = 10;
-    private static final int DRIVE_ENCODER_MIN_PERIOD = 10;
-    private static final double DRIVE_WHEEL_RADIUS = 3.7;
-    private static final int PULSE_PER_ROTATION = 360;
-    private static final double GEAR_RATIO = 42 / 39;
-    private static final double DRIVE_ENCODER_PULSE_PER_ROT = PULSE_PER_ROTATION * GEAR_RATIO;
-    private static final double DRIVE_ENCODER_DIST_PER_TICK
-            = ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
-
+    private static final double encoderKp = 1.00;
+    private static final double encoderKi = 0.000;
+    private static final double emcoderKd = 0.000;
+    public PIDController encoderPID;
+    Preferences prefs;
+    
     private static final double sideKp = 0.3500;
     private static final double sideKi = 0.000;
     private static final double sideKd = 0.100;
@@ -53,12 +58,69 @@ public class DriveTrain extends Subsystem {
     edu.wpi.first.wpilibj.PIDController sidePID;
     Preferences prefs;
 
+    private static final int DRIVE_ENCODER_MIN_RATE = 10;
+    private static final int DRIVE_ENCODER_MIN_PERIOD = 10;
+    private static final double DRIVE_WHEEL_RADIUS = 2.25;
+    private static final int PULSE_PER_ROTATION = 360;
+    private static final double GEAR_RATIO = 42 / 39;
+    private static final double DRIVE_ENCODER_PULSE_PER_ROT = PULSE_PER_ROTATION * GEAR_RATIO;
+
+    private static final double DRIVE_ENCODER_DIST_PER_TICK
+            = ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
+
+
     public DriveTrain() {
         encoderSetup();
+        LiveWindow.addSensor("Drive Train", "Gyro", gyro);
+        LiveWindow.addSensor("Drive Train", "Left Encoder", leftEncoder);
+        LiveWindow.addSensor("Drive Train", "Right Encoder", rightEncoder);
+        autoDrivePID = new PIDController(1.0, 0, 0, new DiffEncoder(), new PIDOutput() {
+
+            public void pidWrite(double output) {
+                double base = .8;
+                SmartDashboard.putNumber("pid output", output);
+                SmartDashboard.putData("gyro",gyro);
+                SmartDashboard.putData("leftenc", leftEncoder);
+                SmartDashboard.putData("rightenc", rightEncoder);
+                //robotDrive2.tankDrive(base + output, base + output);
+                if (leftEncoder.getDistance() - rightEncoder.getDistance() > 0) {  //veering right
+                    robotDrive2.tankDrive(base - output, base + output);
+                    //rightDriveTalon.set(output);
+                    //if (rightDriveTalon.get() + output < 1)
+                    //    rightDriveTalon.set(rightDriveTalon.get() + output);
+                    //else 
+                    //    leftDriveTalon.set(leftDriveTalon.get()-output);
+                } else {  //veering left
+                    robotDrive2.tankDrive(base + output, base - output);
+                    //leftDriveTalon.set(output);
+                    //if (leftDriveTalon.get() + output < 1)
+                    //    leftDriveTalon.set(leftDriveTalon.get() + output);
+                    //else 
+                    //    rightDriveTalon.set(rightDriveTalon.get()-output);
+                }
+            }
+        });
+
+        autoDrivePID.setOutputRange(-.2, .2);
+        autoDrivePID.setPercentTolerance(5);
+
+        LiveWindow.addActuator("DriveTrain", "autoDrivePID", autoDrivePID);
         initSidePID();
     }
 
+    void updatedPID() {
+        prefs = Preferences.getInstance();
+        double kp = prefs.getDouble("dkp", dKp);
+        double ki = prefs.getDouble("dki", dKi);
+        double kd = prefs.getDouble("dkd", dKd);
+        autoDrivePID.setPID(kp, ki, kd);
+    }
+
     private void encoderSetup() {
+
+
+    private void encoderSetup() {
+
         rightEncoder.setMaxPeriod(DRIVE_ENCODER_MIN_PERIOD);
         rightEncoder.setMinRate(DRIVE_ENCODER_MIN_RATE);
         rightEncoder.setDistancePerPulse(DRIVE_ENCODER_DIST_PER_TICK);
@@ -66,6 +128,9 @@ public class DriveTrain extends Subsystem {
         leftEncoder.setMaxPeriod(DRIVE_ENCODER_MIN_PERIOD);
         leftEncoder.setMinRate(DRIVE_ENCODER_MIN_RATE);
         leftEncoder.setDistancePerPulse(DRIVE_ENCODER_DIST_PER_TICK);
+
+
+        startEncoder();
 
     }
 
@@ -84,6 +149,9 @@ public class DriveTrain extends Subsystem {
     }
 
     public void driveXboxArcade(double move, double rotate) {
+
+        robotDrive2.arcadeDrive(move, rotate);
+
         //robotDrive2.arcadeDrive(move, rotate);
     }
 
@@ -118,8 +186,64 @@ public class DriveTrain extends Subsystem {
             robotDrive2.tankDrive(-(baseSpeed+output), -(baseSpeed-output)); //wall on right
             //robotDrive2.tankDrive(baseSpeed-output, baseSpeed+output); //wall on left
         }
+
     }
-    
+
+
+    public void startEncoder() {
+        leftEncoder.start();
+        rightEncoder.start();
+    }
+
+    public void resetEncoder() {
+        leftEncoder.reset();
+        rightEncoder.reset();
+    }
+
+    public void setDriveDistance() {//sets setpoint to 0 and resets everything
+        resetEncoder();
+        startEncoder();
+        gyro.reset();
+//        autoDrivePID.reset();
+        updatedPID();
+        autoDrivePID.setSetpoint(0);
+        autoDrivePID.enable();
+    }
+
+    public boolean isDistanceDone() {
+        if (Math.abs((leftEncoder.getDistance() + rightEncoder.getDistance()) / 2) > getDistanceValue(240.0)) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    public void endDistance() {
+        autoDrivePID.reset();
+        autoDrivePID.disable();
+        robotDrive2.tankDrive(0, 0);
+    }
+
+    //Returns the distance in encoder-speak when we input number of inches
+    public double getDistanceValue(double inches) {
+        double distance;
+        distance = inches / 1.398; //1.398 is our 100% accurate conversion factor based on hours of calculation
+        return distance;
+    }
+
+    private class DiffEncoder implements PIDSource {
+
+        public double pidGet() {
+            double r = rightEncoder.getDistance();
+            double l = leftEncoder.getDistance();
+            //double avg = (r + l) / 2;
+            // Since only one encoder is working using avg throws 
+            // off distance alot. Just use working one for now.
+            double diff = l - r;
+            SmartDashboard.putNumber("Difference", diff);
+            return diff;
+        }
+  
     private class SonarInput implements PIDSource {
         public double pidGet() {
             return getSideSonarDist();
@@ -183,5 +307,6 @@ public class DriveTrain extends Subsystem {
             System.out.println("Front Sonar: "+getFrontSonarDist()+"Side Sonar: "+getSideSonarDist());
             last = now;
         }
+
     }
 }

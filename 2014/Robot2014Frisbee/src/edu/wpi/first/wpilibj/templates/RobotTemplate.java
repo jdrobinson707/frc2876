@@ -4,7 +4,6 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -12,11 +11,12 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.templates.commands.AutonomousEncoderDrive;
+import edu.wpi.first.wpilibj.templates.commands.AutonomousTurn;
 import edu.wpi.first.wpilibj.templates.commands.AutonomousSideDrive;
 import edu.wpi.first.wpilibj.templates.commands.CommandBase;
 import edu.wpi.first.wpilibj.templates.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj.templates.subsystems.Vision;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,9 +29,6 @@ public class RobotTemplate extends IterativeRobot {
 
     Command autonomousCommand;
 
-    public static DriveTrain driveTrain;
-    public static Vision vision;
-    public static OI oi;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -39,10 +36,9 @@ public class RobotTemplate extends IterativeRobot {
     public void robotInit() {
         RobotMap.init();
         // instantiate the command used for the autonomous period
-        
-        
         // Initialize all subsystems
         CommandBase.init();
+
         //driveTrain = new DriveTrain();
         //vision = new Vision();
         //oi = new OI();
@@ -51,9 +47,10 @@ public class RobotTemplate extends IterativeRobot {
     }
     
     public void autonomousInit() {
-        // schedule the autonomous command (example)
-        //autonomousCommand.start();
-        autonomousCommand = new AutonomousSideDrive();
+
+        // instantiate the command used for the autonomous period
+        autonomousCommand = new AutonomousEncoderDrive();
+        //autonomousCommand = new AutonomousSideDrive();
         autonomousCommand.start();
     }
 
@@ -63,6 +60,7 @@ public class RobotTemplate extends IterativeRobot {
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
         //autonomousCommand.run();
+
     }
 
     public void teleopInit() {
@@ -70,11 +68,10 @@ public class RobotTemplate extends IterativeRobot {
         // teleop starts running. If you want the autonomous to 
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        //autonomousCommand.start();
-        
-        //if (autonomousCommand != null) {
-        //    autonomousCommand.cancel();
-        //}
+
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
         SmartDashboard.putNumber("Drive State", CommandBase.oi.getDriveState());
     }
 
@@ -84,7 +81,13 @@ public class RobotTemplate extends IterativeRobot {
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
     }
-    
+
+    public void testInit() {
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
+    }
+
     /**
      * This function is called periodically during test mode
      */

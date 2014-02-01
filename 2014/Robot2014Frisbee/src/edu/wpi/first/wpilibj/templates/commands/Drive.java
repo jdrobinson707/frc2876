@@ -13,14 +13,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Drive extends CommandBase {
     
+    double lDistance = 0.0;
+    double rDistance = 0.0;
+    
     public Drive() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
         requires(driveTrain);
+        
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+         
      
     }
 
@@ -34,11 +39,20 @@ public class Drive extends CommandBase {
         else
             driveTrain.driveXboxArcade(-oi.getXboxLeftY() *.8, -oi.getXboxRightX() *.8);
 
+        //lDistance += driveTrain.leftEncoder.getDistance();
+        //rDistance += driveTrain.rightEncoder.getDistance();
+        SmartDashboard.putNumber("Gyro Angle", driveTrain.gyro.getAngle());
+        SmartDashboard.putNumber("Gyro Rate", driveTrain.gyro.getRate());
+        SmartDashboard.putNumber("Left Encoder Distance",driveTrain.leftEncoder.getDistance());
+        SmartDashboard.putNumber("Right Encoder Distance",driveTrain.rightEncoder.getDistance());
+
+
         SmartDashboard.putNumber("Left Encoder Distance", driveTrain.leftEncoder.getDistance());
         SmartDashboard.putNumber("Right Encoder Distance", driveTrain.rightEncoder.getDistance());
         SmartDashboard.putNumber("Front Sonar Distance", driveTrain.getFrontSonarDist());
         SmartDashboard.putNumber("Side Sonar Distance", driveTrain.getSideSonarDist());  
         
+
 
         
         //System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
