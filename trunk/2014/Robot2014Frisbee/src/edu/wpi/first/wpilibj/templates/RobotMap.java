@@ -1,13 +1,10 @@
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 
 /**
@@ -29,8 +26,8 @@ public class RobotMap {
     public static RobotDrive DRIVETRAIN_ROBOT_DRIVE_2;
     public static Encoder DRIVETRAIN_LEFTENCODER;
     public static Encoder DRIVETRAIN_RIGHTENCODER;
-    public static AnalogChannel DRIVETRAIN_FRONTSONAR;
-    public static AnalogChannel DRIVETRAIN_SIDESONAR; 
+    public static AnalogSonar DRIVETRAIN_FRONTSONAR;
+    public static AnalogSonar DRIVETRAIN_SIDESONAR; 
     public static Gyro DRIVETRAIN_GYRO;
     
     // If you are using multiple modules, make sure to define both the port
@@ -48,8 +45,8 @@ public class RobotMap {
         DRIVETRAIN_GYRO = new Gyro(1, 1);
         DRIVETRAIN_GYRO.setSensitivity(0.007);
 
-        DRIVETRAIN_FRONTSONAR = new AnalogChannel(1,6);
-        DRIVETRAIN_SIDESONAR = new AnalogChannel(1,7);
+        DRIVETRAIN_FRONTSONAR = new AnalogSonar(1,6);
+        DRIVETRAIN_SIDESONAR = new AnalogSonar(1,7);
 
         
         DRIVETRAIN_ROBOT_DRIVE_2 = new RobotDrive(DRIVETRAIN_LEFTDRIVE_TALON, DRIVETRAIN_RIGHTDRIVE_TALON);
