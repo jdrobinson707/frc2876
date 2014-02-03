@@ -39,13 +39,8 @@ public class RobotTemplate extends IterativeRobot {
         // Initialize all subsystems
         CommandBase.init();
 
-        //driveTrain = new DriveTrain();
-        //vision = new Vision();
-        //oi = new OI();
-        
-        //autonomousCommand = new AutonomousSideDrive();
     }
-    
+
     public void autonomousInit() {
 
         // instantiate the command used for the autonomous period
@@ -64,7 +59,7 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     public void teleopInit() {
-	// This makes sure that the autonomous stops running when
+        // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to 
         // continue until interrupted by another command, remove
         // this line or comment it out.
@@ -72,6 +67,7 @@ public class RobotTemplate extends IterativeRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        CommandBase.driveTrain.disablePIDs();
         SmartDashboard.putNumber("Drive State", CommandBase.oi.getDriveState());
     }
 
@@ -80,12 +76,17 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        CommandBase.driveTrain.updateDashboard();
+
     }
 
     public void testInit() {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        CommandBase.driveTrain.disablePIDs();
+        CommandBase.driveTrain.driveXboxTank(0, 0);
+
     }
 
     /**

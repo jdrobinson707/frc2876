@@ -11,19 +11,9 @@ package edu.wpi.first.wpilibj.templates.commands;
  */
 public class AutonomousEncoderDrive extends CommandBase {
 
-    double left = .6;
-    double right = .6;
-    
-    double leftDistance = 0.0;
-    double rightDistance = 0.0;
-    
-    double leftDistancePerTick = 0.0;
-    double rightDistancePerTick = 0.0;
-
     public AutonomousEncoderDrive() {
         requires(driveTrain);
-        // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
+      
     }
 
     // Called just before this Command runs the first time
@@ -34,44 +24,7 @@ public class AutonomousEncoderDrive extends CommandBase {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        driveTrain.driveXboxTank(left, right);
-        //driveTrain.driveXboxTank(left, right);
-        
-        /*double rightEncoderCompensation = driveTrain.leftEncoder.getDistance() - driveTrain.rightEncoder.getDistance();
-        
-        double increaseFactor = rightEncoderCompensation/200.0;
-        
-        if (rightEncoderCompensation > 0)
-        {// 0.5 .... 5 .... 0.0025
-            if (right >= 0.5) {
-                left -= increaseFactor;
-            } else {
-                right += increaseFactor;
-            }
-        } else if (rightEncoderCompensation < 0) {
-            if (left >= 0.5) {
-                right -= increaseFactor;
-            } else {
-                left += increaseFactor;
-            }
-        }*/
-        
-        //if (driveTrain.gyro.getAngle() > 0.5) {
-          //  if (right == 1.0) {
-            //    left -= .0025;
-           // } else {
-             //   right += .0025;
-         //   }
-        //} else if (driveTrain.gyro.getAngle() < -0.5) {
-          //  if (left == 1.0) {
-            //    right -= .0025;
-           // } else {
-             //   left += .0025;
-            //}
-       // }
-       
-        
-      
+        driveTrain.printEncPIDStatus();
     }
 
     // Make this return true when this Command no longer needs to run execute()

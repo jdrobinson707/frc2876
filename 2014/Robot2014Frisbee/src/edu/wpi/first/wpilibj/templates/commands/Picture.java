@@ -35,11 +35,6 @@ public class Picture extends CommandBase {
         else
             driveTrain.driveXboxArcade(-oi.getXboxLeftY() *.8, -oi.getXboxRightX() *.8);
 
-        SmartDashboard.putNumber("Left Encoder Distance", driveTrain.leftEncoder.getDistance());
-        SmartDashboard.putNumber("Right Encoder Distance", driveTrain.rightEncoder.getDistance());
-        
-        //System.out.println("Left Encoder Distance: "+driveTrain.leftEncoder.getDistance()+", Right Encoder Distance "+driveTrain.rightEncoder.getDistance());
-        //System.out.println("Gyro Angle: "+driveTrain.gyro.getAngle());        
     }
 
     // Make this return true when this Command no longer needs to run execute()
