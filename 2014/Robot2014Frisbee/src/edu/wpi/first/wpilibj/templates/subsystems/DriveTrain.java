@@ -43,13 +43,15 @@ public class DriveTrain extends Subsystem {
     double now = Timer.getFPGATimestamp();
     double last = Timer.getFPGATimestamp();
 
-    private static final double encoderKp = 1.00;
-    private static final double encoderKi = 0.000;
-    private static final double encoderKd = 0.000;
-    private static final double encoderKf = 0.000;
-    public PIDController encoderPID;
-    Preferences encoderPrefs;
+    PIDController gyroPID;
 
+//
+//    private static final double encoderKp = 1.00;
+//    private static final double encoderKi = 0.000;
+//    private static final double encoderKd = 0.000;
+//    private static final double encoderKf = 0.000;
+//    public PIDController encoderPID;
+//    Preferences encoderPrefs;
     private static final double sideKp = 0.3500;
     private static final double sideKi = 0.000;
     private static final double sideKd = 0.100;
@@ -68,8 +70,9 @@ public class DriveTrain extends Subsystem {
 
     public DriveTrain() {
         encoderSetup();
-        initEncoderPID();
+        //initEncoderPID();
         initSideSonarPID();
+        initGyroPID();
 
         LiveWindow.addSensor("DriveTrainGyro", "Gyro", gyro);
         LiveWindow.addSensor("DriveTrain", "Left Encoder", leftEncoder);
@@ -79,8 +82,56 @@ public class DriveTrain extends Subsystem {
         LiveWindow.addActuator("DriveTrain", "LeftSC", leftDriveTalon);
         LiveWindow.addActuator("DriveTrain", "RightSC", rightDriveTalon);
 
-        LiveWindow.addActuator("DriveTrainPID", "encoderPID", encoderPID);
+        LiveWindow.addActuator("DriveTrainPID", "gyroPID", gyroPID);
+
+        //LiveWindow.addActuator("DriveTrainPID", "encoderPID", encoderPID);
         LiveWindow.addActuator("DriveTrainPID", "sidePID", sideSonarPID);
+    }
+
+    private class DrivePIDOutput implements PIDOutput {
+
+        public void pidWrite(double output) {
+            double base = .7;
+            //System.out.println("gryopid output" + Utilities.rnd(output));
+            printGyroPIDStatus();
+            if (output > 0) {
+                //robotDrive2.tankDrive(base, base);
+                robotDrive2.tankDrive(output+base, base);
+            } else if (output < 0) {
+                robotDrive2.tankDrive(base, output+base);
+            } else {
+                robotDrive2.tankDrive(base, base);
+            }
+            //robotDrive2.tankDrive(base + output, base + output);
+        }
+    }
+
+    private void initGyroPID() {
+        gyroPID = new PIDController(1.0, 0, 0, gyro, new DrivePIDOutput());
+        gyroPID.setOutputRange(-.2, .2);
+        gyroPID.setPercentTolerance(5);
+    }
+
+    public void startGyroPID() {
+        gyro.reset();
+        gyroPID.setSetpoint(0);
+        gyroPID.enable();
+    }
+
+    public void stopGyroPID() {
+        gyroPID.disable();
+    }
+
+    public void printGyroPIDStatus() {
+        now = Timer.getFPGATimestamp();
+        if (now - last > 1) {
+            System.out.println("gyroPID out: " + gyroPID.get()
+                    + " error: " + gyroPID.getError()
+                    + " l: " + leftDriveTalon.get()
+                    + " r: " + rightDriveTalon.get());
+            last = now;
+        }
+
     }
 
     //-------------------------GENERAL-------------------------//
@@ -128,6 +179,10 @@ public class DriveTrain extends Subsystem {
         rightEncoder.start();
     }
 
+    public double getDistance() {
+        return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    }
+
     //-----------------------ENCODER PID-----------------------//
     private class DiffEncoderInput implements PIDSource {
 
@@ -166,33 +221,29 @@ public class DriveTrain extends Subsystem {
         }
     }
 
-    private void initEncoderPID() {
-        encoderPID = new PIDController(1.0, 0, 0, new DiffEncoderInput(), new EncoderOutput());
-
-        encoderPID.setOutputRange(-.2, .2);
-        encoderPID.setPercentTolerance(5);
-
-    }
-
-    void updateEncoderPID() {
-        encoderPrefs = Preferences.getInstance();
-        double kp = encoderPrefs.getDouble("encoderkp", encoderKp);
-        double ki = encoderPrefs.getDouble("encoderki", encoderKi);
-        double kd = encoderPrefs.getDouble("encoderkd", encoderKd);
-        encoderPID.setPID(kp, ki, kd);
-    }
-
+//    private void initEncoderPID() {
+//        encoderPID = new PIDController(1.0, 0, 0, new DiffEncoderInput(), new EncoderOutput());
+//
+//        encoderPID.setOutputRange(-.2, .2);
+//        encoderPID.setPercentTolerance(5);
+//
+//    }
+//    void updateEncoderPID() {
+//        encoderPrefs = Preferences.getInstance();
+//        double kp = encoderPrefs.getDouble("encoderkp", encoderKp);
+//        double ki = encoderPrefs.getDouble("encoderki", encoderKi);
+//        double kd = encoderPrefs.getDouble("encoderkd", encoderKd);
+//        encoderPID.setPID(kp, ki, kd);
+//    }
     //--------------------ENCODER AUTONOMOUS--------------------//
-    public void startEncoderAutonomous() {//sets setpoint to 0 and resets everything
-        resetEncoder();
-        startEncoder();
-        gyro.reset();
-//        encoderPID.reset();
-        updateEncoderPID();
-        encoderPID.setSetpoint(0);
-        encoderPID.enable();
-    }
-
+//    public void startEncoderAutonomous() {//sets setpoint to 0 and resets everything
+//        resetEncoder();
+//        startEncoder();
+//        gyro.reset();
+//        updateEncoderPID();
+//        encoderPID.setSetpoint(0);
+//        encoderPID.enable();
+//    }
     public boolean encoderAutonomousOnTarget(double target) {
         if (Math.abs((leftEncoder.getDistance() + rightEncoder.getDistance()) / 2) > getTrueEncoderDistance(target)) {
             return true;
@@ -201,12 +252,11 @@ public class DriveTrain extends Subsystem {
         }
     }
 
-    public void endEncoderAutonomous() {
-        encoderPID.reset();
-        encoderPID.disable();
-        robotDrive2.tankDrive(0, 0);
-    }
-
+//    public void endEncoderAutonomous() {
+//        encoderPID.reset();
+//        encoderPID.disable();
+//        robotDrive2.tankDrive(0, 0);
+//    }
     //Returns the distance in encoder-speak when we input number of inches
     public double getTrueEncoderDistance(double inches) {
         double distance;
@@ -279,29 +329,26 @@ public class DriveTrain extends Subsystem {
 
     }
 
-    public void printEncPIDStatus() {
-        now = Timer.getFPGATimestamp();
-        if (now - last > .2) {
-            System.out.println("encPID out: " + Utilities.rnd(encoderPID.get())
-                    + " error: " + Utilities.rnd(encoderPID.getError())
-                    + " l: " + Utilities.rnd(leftDriveTalon.get())
-                    + " r: " + Utilities.rnd(rightDriveTalon.get()));
-            last = now;
-        }
-
-    }
-
+//    public void printEncPIDStatus() {
+//        now = Timer.getFPGATimestamp();
+//        if (now - last > .2) {
+//            System.out.println("encPID out: " + Utilities.rnd(encoderPID.get())
+//                    + " error: " + Utilities.rnd(encoderPID.getError())
+//                    + " l: " + Utilities.rnd(leftDriveTalon.get())
+//                    + " r: " + Utilities.rnd(rightDriveTalon.get()));
+//            last = now;
+//        }
+//
+//    }
     public void updateDashboard() {
-        SmartDashboard.putData("sidePID", encoderPID);
         SmartDashboard.putNumber("sidePID out: ", Utilities.rnd(sideSonarPID.get()));
         SmartDashboard.putNumber("sidePID in: ", Utilities.rnd(sideSonar.pidGet()));
         SmartDashboard.putNumber("sidePid error: ", Utilities.rnd(sideSonarPID.getError()));
 
-        SmartDashboard.putData("encPID", encoderPID);
-        SmartDashboard.putNumber("encPID out: ", Utilities.rnd(encoderPID.get()));
-        // encPID input is displayed by the pid input class
-        SmartDashboard.putNumber("encPid error: ", Utilities.rnd(encoderPID.getError()));
-
+//        SmartDashboard.putData("encPID", encoderPID);
+//        SmartDashboard.putNumber("encPID out: ", Utilities.rnd(encoderPID.get()));
+//        // encPID input is displayed by the pid input class
+//        SmartDashboard.putNumber("encPid error: ", Utilities.rnd(encoderPID.getError()));
         SmartDashboard.putData("Gyro", gyro);
         SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 
@@ -316,6 +363,6 @@ public class DriveTrain extends Subsystem {
     }
 
     public void disablePIDs() {
-        endEncoderAutonomous();
+        //endEncoderAutonomous();
     }
 }
