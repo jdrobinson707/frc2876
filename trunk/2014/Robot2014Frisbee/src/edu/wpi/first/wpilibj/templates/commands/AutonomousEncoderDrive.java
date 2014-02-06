@@ -18,23 +18,27 @@ public class AutonomousEncoderDrive extends CommandBase {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        driveTrain.startEncoderAutonomous();
-        
+        //driveTrain.startEncoderAutonomous();
+        driveTrain.startGyroPID();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        driveTrain.printEncPIDStatus();
+        driveTrain.printGyroPIDStatus();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return driveTrain.encoderAutonomousOnTarget(240.0);
+        if (driveTrain.getDistance() > -150 ) {
+            return false;
+        }
+        return true;
+        //return driveTrain.encoderAutonomousOnTarget(178.0);
     }
 
     // Called once after isFinished returns true
     protected void end() {
-        driveTrain.endEncoderAutonomous();
+        driveTrain.stopGyroPID();
     }
 
     // Called when another command which requires one or more of the same

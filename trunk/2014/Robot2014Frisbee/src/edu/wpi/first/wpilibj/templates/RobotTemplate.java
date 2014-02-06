@@ -48,6 +48,13 @@ public class RobotTemplate extends IterativeRobot {
         //autonomousCommand = new AutonomousSideDrive();
         autonomousCommand.start();
     }
+   public void autonomousDisabled() {
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
+   }
+           
+    
 
     /**
      * This function is called periodically during autonomous
@@ -55,6 +62,7 @@ public class RobotTemplate extends IterativeRobot {
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
         //autonomousCommand.run();
+        CommandBase.driveTrain.updateDashboard();
 
     }
 
