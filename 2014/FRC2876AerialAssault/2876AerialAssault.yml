@@ -51,7 +51,7 @@ Children:
           validators: null
           value: kRate
         Distance Per Pulse: !!robotbuilder.data.properties.DoubleProperty {default: 1,
-          name: Distance Per Pulse, validators: null, value: 0.020933333}
+          name: Distance Per Pulse, validators: null, value: 0.036464914729}
         Encoding Type: !!robotbuilder.data.properties.ChoicesProperty
           choices: &id006 [k4X, k2X, k1X]
           default: k4X
@@ -199,6 +199,121 @@ Children:
     Properties:
       Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
         name: Default Command, type: Command, validators: null, value: Autonomous Command}
+  - Name: Arm
+    Base: Subsystem
+    Children:
+    - Name: ArmBaseController
+      Base: Speed Controller
+      Children: []
+      Properties:
+        Output Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id011
+          default: '1'
+          name: Output Module (Digital)
+          validators: *id012
+          value: '1'
+        Type: !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id013
+          default: Victor
+          name: Type
+          validators: null
+          value: Talon
+        Output Channel (PWM): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id014
+          default: '1'
+          name: Output Channel (PWM)
+          validators: *id015
+          value: '1'
+    - Name: ArmGrabberController
+      Base: Speed Controller
+      Children: []
+      Properties:
+        Output Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id011
+          default: '1'
+          name: Output Module (Digital)
+          validators: *id012
+          value: '1'
+        Type: !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id013
+          default: Victor
+          name: Type
+          validators: null
+          value: Talon
+        Output Channel (PWM): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id014
+          default: '1'
+          name: Output Channel (PWM)
+          validators: *id015
+          value: '3'
+    - Name: TopLimitSwitch
+      Base: Limit Switch
+      Children: []
+      Properties:
+        Input Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: &id016 ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
+            '12', '13', '14']
+          default: '1'
+          name: Input Channel (Digital)
+          validators: &id017 [DigitalChannel]
+          value: '1'
+        Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: &id018 ['1', '2']
+          default: '1'
+          name: Input Module (Digital)
+          validators: &id019 [DigitalChannel]
+          value: '1'
+    - Name: BottomLimitSwitch
+      Base: Limit Switch
+      Children: []
+      Properties:
+        Input Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id016
+          default: '1'
+          name: Input Channel (Digital)
+          validators: *id017
+          value: '2'
+        Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id018
+          default: '1'
+          name: Input Module (Digital)
+          validators: *id019
+          value: '1'
+    - Name: BallLimitSwitch
+      Base: Limit Switch
+      Children: []
+      Properties:
+        Input Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id016
+          default: '1'
+          name: Input Channel (Digital)
+          validators: *id017
+          value: '3'
+        Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id018
+          default: '1'
+          name: Input Module (Digital)
+          validators: *id019
+          value: '1'
+    - Name: ArmPot
+      Base: Potentiometer
+      Children: []
+      Properties:
+        Input Module (Analog): !!robotbuilder.data.properties.ChoicesProperty
+          choices: ['1', '2']
+          default: '1'
+          name: Input Module (Analog)
+          validators: [AnalogInput]
+          value: '1'
+        Input Channel (Analog): !!robotbuilder.data.properties.ChoicesProperty
+          choices: ['1', '2', '3', '4', '5', '6', '7', '8']
+          default: '1'
+          name: Input Channel (Analog)
+          validators: [AnalogInput]
+          value: '2'
+    Properties:
+      Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Default Command, type: Command, validators: null, value: None}
   Properties: {}
 - Name: Operator Interface
   Base: OI
@@ -208,20 +323,20 @@ Children:
     Children: []
     Properties:
       Number: !!robotbuilder.data.properties.ChoicesProperty
-        choices: &id016 ['1', '2', '3', '4']
+        choices: &id020 ['1', '2', '3', '4']
         default: 1
         name: Number
-        validators: &id017 [Joystick]
+        validators: &id021 [Joystick]
         value: '1'
   - Name: XBOXJoystick2
     Base: Joystick
     Children: []
     Properties:
       Number: !!robotbuilder.data.properties.ChoicesProperty
-        choices: *id016
+        choices: *id020
         default: 1
         name: Number
-        validators: *id017
+        validators: *id021
         value: '2'
   Properties: {}
 - Name: Commands
