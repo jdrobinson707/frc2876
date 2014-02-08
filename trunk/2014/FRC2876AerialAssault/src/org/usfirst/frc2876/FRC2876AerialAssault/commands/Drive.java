@@ -9,6 +9,7 @@
 // it from being updated in the future.
 package org.usfirst.frc2876.FRC2876AerialAssault.commands;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.usfirst.frc2876.FRC2876AerialAssault.Robot;
 /**
  *
@@ -27,7 +28,10 @@ public class  Drive extends Command {
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        Robot.driveTrain.tankDrive(-Robot.oi.getXboxLeftY() *.8, -Robot.oi.getXboxRightY() *.8);
+        //Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
+        Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY(), Robot.oi.getXboxRightY());
+        //Robot.driveTrain.tankDrive(.5, .5);
+        //LiveWindow.addActuator("DriveTrain", "driveTrain", null);
     }
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
