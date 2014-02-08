@@ -33,8 +33,7 @@ public class  Drive extends Command {
     protected void execute() {
         //Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
         Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY(), Robot.oi.getXboxRightY());
-        SmartDashboard.putData("Left Encoder", Robot.driveTrain.leftEncoder);
-        SmartDashboard.putData("Right Encoder", Robot.driveTrain.rightEncoder);
+        Robot.driveTrain.putEncoderData();
         //Robot.driveTrain.tankDrive(.5, .5);
         //LiveWindow.addActuator("DriveTrain", "driveTrain", null);
     }
