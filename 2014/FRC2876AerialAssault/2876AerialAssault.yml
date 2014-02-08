@@ -109,13 +109,13 @@ Children:
           default: '1'
           name: Channel B Channel (Digital)
           validators: *id008
-          value: '13'
+          value: '5'
         Channel A Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
           choices: *id009
           default: '1'
           name: Channel A Channel (Digital)
           validators: *id010
-          value: '14'
+          value: '6'
         Reverse Direction: !!robotbuilder.data.properties.BooleanProperty {default: false,
           name: Reverse Direction, validators: null, value: false}
     - Name: Robot Drive 2 1
@@ -242,7 +242,7 @@ Properties:
   Autonomous Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
     name: Autonomous Command, type: Command, validators: null, value: Autonomous Command}
   Wiring File: !!robotbuilder.data.properties.FileProperty {default: '', extension: html,
-    folder: false, name: Wiring File, validators: null, value: 'C:\Users\mentor\Documents\NetBeansProjects\FRC2876AerialAssault\2876AerialAssaultWiringDiagram.html'}
+    folder: false, name: Wiring File, validators: null, value: /home/student/NetBeansProjects/FRC2876AerialAssault/2876AerialAssaultWiringDiagram.html}
   C++ Windriver Workspace: !!robotbuilder.data.properties.FileProperty {default: 'C:\Windriver\workspace',
     extension: null, folder: true, name: C++ Windriver Workspace, validators: null,
     value: 'C:\Windriver\workspace'}
@@ -256,6 +256,6 @@ Properties:
     validators: null, value: 2876}
   Export Commands: !!robotbuilder.data.properties.BooleanProperty {default: true,
     name: Export Commands, validators: null, value: true}
-  Java Project Directory: !!robotbuilder.data.properties.FileProperty {default: 'C:\Users\mentor\NetBeansProjects',
+  Java Project Directory: !!robotbuilder.data.properties.FileProperty {default: /home/student/NetBeansProjects,
     extension: null, folder: true, name: Java Project Directory, validators: null,
-    value: 'C:\Users\mentor\Documents\NetBeansProjects'}
+    value: '/home/student/sunspotfrcsdk/tools/C:\Users\mentor\Documents\NetBeansProjects'}
