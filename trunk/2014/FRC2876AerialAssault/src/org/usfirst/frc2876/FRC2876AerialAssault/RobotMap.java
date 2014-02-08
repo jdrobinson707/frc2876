@@ -43,7 +43,7 @@ public class RobotMap {
         driveTrainRightEncoder.setDistancePerPulse(0.036464914729);
         driveTrainRightEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainRightEncoder.start();
-        driveTrainLeftSpeedController = new Talon(1, 1);
+        driveTrainLeftSpeedController = new Talon(1, 4);
 	LiveWindow.addActuator("DriveTrain", "LeftSpeedController", (Talon) driveTrainLeftSpeedController);
         
         driveTrainRightSpeedController = new Talon(1, 2);

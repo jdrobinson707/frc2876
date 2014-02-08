@@ -193,6 +193,12 @@ Children:
     Properties:
       Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
         name: Default Command, type: Command, validators: null, value: Drive}
+  - Name: Vision
+    Base: Subsystem
+    Children: []
+    Properties:
+      Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Default Command, type: Command, validators: null, value: Autonomous Command}
   Properties: {}
 - Name: Operator Interface
   Base: OI
@@ -256,6 +262,6 @@ Properties:
     validators: null, value: 2876}
   Export Commands: !!robotbuilder.data.properties.BooleanProperty {default: true,
     name: Export Commands, validators: null, value: true}
-  Java Project Directory: !!robotbuilder.data.properties.FileProperty {default: /home/student/NetBeansProjects,
+  Java Project Directory: !!robotbuilder.data.properties.FileProperty {default: 'C:\Users\mentor\NetBeansProjects',
     extension: null, folder: true, name: Java Project Directory, validators: null,
-    value: '/home/student/sunspotfrcsdk/tools/C:\Users\mentor\Documents\NetBeansProjects'}
+    value: ..\}
