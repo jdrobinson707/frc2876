@@ -196,7 +196,27 @@ Children:
   Properties: {}
 - Name: Operator Interface
   Base: OI
-  Children: []
+  Children:
+  - Name: XBOXJoystick1
+    Base: Joystick
+    Children: []
+    Properties:
+      Number: !!robotbuilder.data.properties.ChoicesProperty
+        choices: &id016 ['1', '2', '3', '4']
+        default: 1
+        name: Number
+        validators: &id017 [Joystick]
+        value: '1'
+  - Name: XBOXJoystick2
+    Base: Joystick
+    Children: []
+    Properties:
+      Number: !!robotbuilder.data.properties.ChoicesProperty
+        choices: *id016
+        default: 1
+        name: Number
+        validators: *id017
+        value: '2'
   Properties: {}
 - Name: Commands
   Base: Commands
@@ -222,7 +242,7 @@ Properties:
   Autonomous Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
     name: Autonomous Command, type: Command, validators: null, value: Autonomous Command}
   Wiring File: !!robotbuilder.data.properties.FileProperty {default: '', extension: html,
-    folder: false, name: Wiring File, validators: null, value: 'C:\Users\mentor\Documents\NetBeansProjects\2876AerialAssaultWiringDiagram.html'}
+    folder: false, name: Wiring File, validators: null, value: 'C:\Users\mentor\Documents\NetBeansProjects\FRC2876AerialAssault\2876AerialAssaultWiringDiagram.html'}
   C++ Windriver Workspace: !!robotbuilder.data.properties.FileProperty {default: 'C:\Windriver\workspace',
     extension: null, folder: true, name: C++ Windriver Workspace, validators: null,
     value: 'C:\Windriver\workspace'}
