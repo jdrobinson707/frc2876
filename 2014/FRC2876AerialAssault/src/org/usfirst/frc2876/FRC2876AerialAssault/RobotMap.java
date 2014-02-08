@@ -35,7 +35,7 @@ public class RobotMap {
         driveTrainGyro.setSensitivity(0.007);
         driveTrainLeftEncoder = new Encoder(1, 12, 1, 11, false, EncodingType.k4X);
 	LiveWindow.addSensor("DriveTrain", "Left Encoder", driveTrainLeftEncoder);
-        driveTrainLeftEncoder.setDistancePerPulse(0.036464914729);
+        driveTrainLeftEncoder.setDistancePerPulse(0.020933333);
         driveTrainLeftEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainLeftEncoder.start();
         driveTrainRightEncoder = new Encoder(1, 6, 1, 5, false, EncodingType.k4X);

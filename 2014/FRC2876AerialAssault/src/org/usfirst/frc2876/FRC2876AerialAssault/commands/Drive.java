@@ -10,6 +10,7 @@
 package org.usfirst.frc2876.FRC2876AerialAssault.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc2876.FRC2876AerialAssault.Robot;
 /**
  *
@@ -25,11 +26,15 @@ public class  Drive extends Command {
     }
     // Called just before this Command runs the first time
     protected void initialize() {
+        Robot.driveTrain.resetEncoders();
+        Robot.driveTrain.startEncoders();
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
         //Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
         Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY(), Robot.oi.getXboxRightY());
+        SmartDashboard.putData("Left Encoder", Robot.driveTrain.leftEncoder);
+        SmartDashboard.putData("Right Encoder", Robot.driveTrain.rightEncoder);
         //Robot.driveTrain.tankDrive(.5, .5);
         //LiveWindow.addActuator("DriveTrain", "driveTrain", null);
     }
@@ -39,9 +44,11 @@ public class  Drive extends Command {
     }
     // Called once after isFinished returns true
     protected void end() {
+        Robot.driveTrain.stopEncoders();
     }
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+        end();
     }
 }
