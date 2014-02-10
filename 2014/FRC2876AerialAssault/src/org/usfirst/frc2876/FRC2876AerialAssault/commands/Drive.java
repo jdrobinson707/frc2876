@@ -33,9 +33,7 @@ public class  Drive extends Command {
     protected void execute() {
         //Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
         Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY(), Robot.oi.getXboxRightY());
-        Robot.driveTrain.putEncoderData();
-        //Robot.driveTrain.tankDrive(.5, .5);
-        //LiveWindow.addActuator("DriveTrain", "driveTrain", null);
+        
     }
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
