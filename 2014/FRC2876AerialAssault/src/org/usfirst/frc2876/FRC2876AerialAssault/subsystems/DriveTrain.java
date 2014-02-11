@@ -47,10 +47,14 @@ public class DriveTrain extends Subsystem {
 
     }
 
+    public void arcadeDrive(double throttle, double rotation) {
+        robotDrive21.arcadeDrive(throttle, rotation);
+    }
+
     public double getHeading() {
         return gyro.getAngle();
     }
-    
+
     public void resetEncoders() {
 
         leftEncoder.reset();
@@ -86,7 +90,7 @@ public class DriveTrain extends Subsystem {
 
     private class GyroPID {
 
-        private PIDController gpid;
+        private PIDController gpid = new PIDController(1.0, 0, 0, gyro, new DrivePIDOutput());;
 
         private class DrivePIDOutput implements PIDOutput {
 
@@ -107,7 +111,7 @@ public class DriveTrain extends Subsystem {
         }
 
         public void GyroPID() {
-            gpid = new PIDController(1.0, 0, 0, gyro, new DrivePIDOutput());
+            //gpid = new PIDController(1.0, 0, 0, gyro, new DrivePIDOutput());
             gpid.setOutputRange(-.2, .2);
             gpid.setPercentTolerance(5);
         }
