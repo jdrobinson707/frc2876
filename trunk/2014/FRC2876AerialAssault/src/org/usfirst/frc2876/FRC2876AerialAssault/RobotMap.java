@@ -49,7 +49,7 @@ public class RobotMap {
         driveTrainRightEncoder.setDistancePerPulse(0.036464914729);
         driveTrainRightEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainRightEncoder.start();
-        driveTrainLeftSpeedController = new Talon(1, 4);
+        driveTrainLeftSpeedController = new Talon(1, 1);
 	LiveWindow.addActuator("DriveTrain", "LeftSpeedController", (Talon) driveTrainLeftSpeedController);
         
         driveTrainRightSpeedController = new Talon(1, 2);
@@ -62,7 +62,7 @@ public class RobotMap {
         driveTrainRobotDrive21.setSensitivity(0.5);
         driveTrainRobotDrive21.setMaxOutput(1.0);
         
-        armArmBaseController = new Talon(1, 1);
+        armArmBaseController = new Talon(1, 4);
 	LiveWindow.addActuator("Arm", "ArmBaseController", (Talon) armArmBaseController);
         
         armArmGrabberController = new Talon(1, 3);
