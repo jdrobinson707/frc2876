@@ -60,6 +60,8 @@ public class XboxController {
     public Button back = new JoystickButton(m_pad, BUTTON_BACK);
     public Button lStick = new JoystickButton(m_pad, LEFT_STICK_PRESS);
     public Button rStick = new JoystickButton(m_pad, RIGHT_STICK_PRESS);
+    public Button lTrigger = new JoystickButton (m_pad, L_TRIGGER_VAL);
+    public Button rTrigger = new JoystickButton (m_pad, R_TRIGGER_VAL);
     
     public boolean getButton(int btn) {
         return m_pad.getRawButton(btn);
@@ -85,6 +87,8 @@ public class XboxController {
             BUTTON_BACK = 7,
             BUTTON_START = 8,
             LEFT_STICK_PRESS = 9,
-            RIGHT_STICK_PRESS = 10;
+            RIGHT_STICK_PRESS = 10,
+            L_TRIGGER_VAL = 11,
+            R_TRIGGER_VAL = 12;
     
 }

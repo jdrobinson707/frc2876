@@ -198,7 +198,7 @@ Children:
     Children: []
     Properties:
       Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
-        name: Default Command, type: Command, validators: null, value: Autonomous Command}
+        name: Default Command, type: Command, validators: null, value: VisionIdle}
   - Name: Arm
     Base: Subsystem
     Children:
@@ -317,27 +317,7 @@ Children:
   Properties: {}
 - Name: Operator Interface
   Base: OI
-  Children:
-  - Name: XBOXJoystick1
-    Base: Joystick
-    Children: []
-    Properties:
-      Number: !!robotbuilder.data.properties.ChoicesProperty
-        choices: &id020 ['1', '2', '3', '4']
-        default: 1
-        name: Number
-        validators: &id021 [Joystick]
-        value: '1'
-  - Name: XBOXJoystick2
-    Base: Joystick
-    Children: []
-    Properties:
-      Number: !!robotbuilder.data.properties.ChoicesProperty
-        choices: *id020
-        default: 1
-        name: Number
-        validators: *id021
-        value: '2'
+  Children: []
   Properties: {}
 - Name: Commands
   Base: Commands
@@ -356,6 +336,14 @@ Children:
     Properties:
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
         name: Requires, type: Subsystem, validators: null, value: DriveTrain}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+  - Name: VisionIdle
+    Base: Command
+    Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Vision}
       Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
         name: Button on SmartDashboard, validators: null, value: true}
   Properties: {}
