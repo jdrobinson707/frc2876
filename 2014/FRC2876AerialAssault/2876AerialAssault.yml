@@ -142,7 +142,7 @@ Children:
             default: '1'
             name: Output Channel (PWM)
             validators: &id015 [PWMOutput]
-            value: '4'
+            value: '1'
       - Name: RightSpeedController
         Base: Speed Controller
         Children: []
@@ -223,7 +223,7 @@ Children:
           default: '1'
           name: Output Channel (PWM)
           validators: *id015
-          value: '1'
+          value: '4'
     - Name: ArmGrabberController
       Base: Speed Controller
       Children: []

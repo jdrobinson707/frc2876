@@ -31,11 +31,11 @@ public class  Drive extends Command {
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        //Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
-        Robot.driveTrain.arcadeDrive(Robot.oi.getXboxTrigger(), Robot.oi.getXboxLeftX());
+        Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
+        //Robot.driveTrain.arcadeDrive(Robot.oi.getXboxTrigger(), Robot.oi.getXboxLeftX());
     
-        System.out.print(Robot.oi.getXboxTrigger() + "\r");
-        SmartDashboard.putNumber("Trigger", Robot.oi.getXboxTrigger());
+//        System.out.print(Robot.oi.getXboxTrigger() + "\r");
+//        SmartDashboard.putNumber("Trigger", Robot.oi.getXboxTrigger());
         
     }
     // Make this return true when this Command no longer needs to run execute()
