@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.templates.RobotMap;
 import edu.wpi.first.wpilibj.templates.Utilities;
 import edu.wpi.first.wpilibj.templates.commands.Drive;
 
+import edu.wpi.first.wpilibj.Jaguar;
+
 /**
  *
  * @author mentor
@@ -32,8 +34,10 @@ public class DriveTrain extends Subsystem {
     // here. Call these from Commands.
 
     RobotDrive robotDrive2 = RobotMap.DRIVETRAIN_ROBOT_DRIVE_2;
-    Talon rightDriveTalon = RobotMap.DRIVETRAIN_RIGHTDRIVE_TALON;
-    Talon leftDriveTalon = RobotMap.DRIVETRAIN_LEFTDRIVE_TALON;
+    //Talon rightDriveTalon = RobotMap.DRIVETRAIN_RIGHTDRIVE_TALON;
+    //Talon leftDriveTalon = RobotMap.DRIVETRAIN_LEFTDRIVE_TALON;
+    Jaguar rightDriveTalon = RobotMap.DRIVETRAIN_RIGHTDRIVE_TALON;
+    Jaguar leftDriveTalon = RobotMap.DRIVETRAIN_LEFTDRIVE_TALON;
     Encoder leftEncoder = RobotMap.DRIVETRAIN_LEFTENCODER;
     Encoder rightEncoder = RobotMap.DRIVETRAIN_RIGHTENCODER;
     AnalogSonar frontSonar = RobotMap.DRIVETRAIN_FRONTSONAR;
@@ -180,7 +184,9 @@ public class DriveTrain extends Subsystem {
     }
 
     public double getDistance() {
-        return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+        double averageEncoder = (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+        System.out.println("average Encoder" + averageEncoder);
+        return averageEncoder;
     }
 
     //-----------------------ENCODER PID-----------------------//
@@ -190,7 +196,6 @@ public class DriveTrain extends Subsystem {
             double r = rightEncoder.getDistance();
             double l = leftEncoder.getDistance();
             //double avg = (r + l) / 2;
-            // Since only one encoder is working using avg throws 
             // off distance alot. Just use working one for now.
             double diff = l - r;
             SmartDashboard.putNumber("encPID in: ", Utilities.rnd(diff));
