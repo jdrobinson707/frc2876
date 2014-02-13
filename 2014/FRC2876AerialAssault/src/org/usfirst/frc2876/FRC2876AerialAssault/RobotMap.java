@@ -12,7 +12,6 @@ package org.usfirst.frc2876.FRC2876AerialAssault;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType; import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import java.util.Vector;
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -27,6 +26,9 @@ public class RobotMap {
     public static SpeedController driveTrainLeftSpeedController;
     public static SpeedController driveTrainRightSpeedController;
     public static RobotDrive driveTrainRobotDrive21;
+    public static Ultrasonic driveTrainleftSonar;
+    public static Ultrasonic driveTrainrightSonar;
+    public static Ultrasonic driveTrainfrontSonar;
     public static SpeedController armArmBaseController;
     public static SpeedController armArmGrabberController;
     public static DigitalInput armTopLimitSwitch;
@@ -49,11 +51,11 @@ public class RobotMap {
         driveTrainRightEncoder.setDistancePerPulse(0.036464914729);
         driveTrainRightEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainRightEncoder.start();
-        driveTrainLeftSpeedController = new Talon(1, 1);
-	LiveWindow.addActuator("DriveTrain", "LeftSpeedController", (Talon) driveTrainLeftSpeedController);
+        driveTrainLeftSpeedController = new Jaguar(1, 3);
+	LiveWindow.addActuator("DriveTrain", "LeftSpeedController", (Jaguar) driveTrainLeftSpeedController);
         
-        driveTrainRightSpeedController = new Talon(1, 2);
-	LiveWindow.addActuator("DriveTrain", "RightSpeedController", (Talon) driveTrainRightSpeedController);
+        driveTrainRightSpeedController = new Jaguar(1, 4);
+	LiveWindow.addActuator("DriveTrain", "RightSpeedController", (Jaguar) driveTrainRightSpeedController);
         
         driveTrainRobotDrive21 = new RobotDrive(driveTrainLeftSpeedController, driveTrainRightSpeedController);
 	
@@ -62,10 +64,19 @@ public class RobotMap {
         driveTrainRobotDrive21.setSensitivity(0.5);
         driveTrainRobotDrive21.setMaxOutput(1.0);
         
-        armArmBaseController = new Talon(1, 4);
+        driveTrainleftSonar = new Ultrasonic(1, 4, 1, 7);
+	LiveWindow.addSensor("DriveTrain", "leftSonar", driveTrainleftSonar);
+        
+        driveTrainrightSonar = new Ultrasonic(1, 8, 1, 9);
+	LiveWindow.addSensor("DriveTrain", "rightSonar", driveTrainrightSonar);
+        
+        driveTrainfrontSonar = new Ultrasonic(1, 10, 1, 13);
+	LiveWindow.addSensor("DriveTrain", "frontSonar", driveTrainfrontSonar);
+        
+        armArmBaseController = new Talon(1, 5); //(1, 2)
 	LiveWindow.addActuator("Arm", "ArmBaseController", (Talon) armArmBaseController);
         
-        armArmGrabberController = new Talon(1, 3);
+        armArmGrabberController = new Talon(1, 4); //(1, 1)
 	LiveWindow.addActuator("Arm", "ArmGrabberController", (Talon) armArmGrabberController);
         
         armTopLimitSwitch = new DigitalInput(1, 1);
