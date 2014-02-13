@@ -9,6 +9,7 @@
 // it from being updated in the future.
 package org.usfirst.frc2876.FRC2876AerialAssault;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -91,4 +92,11 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         LiveWindow.run();
     }
+     public void test() {
+            while (isTest() && isEnabled()) {
+                LiveWindow.run();
+                Timer.delay(0.1);
+            }
+            
+       }
 }
