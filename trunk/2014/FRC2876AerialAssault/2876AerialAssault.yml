@@ -142,7 +142,7 @@ Children:
             default: '1'
             name: Output Channel (PWM)
             validators: &id015 [PWMOutput]
-            value: '1'
+            value: '2'
       - Name: RightSpeedController
         Base: Speed Controller
         Children: []
@@ -164,7 +164,7 @@ Children:
             default: '1'
             name: Output Channel (PWM)
             validators: *id015
-            value: '2'
+            value: '1'
       Properties:
         Sensitivity: !!robotbuilder.data.properties.DoubleProperty {default: 0.5,
           name: Sensitivity, validators: null, value: 0.5}
@@ -190,6 +190,92 @@ Children:
           name: Right Motor Inverted, validators: null, value: false}
         Safety Expiration Time: !!robotbuilder.data.properties.DoubleProperty {default: 0.1,
           name: Safety Expiration Time, validators: null, value: 0.1}
+    - Name: leftSonar
+      Base: Ultrasonic
+      Children: []
+      Properties:
+        Ping Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: &id016 ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
+            '12', '13', '14']
+          default: '1'
+          name: Ping Channel (Digital)
+          validators: &id017 [DigitalChannel]
+          value: '4'
+        Ping Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: &id018 ['1', '2']
+          default: '1'
+          name: Ping Module (Digital)
+          validators: &id019 [DigitalChannel]
+          value: '1'
+        Echo Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: &id020 ['1', '2']
+          default: '1'
+          name: Echo Module (Digital)
+          validators: &id021 [DigitalChannel]
+          value: '1'
+        Echo Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: &id022 ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
+            '12', '13', '14']
+          default: '1'
+          name: Echo Channel (Digital)
+          validators: &id023 [DigitalChannel]
+          value: '7'
+    - Name: rightSonar
+      Base: Ultrasonic
+      Children: []
+      Properties:
+        Ping Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id016
+          default: '1'
+          name: Ping Channel (Digital)
+          validators: *id017
+          value: '8'
+        Ping Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id018
+          default: '1'
+          name: Ping Module (Digital)
+          validators: *id019
+          value: '1'
+        Echo Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id020
+          default: '1'
+          name: Echo Module (Digital)
+          validators: *id021
+          value: '1'
+        Echo Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id022
+          default: '1'
+          name: Echo Channel (Digital)
+          validators: *id023
+          value: '9'
+    - Name: frontSonar
+      Base: Ultrasonic
+      Children: []
+      Properties:
+        Ping Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id016
+          default: '1'
+          name: Ping Channel (Digital)
+          validators: *id017
+          value: '10'
+        Ping Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id018
+          default: '1'
+          name: Ping Module (Digital)
+          validators: *id019
+          value: '1'
+        Echo Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id020
+          default: '1'
+          name: Echo Module (Digital)
+          validators: *id021
+          value: '1'
+        Echo Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
+          choices: *id022
+          default: '1'
+          name: Echo Channel (Digital)
+          validators: *id023
+          value: '13'
     Properties:
       Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
         name: Default Command, type: Command, validators: null, value: Drive}
@@ -223,7 +309,7 @@ Children:
           default: '1'
           name: Output Channel (PWM)
           validators: *id015
-          value: '4'
+          value: '5'
     - Name: ArmGrabberController
       Base: Speed Controller
       Children: []
@@ -245,55 +331,55 @@ Children:
           default: '1'
           name: Output Channel (PWM)
           validators: *id015
-          value: '3'
+          value: '4'
     - Name: TopLimitSwitch
       Base: Limit Switch
       Children: []
       Properties:
         Input Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
-          choices: &id016 ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
+          choices: &id024 ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
             '12', '13', '14']
           default: '1'
           name: Input Channel (Digital)
-          validators: &id017 [DigitalChannel]
+          validators: &id025 [DigitalChannel]
           value: '1'
         Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
-          choices: &id018 ['1', '2']
+          choices: &id026 ['1', '2']
           default: '1'
           name: Input Module (Digital)
-          validators: &id019 [DigitalChannel]
+          validators: &id027 [DigitalChannel]
           value: '1'
     - Name: BottomLimitSwitch
       Base: Limit Switch
       Children: []
       Properties:
         Input Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
-          choices: *id016
+          choices: *id024
           default: '1'
           name: Input Channel (Digital)
-          validators: *id017
+          validators: *id025
           value: '2'
         Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
-          choices: *id018
+          choices: *id026
           default: '1'
           name: Input Module (Digital)
-          validators: *id019
+          validators: *id027
           value: '1'
     - Name: BallLimitSwitch
       Base: Limit Switch
       Children: []
       Properties:
         Input Channel (Digital): !!robotbuilder.data.properties.ChoicesProperty
-          choices: *id016
+          choices: *id024
           default: '1'
           name: Input Channel (Digital)
-          validators: *id017
+          validators: *id025
           value: '3'
         Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
-          choices: *id018
+          choices: *id026
           default: '1'
           name: Input Module (Digital)
-          validators: *id019
+          validators: *id027
           value: '1'
     - Name: ArmPot
       Base: Potentiometer
