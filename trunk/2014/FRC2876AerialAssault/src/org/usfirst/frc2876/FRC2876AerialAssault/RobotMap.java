@@ -51,11 +51,11 @@ public class RobotMap {
         driveTrainRightEncoder.setDistancePerPulse(0.036464914729);
         driveTrainRightEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainRightEncoder.start();
-        driveTrainLeftSpeedController = new Talon(1, 3);
-	LiveWindow.addActuator("DriveTrain", "LeftSpeedController", (Jaguar) driveTrainLeftSpeedController);
+        driveTrainLeftSpeedController = new Talon(1, 2);
+	LiveWindow.addActuator("DriveTrain", "LeftSpeedController", (Talon) driveTrainLeftSpeedController);
         
-        driveTrainRightSpeedController = new Talon(1, 4);
-	LiveWindow.addActuator("DriveTrain", "RightSpeedController", (Jaguar) driveTrainRightSpeedController);
+        driveTrainRightSpeedController = new Talon(1, 1);
+	LiveWindow.addActuator("DriveTrain", "RightSpeedController", (Talon) driveTrainRightSpeedController);
         
         driveTrainRobotDrive21 = new RobotDrive(driveTrainLeftSpeedController, driveTrainRightSpeedController);
 	
@@ -64,7 +64,7 @@ public class RobotMap {
         driveTrainRobotDrive21.setSensitivity(0.5);
         driveTrainRobotDrive21.setMaxOutput(1.0);
         
-        driveTrainleftSonar = new Ultrasonic(1, 4, 1, 7);
+        driveTrainleftSonar = new Ultrasonic(1, 4, 1, 1);
 	LiveWindow.addSensor("DriveTrain", "leftSonar", driveTrainleftSonar);
         
         driveTrainrightSonar = new Ultrasonic(1, 8, 1, 9);
@@ -73,13 +73,13 @@ public class RobotMap {
         driveTrainfrontSonar = new Ultrasonic(1, 10, 1, 13);
 	LiveWindow.addSensor("DriveTrain", "frontSonar", driveTrainfrontSonar);
         
-        armArmBaseController = new Talon(1, 5); //(1, 2)
+        armArmBaseController = new Talon(1, 5);
 	LiveWindow.addActuator("Arm", "ArmBaseController", (Talon) armArmBaseController);
         
-        armArmGrabberController = new Talon(1, 4); //(1, 1)
+        armArmGrabberController = new Talon(1, 4);
 	LiveWindow.addActuator("Arm", "ArmGrabberController", (Talon) armArmGrabberController);
         
-        armTopLimitSwitch = new DigitalInput(1, 1);
+        armTopLimitSwitch = new DigitalInput(1, 7);
 	LiveWindow.addSensor("Arm", "TopLimitSwitch", armTopLimitSwitch);
         
         armBottomLimitSwitch = new DigitalInput(1, 2);

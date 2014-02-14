@@ -219,7 +219,7 @@ Children:
           default: '1'
           name: Echo Channel (Digital)
           validators: &id023 [DigitalChannel]
-          value: '7'
+          value: '1'
     - Name: rightSonar
       Base: Ultrasonic
       Children: []
@@ -342,7 +342,7 @@ Children:
           default: '1'
           name: Input Channel (Digital)
           validators: &id025 [DigitalChannel]
-          value: '1'
+          value: '7'
         Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
           choices: &id026 ['1', '2']
           default: '1'
@@ -430,6 +430,22 @@ Children:
     Properties:
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
         name: Requires, type: Subsystem, validators: null, value: Vision}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+  - Name: RaiseArm
+    Base: Command
+    Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Arm}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+  - Name: LowerArm
+    Base: Command
+    Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Arm}
       Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
         name: Button on SmartDashboard, validators: null, value: true}
   Properties: {}
