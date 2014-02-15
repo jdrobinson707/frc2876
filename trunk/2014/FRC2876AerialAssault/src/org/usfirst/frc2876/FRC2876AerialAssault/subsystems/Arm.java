@@ -71,4 +71,28 @@ public class Arm extends Subsystem {
         armPID.enable();
     }
     
+    public void collectBall(){
+        armGrabberController.set(0.8);
+    }
+    
+    public void releaseBall(){
+        armGrabberController.set(-0.8);
+    }
+    
+    public void stopGrabberMotor(){
+        armGrabberController.set(0);
+    }
+    
+    public boolean isTopPressed(){
+      return topLimitSwitch.get();  
+    }
+    
+    public boolean isBottomPressed(){
+      return bottomLimitSwitch.get();  
+    }
+    
+    public boolean isBallLimitPressed(){
+      return ballLimitSwitch.get();  
+    }
+    
 }
