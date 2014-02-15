@@ -67,9 +67,13 @@ public class Arm extends Subsystem {
     
     public void raiseArm(){
 
-        if(topLimitSwitch.get()!= true){
-           
+        if(!topLimitSwitch.get()){
+           armBaseController.set(0.4);
         }
+        else{
+            armBaseController.set(0);
+        }
+    
 
         armPID.reset();
         armPID.setSetpoint(armMax);
@@ -78,6 +82,14 @@ public class Arm extends Subsystem {
     }
     
     public void lowerArm(){
+        
+        if(!bottomLimitSwitch.get()){
+           armBaseController.set(-0.4);
+        }
+        else{
+            armBaseController.set(0);
+        }
+        
         armPID.reset();
         armPID.setSetpoint(armMin);
         armPID.enable();
