@@ -101,11 +101,11 @@ public class Arm extends Subsystem {
         //System.out.println("collectBall");
     }
     public void releaseBall() {
-        armGrabberController.set(-0.8);
+        armGrabberController.set(-1);
         //System.out.println("releaseBall");
     }
     public boolean armPIDonTarget(){
-        if(Math.abs(armPID.getError()) <= 5){
+        if(Math.abs(armPID.getError()) <= 8){
             return true;
         }else{
             return false;

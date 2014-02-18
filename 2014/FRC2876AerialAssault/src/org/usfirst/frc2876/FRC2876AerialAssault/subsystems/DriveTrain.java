@@ -34,10 +34,14 @@ public class DriveTrain extends Subsystem {
     public static AnalogSonar frontSonar;
 
     GyroPID gyroPID = new GyroPID();
-    boolean driveWithGain = false;
+    boolean driveWithGain = true;
     private double now = Timer.getFPGATimestamp();
     private double last = now;
 
+    
+    public DriveTrain() {
+        setDriveWithGain(true);
+    }
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
     public void initDefaultCommand() {
@@ -108,7 +112,6 @@ public class DriveTrain extends Subsystem {
 
     public boolean isDriveGain() {
         return driveWithGain;
-
     }
 
     public double getHeading() {

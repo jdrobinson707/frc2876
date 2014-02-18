@@ -29,7 +29,7 @@ public class DriveStraight extends Command {
         //Robot.driveTrain.driveStraightStart();
         Robot.driveTrain.resetEncoders();
         Robot.driveTrain.startEncoders();
-        Robot.driveTrain.tankDrive(.7, .71);
+        Robot.driveTrain.tankDrive(.7, .7);
         
         
     }
