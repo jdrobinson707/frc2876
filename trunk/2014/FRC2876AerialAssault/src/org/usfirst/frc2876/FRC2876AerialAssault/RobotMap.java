@@ -26,8 +26,6 @@ public class RobotMap {
     public static SpeedController driveTrainLeftSpeedController;
     public static SpeedController driveTrainRightSpeedController;
     public static RobotDrive driveTrainRobotDrive21;
-    public static Ultrasonic driveTrainleftSonar;
-    public static Ultrasonic driveTrainrightSonar;
     public static SpeedController armArmBaseController;
     public static SpeedController armArmGrabberController;
     public static DigitalInput armTopLimitSwitch;
@@ -47,7 +45,7 @@ public class RobotMap {
         driveTrainLeftEncoder.start();
         driveTrainRightEncoder = new Encoder(1, 14, 1, 13, false, EncodingType.k4X);
 	LiveWindow.addSensor("DriveTrain", "Right Encoder", driveTrainRightEncoder);
-        driveTrainRightEncoder.setDistancePerPulse(0.036464914729);
+        driveTrainRightEncoder.setDistancePerPulse(0.020943951);
         driveTrainRightEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainRightEncoder.start();
         driveTrainLeftSpeedController = new Talon(1, 2);
@@ -62,12 +60,6 @@ public class RobotMap {
         driveTrainRobotDrive21.setExpiration(0.1);
         driveTrainRobotDrive21.setSensitivity(0.5);
         driveTrainRobotDrive21.setMaxOutput(1.0);
-        
-        driveTrainleftSonar = new Ultrasonic(1, 4, 1, 1);
-	LiveWindow.addSensor("DriveTrain", "leftSonar", driveTrainleftSonar);
-        
-        driveTrainrightSonar = new Ultrasonic(1, 3, 1, 2);
-	LiveWindow.addSensor("DriveTrain", "rightSonar", driveTrainrightSonar);
         
         armArmBaseController = new Talon(1, 5);
 	LiveWindow.addActuator("Arm", "ArmBaseController", (Talon) armArmBaseController);

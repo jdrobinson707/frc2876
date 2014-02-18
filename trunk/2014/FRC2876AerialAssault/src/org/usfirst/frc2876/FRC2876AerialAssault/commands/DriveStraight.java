@@ -5,14 +5,18 @@
  */
 package org.usfirst.frc2876.FRC2876AerialAssault.commands;
 
+
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc2876.FRC2876AerialAssault.Robot;
+import org.usfirst.frc2876.FRC2876AerialAssault.RobotMap;
 
 /**
  *
  * @author maciej
  */
 public class DriveStraight extends Command {
+    
+
 
     public DriveStraight() {
         // Use requires() here to declare subsystem dependencies
@@ -22,13 +26,19 @@ public class DriveStraight extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.driveTrain.driveStraightStart();
+        //Robot.driveTrain.driveStraightStart();
+        Robot.driveTrain.resetEncoders();
+        Robot.driveTrain.startEncoders();
+        Robot.driveTrain.tankDrive(.7, .71);
+        
+        
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
         // Nothing to do here, the pid controller is making robot drive.
         // SmartDashboard is being updated in teleopPeriodic or autoPeriodic funcs.
+        System.out.println(Robot.driveTrain.getDistance());
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -38,7 +48,7 @@ public class DriveStraight extends Command {
         
         // Until we get straight line working.. check gyro angle and if it gets
         // too far off give up and stop driving in straight line.
-        if (Math.abs(Robot.driveTrain.getHeading()) > 10) {
+        if ((Robot.driveTrain.getDistance() > 65)) {
             return true;
         }
         return false;
@@ -47,6 +57,10 @@ public class DriveStraight extends Command {
     // Called once after isFinished returns true
     protected void end() {
         Robot.driveTrain.driveStraightStop();
+        Robot.driveTrain.stopEncoders();
+        
+        Robot.driveTrain.tankDrive(0, 0);
+        
     }
 
     // Called when another command which requires one or more of the same
