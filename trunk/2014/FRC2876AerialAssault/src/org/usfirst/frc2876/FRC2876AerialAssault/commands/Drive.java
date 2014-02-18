@@ -16,7 +16,7 @@ import org.usfirst.frc2876.FRC2876AerialAssault.Robot;
  *
  */
 public class  Drive extends Command {
-    public Drive() {
+    public Drive() {    
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
 	
@@ -32,7 +32,7 @@ public class  Drive extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
         //Robot.driveTrain.tankDrive(Robot.oi.getXboxLeftY() *.8, Robot.oi.getXboxRightY() *.8);
-        Robot.driveTrain.arcadeDrive(Robot.oi.getXboxTrigger() * .8, -Robot.oi.getXboxLeftX() * .8);
+        Robot.driveTrain.arcadeDrive(-Robot.oi.getXboxLeftY()*.8, -Robot.oi.getXboxRightX()*.8);
     
 //        System.out.print(Robot.oi.getXboxTrigger() + "\r");
 //        SmartDashboard.putNumber("Trigger", Robot.oi.getXboxTrigger());
