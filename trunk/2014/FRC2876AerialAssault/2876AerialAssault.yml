@@ -200,7 +200,7 @@ Children:
           default: '1'
           name: Ping Channel (Digital)
           validators: &id017 [DigitalChannel]
-          value: '4'
+          value: '3'
         Ping Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
           choices: &id018 ['1', '2']
           default: '1'
@@ -229,7 +229,7 @@ Children:
           default: '1'
           name: Ping Channel (Digital)
           validators: *id017
-          value: '8'
+          value: '4'
         Ping Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
           choices: *id018
           default: '1'
@@ -247,7 +247,7 @@ Children:
           default: '1'
           name: Echo Channel (Digital)
           validators: *id023
-          value: '9'
+          value: '2'
     - Name: frontSonar
       Base: Ultrasonic
       Children: []
@@ -358,7 +358,7 @@ Children:
           default: '1'
           name: Input Channel (Digital)
           validators: *id025
-          value: '2'
+          value: '9'
         Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
           choices: *id026
           default: '1'
@@ -374,7 +374,7 @@ Children:
           default: '1'
           name: Input Channel (Digital)
           validators: *id025
-          value: '3'
+          value: '8'
         Input Module (Digital): !!robotbuilder.data.properties.ChoicesProperty
           choices: *id026
           default: '1'
