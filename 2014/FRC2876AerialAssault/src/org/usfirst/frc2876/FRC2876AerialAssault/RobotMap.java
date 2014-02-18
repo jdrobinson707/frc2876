@@ -28,7 +28,6 @@ public class RobotMap {
     public static RobotDrive driveTrainRobotDrive21;
     public static Ultrasonic driveTrainleftSonar;
     public static Ultrasonic driveTrainrightSonar;
-    public static Ultrasonic driveTrainfrontSonar;
     public static SpeedController armArmBaseController;
     public static SpeedController armArmGrabberController;
     public static DigitalInput armTopLimitSwitch;
@@ -46,7 +45,7 @@ public class RobotMap {
         driveTrainLeftEncoder.setDistancePerPulse(0.036464914729);
         driveTrainLeftEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
         driveTrainLeftEncoder.start();
-        driveTrainRightEncoder = new Encoder(1, 6, 1, 5, false, EncodingType.k4X);
+        driveTrainRightEncoder = new Encoder(1, 14, 1, 13, false, EncodingType.k4X);
 	LiveWindow.addSensor("DriveTrain", "Right Encoder", driveTrainRightEncoder);
         driveTrainRightEncoder.setDistancePerPulse(0.036464914729);
         driveTrainRightEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
@@ -67,11 +66,8 @@ public class RobotMap {
         driveTrainleftSonar = new Ultrasonic(1, 4, 1, 1);
 	LiveWindow.addSensor("DriveTrain", "leftSonar", driveTrainleftSonar);
         
-        driveTrainrightSonar = new Ultrasonic(1, 8, 1, 9);
+        driveTrainrightSonar = new Ultrasonic(1, 3, 1, 2);
 	LiveWindow.addSensor("DriveTrain", "rightSonar", driveTrainrightSonar);
-        
-        driveTrainfrontSonar = new Ultrasonic(1, 10, 1, 13);
-	LiveWindow.addSensor("DriveTrain", "frontSonar", driveTrainfrontSonar);
         
         armArmBaseController = new Talon(1, 5);
 	LiveWindow.addActuator("Arm", "ArmBaseController", (Talon) armArmBaseController);
@@ -82,10 +78,10 @@ public class RobotMap {
         armTopLimitSwitch = new DigitalInput(1, 7);
 	LiveWindow.addSensor("Arm", "TopLimitSwitch", armTopLimitSwitch);
         
-        armBottomLimitSwitch = new DigitalInput(1, 2);
+        armBottomLimitSwitch = new DigitalInput(1, 9);
 	LiveWindow.addSensor("Arm", "BottomLimitSwitch", armBottomLimitSwitch);
         
-        armBallLimitSwitch = new DigitalInput(1, 3);
+        armBallLimitSwitch = new DigitalInput(1, 8);
 	LiveWindow.addSensor("Arm", "BallLimitSwitch", armBallLimitSwitch);
         
         armArmPot = new AnalogChannel(1, 2);

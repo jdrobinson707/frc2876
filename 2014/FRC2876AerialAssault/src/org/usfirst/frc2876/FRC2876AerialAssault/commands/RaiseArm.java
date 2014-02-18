@@ -14,6 +14,7 @@ import org.usfirst.frc2876.FRC2876AerialAssault.Robot;
  *
  */
 public class  RaiseArm extends Command {
+    public boolean finished = false;
     public RaiseArm() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -28,10 +29,14 @@ public class  RaiseArm extends Command {
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+//        if(Robot.arm.isTopPressed()){   //safe stop so we don't smash arm
+//           Robot.arm.armBaseControllerSet(0.0);
+//           finished = true;
+//        }
     }
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return Robot.arm.armPIDonTarget();
     }
     // Called once after isFinished returns true
     protected void end() {

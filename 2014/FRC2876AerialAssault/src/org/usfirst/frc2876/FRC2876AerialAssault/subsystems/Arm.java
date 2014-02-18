@@ -24,7 +24,7 @@ public class Arm extends Subsystem {
     private static PIDController armPID;
     private static final double armTop = 10;    //voltage 0.11
     private static final double armBottom = 462;// voltage 2.34;
-    private static final double armScore = 318; //voltage 2.025 //scorebottom = 400
+    private static final double armScore = 338; //voltage 2.025 //scorebottom = 400
     private static final double armKp = 0.50;
     private static final double armKi = 0.00;
     private static final double armKd = 0.00;
@@ -68,7 +68,7 @@ public class Arm extends Subsystem {
         armPID = new PIDController(armKp, armKi, armKd, armPot, new ArmOutput());
         armPID.setOutputRange(-.8, .8);
         //armPID.setInputRange(armTop, armBottom);
-        armPID.setPercentTolerance(10);
+        armPID.setPercentTolerance(5);
         SmartDashboard.putData("armPID", armPID);
     }
 
@@ -136,7 +136,7 @@ public class Arm extends Subsystem {
     }
 
     public boolean armPIDonTarget(){
-        if(Math.abs(armPID.getError()) <= 8){
+        if(Math.abs(armPID.getError()) <= 5){
             return true;
         }else{
             return false;

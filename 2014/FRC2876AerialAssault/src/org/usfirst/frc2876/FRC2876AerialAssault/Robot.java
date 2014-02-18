@@ -80,6 +80,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
         driveTrain.updateDashboard();
+        arm.updateDashboard();
     }
     public void testInit() {
         if (autonomousCommand != null) {
@@ -92,11 +93,11 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         LiveWindow.run();
     }
-     public void test() {
-            while (isTest() && isEnabled()) {
-                LiveWindow.run();
-                Timer.delay(0.1);
-            }
-            
-       }
+//     public void test() {
+//            while (isTest() && isEnabled()) {
+//                LiveWindow.run();
+//                //Timer.delay(0.1);
+//            }
+//            
+//       }
 }

@@ -8,12 +8,17 @@
 // update. Deleting the comments indicating the section will prevent
 // it from being updated in the future.
 package org.usfirst.frc2876.FRC2876AerialAssault.commands;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc2876.FRC2876AerialAssault.Robot;
 /**
  *
  */
 public class  ReleaseBall extends Command {
+    private static double now;
+    private static double start;
+    private static double wait = 2;
+    
     public ReleaseBall() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -24,14 +29,21 @@ public class  ReleaseBall extends Command {
     }
     // Called just before this Command runs the first time
     protected void initialize() {
+        start = Timer.getFPGATimestamp();
+        Robot.arm.releaseBall();
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        Robot.arm.releaseBall();
+      
     }
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return !Robot.arm.isBallLimitPressed();
+        now = Timer.getFPGATimestamp();
+        if(now - start >= wait){
+            return true;
+        }else{
+            return false;
+        }
     }
     // Called once after isFinished returns true
     protected void end() {
