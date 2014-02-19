@@ -12,7 +12,7 @@ http://www.chiefdelphi.com/forums/showthread.php?t=125816
 
 {{{
 
-*** Refer to the attached graph when reading this description ***
+*** Refer to the graph when reading this description. Note you need to download pic to view it. ***
 https://code.google.com/p/frc2876/source/browse/trunk/wiki_attachments/sensitivity_adjustment.gif
 
 Let X be a joystick axis with value ranging from -1 to +1.
