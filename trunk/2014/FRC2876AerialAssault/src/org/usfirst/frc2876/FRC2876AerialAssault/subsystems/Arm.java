@@ -19,8 +19,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Arm extends Subsystem {
     private static PIDController armPID;
     private static final double armTop = 10;    //voltage 0.11
+    //scorebottom = 400
     private static final double armBottom = 462;// voltage 2.34;
-    private static final double armScore = 338; //voltage 2.025 //scorebottom = 400
+    //private static final double armScore = 338; //voltage 2.025 
+    // 338 was about 4.5inches.. too high for autonomous. So we tried lowering
+    // arm to about 3 inches by changing to 358
+    private static final double armScore = 358; 
     private static final double armKp = 0.50;
     private static final double armKi = 0.00;
     private static final double armKd = 0.00;
