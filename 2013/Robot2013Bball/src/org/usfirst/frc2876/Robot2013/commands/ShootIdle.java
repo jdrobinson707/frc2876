@@ -12,6 +12,7 @@ import org.usfirst.frc2876.Robot2013.Robot;
 public class ShootIdle extends Command {
 
     double startTime;
+    double lastdpadvalue = 0;
 
     public ShootIdle() {
         // Use requires() here to declare subsystem dependencies
@@ -30,19 +31,33 @@ public class ShootIdle extends Command {
     // Called just before this Command runs the first time
 
     protected void initialize() {
-        startTime = Timer.getFPGATimestamp();
-        SmartDashboard.putNumber("Timer", 0);
-        Robot.shooter.endFeeder();
-        SmartDashboard.putBoolean("isFeederOn", Robot.shooter.isFeederOn());
+//        startTime = Timer.getFPGATimestamp();
+//        SmartDashboard.putNumber("Timer", 0);
+//        Robot.shooter.endFeeder();
+//        SmartDashboard.putBoolean("isFeederOn", Robot.shooter.isFeederOn());
+        lastdpadvalue = 0;
     }
     // Called repeatedly when this Command is scheduled to run
 
     protected void execute() {
-        double now = Timer.getFPGATimestamp();
-        double currentTime = now - startTime;
-        if (currentTime >= 2 && currentTime < 3) {
-            SmartDashboard.putNumber("Timer", currentTime);
-            Robot.shooter.endShooter();
+//        double now = Timer.getFPGATimestamp();
+//        double currentTime = now - startTime;
+//        if (currentTime >= 2 && currentTime < 3) {
+//            SmartDashboard.putNumber("Timer", currentTime);
+//            Robot.shooter.endShooter();
+//        }
+
+        double val = Robot.oi.getXbox().getDpadX();
+        if (val != lastdpadvalue) {
+            System.out.println(val);
+            if (val > .5) {
+                Robot.shooter.incrementShooterSpeed();
+                Robot.shooter.startShooter();
+            } else if (val < -.5) {
+                Robot.shooter.decrementShooterSpeed();
+                Robot.shooter.startShooter();
+            }
+            lastdpadvalue = val;
         }
     }
     // Make this return true when this Command no longer needs to run execute()

@@ -32,10 +32,10 @@ public class DriveTrain extends Subsystem {
     public static final double DRIVE_WHEEL_RADIUS = 3.7;
     public static final int PULSE_PER_ROTATION = 360;
     public static final double GEAR_RATIO = 42 / 39;
-    public static final double DRIVE_ENCODER_PULSE_PER_ROT =
-            PULSE_PER_ROTATION * GEAR_RATIO;
-    public static final double DRIVE_ENCODER_DIST_PER_TICK =
-            ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
+    public static final double DRIVE_ENCODER_PULSE_PER_ROT
+            = PULSE_PER_ROTATION * GEAR_RATIO;
+    public static final double DRIVE_ENCODER_DIST_PER_TICK
+            = ((Math.PI * 2 * DRIVE_WHEEL_RADIUS) / DRIVE_ENCODER_PULSE_PER_ROT);
     // Turn PID controller variables
     private static final double turnKp = 0.100;
     private static final double turnKi = 0.000;
@@ -56,7 +56,6 @@ public class DriveTrain extends Subsystem {
     // It will just calculate error and come up with the output value
     // that should be sent to jaguars to drive.
     boolean dPIDOutputEnabled = false;
-    Preferences prefs;
 
     public DriveTrain() {
 
@@ -102,22 +101,6 @@ public class DriveTrain extends Subsystem {
         dPID.reset();
     }
 
-    void updateTurnPID() {
-        prefs = Preferences.getInstance();
-        double kp = prefs.getDouble("tkp", turnKp);
-        double ki = prefs.getDouble("tki", turnKi);
-        double kd = prefs.getDouble("tkd", turnKd);
-        turnPID.setPID(kp, ki, kd);
-    }
-
-    void updatedPID() {
-        prefs = Preferences.getInstance();
-        double kp = prefs.getDouble("dkp", dKp);
-        double ki = prefs.getDouble("dki", dKi);
-        double kd = prefs.getDouble("dkd", dKd);
-        turnPID.setPID(kp, ki, kd);
-    }
-
     private void initTurnPID() {
         turnPID = new PIDController(turnKp, turnKi, turnKd, turnKf, gyro, new PIDOutput() {
             public void pidWrite(double output) {
@@ -140,7 +123,6 @@ public class DriveTrain extends Subsystem {
         turnPIDOutputEnabled = true;
         dPIDOutputEnabled = false;
         gyro.reset();
-        updateTurnPID();
         turnPID.reset();
         turnPID.setSetpoint(degrees);
 
@@ -181,6 +163,14 @@ public class DriveTrain extends Subsystem {
 
     public void driveSmooth(Joystick left, Joystick right) {
         robotDrive2.tankDrive(left, right, true);
+    }
+
+    public void driveXboxTank(double left, double right) {
+        robotDrive2.tankDrive(left, right);
+    }
+
+    public void driveXboxArcade(double move, double rotate) {
+        robotDrive2.arcadeDrive(move, rotate);
     }
 
     public void startEncoder(Encoder encoder) {
@@ -234,12 +224,12 @@ public class DriveTrain extends Subsystem {
         leftEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         dPID = new PIDController(dKp, dKi, dKd, dKf,
                 new AvgEncoder(), new PIDOutput() {
-            public void pidWrite(double output) {
-                if (dPIDOutputEnabled) {
-                    robotDrive2.tankDrive(output, output);
-                }
-            }
-        });
+                    public void pidWrite(double output) {
+                        if (dPIDOutputEnabled) {
+                            robotDrive2.tankDrive(output, output);
+                        }
+                    }
+                });
         // limit the output range of distance PID so there is
         // room to correct for turning.  If the robot is driving
         // 10 ft and starts to drift left, we need to be able to turn
@@ -261,7 +251,6 @@ public class DriveTrain extends Subsystem {
         leftEncoder.start();
         rightEncoder.start();
         dPID.reset();
-        updatedPID();
         dPID.setSetpoint(inches);
         dPID.enable();
         SmartDashboard.putNumber("dPID setpoint", dPID.getSetpoint());
@@ -281,10 +270,7 @@ public class DriveTrain extends Subsystem {
         rightEncoder.start();
         dPID.reset();
         dPID.setSetpoint(inches);
-        updatedPID();
-        //
         gyro.reset();
-        updateTurnPID();
         turnPID.reset();
         turnPID.setSetpoint(0);
         //

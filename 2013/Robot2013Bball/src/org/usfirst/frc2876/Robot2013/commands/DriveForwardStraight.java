@@ -24,7 +24,8 @@ public class DriveForwardStraight extends Command {
     protected void initialize() {
 //        Robot.driveTrain.startEncoder(Robot.driveTrain.rightEncoder);
 //        Robot.driveTrain.startEncoder(Robot.driveTrain.leftEncoder);
-        double z = Robot.oi.getRightStick().getZ();
+//        double z = Robot.oi.getRightStick().getZ();
+        double z = 0;
         z = (((z + 1) / 2) * 1000) + 25;
         Robot.driveTrain.setDriveDistanceStraight(z);
     }

@@ -27,17 +27,19 @@ public class Drive extends Command {
 
     protected void initialize() {
         Robot.driveTrain.resetSensors();
-        System.out.println("leftz " + Robot.oi.getLeftStick().getZ());
+        Robot.driveTrain.driveXboxTank(0, 0);
+
     }
     // Called repeatedly when this Command is scheduled to run
 
     protected void execute() {
-        if (Robot.oi.getLeftStick().getZ() > 0) {
-            Robot.driveTrain.drive(Robot.oi.getLeftStick(), Robot.oi.getRightStick());
-        } else {
-            Robot.driveTrain.driveSmooth(Robot.oi.getLeftStick(), Robot.oi.getRightStick());
-        }
-        Robot.driveTrain.updateDashboard();
+        int driveState = Robot.oi.getDriveState();
+        if (driveState == 0) 
+            Robot.driveTrain.driveXboxTank(-Robot.oi.getXboxLeftY() *.8, 
+                    -Robot.oi.getXboxRightY() *.8);
+        else
+            Robot.driveTrain.driveXboxArcade(-Robot.oi.getXboxLeftY() *.8, 
+                    -Robot.oi.getXboxRightX() *.8);
     }
     // Make this return true when this Command no longer needs to run execute()
 

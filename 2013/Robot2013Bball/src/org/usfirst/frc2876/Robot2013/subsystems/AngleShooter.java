@@ -91,6 +91,15 @@ public class AngleShooter extends Subsystem {
         shootingAngleJaguar.set(0);
     }
 
+    public void raiseShooter() {
+        jaguarAngle(1);
+    }
+    public void lowerShooter() {
+        jaguarAngle(-1);
+    }
+    public void stopShooter() {
+        jaguarAngle(0);
+    }
     public void jaguarAngle(double speed) {
         if (highlm.get() && speed > 0) {
             shootingAngleJaguar.set(0);
