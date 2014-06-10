@@ -20,7 +20,8 @@ public class AdjustShooterAngle extends Command {
     protected void initialize() {
         // Robot.angleShooter.setPotSetpoint(volts);
         // scale z button from -1 to 1 to 200 to 800
-        double z = Robot.oi.armStick.getZ();
+        //double z = Robot.oi.armStick.getZ();
+        double z =0.0;
 //        setpoint = ((((int)(z * 100)S) + 100)/2)*6;
 //        setpoint += 200;
         setpoint = (int)((300.0 * z) + 500.0);

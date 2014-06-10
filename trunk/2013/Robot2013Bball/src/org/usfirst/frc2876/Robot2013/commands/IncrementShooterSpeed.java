@@ -1,5 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package org.usfirst.frc2876.Robot2013.commands;
@@ -9,49 +10,37 @@ import org.usfirst.frc2876.Robot2013.Robot;
 
 /**
  *
- * @author Student
+ * @author Mentor
  */
-public class DriveForward extends Command {
-    double dist;
-    public DriveForward(double d) {
+public class IncrementShooterSpeed extends Command {
+
+    public IncrementShooterSpeed() {
+        requires(Robot.shooter);
+
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-        requires(Robot.driveTrain);
-        dist = d;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-        Robot.driveTrain.leftEncoder.reset();
-        Robot.driveTrain.rightEncoder.reset();
-        Robot.driveTrain.startEncoder(Robot.driveTrain.rightEncoder);
-        Robot.driveTrain.startEncoder(Robot.driveTrain.leftEncoder);
-         //double z = Robot.oi.getRightStick().getZ();
-        double z = 0;
-        z = (((z + 1) / 2) * 1000)+25;
-        Robot.driveTrain.setDriveDistance(z);
+        Robot.shooter.incrementShooterSpeed();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.driveTrain.isDistanceDone();
+        return true;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-        Robot.driveTrain.endDistance();
-        Robot.driveTrain.stopEncoder(Robot.driveTrain.rightEncoder);
-        Robot.driveTrain.stopEncoder(Robot.driveTrain.leftEncoder);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-        end();
     }
 }
