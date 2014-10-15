@@ -9,7 +9,9 @@ One thing that programming does often is switch network settings between 'robot'
 
 = Details =
 
-Write a windows program/script that will change network settings.  The program needs to ask the user the following:
+Write a windows program/script that will change network settings.  It has to run on windows 7 and 8 (i think that's what laptops are running).
+
+The program needs to ask the user the following:
 - Do you want static or dhcp network?
 - If static, what is your team number?
 
