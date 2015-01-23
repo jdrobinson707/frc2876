@@ -14,9 +14,13 @@ http://www.chiefdelphi.com/forums/showthread.php?t=125816
 https://code.google.com/p/frc2876/source/browse/trunk/wiki_attachments/sensitivity_adjustment.gif
 
     Let X be a joystick axis with value ranging from -1 to +1.
+    
     Plot y=x and you get a straight line with slope (gain) = 1
+
     Now plot y = x^3 and you get a cubic output, also ranging from -1 to +1.
+
     The gain of this cubic curve is less than 1 for all x values between -sqrt(1/3) and +sqrt(1/3), and greater than 1 outside that range.  At x=0 the gain is zero (essentially giving a small deadband), and at x=1 the gain is 3.
+
     Now plot y = a(x^3) + (1-a)x, where "a" is a constant in the range 0<=a<=1.  You get a family of curves lying between the curve y=x and y=x^3.  When a=0 you get y=x, and when a=1 you get y=x^3. When 0<a<1, you get a "blend" in-between y=x and y=x^3.  The range of y is still -1 to +1 for all curves in the family.
 
     The gain of each curve is given by:
