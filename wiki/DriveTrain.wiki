@@ -6,7 +6,7 @@ This page covers anything to do with drive train. That means speed controllers(v
 
 
 
-= Adjust Joystick reading before sending to SpeedController
+= Adjust Joystick reading before sending to Speed Controller =
 
 http://www.chiefdelphi.com/forums/showthread.php?t=125816
 
