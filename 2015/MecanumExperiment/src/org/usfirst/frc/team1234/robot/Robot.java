@@ -76,17 +76,94 @@ public class Robot extends SampleRobot {
 	 */
 	public void operatorControl() {
 		myRobot.setSafetyEnabled(true);
-		while (isOperatorControl() && isEnabled()) {
+		boolean fieldOfViewToggle=false;
+		boolean lastBPress=false;
+		boolean lastStartPress=false;
+		boolean lastYPress=false;
+		boolean lastAPress=false;
+		boolean lastXPress=false;
+		double a = .75;
+		double lastMotor = stick.getLeftX(), lastX = 0, stepX = .01;
+		while (isOperatorControl() && isEnabled()){
 			double x = stick.getLeftX();
 			double y = stick.getLeftY();
 			double rotation = stick.getRightX();
-			double g = gyro.getAngle();
+			double angle = gyro.getAngle();
+			boolean isBPressed = stick.getButton(XboxController.BUTTON_B);
+			boolean isStartPressed = stick.getButton(XboxController.BUTTON_START);
+			boolean isAPressed = stick.getButton(XboxController.BUTTON_A);
+			boolean isYPressed = stick.getButton(XboxController.BUTTON_Y);
+			boolean isXPressed = stick.getButton(XboxController.BUTTON_X);
+			if (isStartPressed && !lastStartPress){
+				fieldOfViewToggle = !fieldOfViewToggle;
+				lastStartPress=true;
+			}
+			lastStartPress=isStartPressed;
+			if (isBPressed && !lastBPress){
+				gyro.reset();
+				lastBPress=true;
+			}
+			lastBPress=isBPressed;
+			if (isAPressed){ //linear joystick input
+				a=0; 
+				lastAPress=true;
+			}
+			lastAPress=isAPressed;
+			if (isXPressed){
+				a=.75; 
+				lastXPress=true;
+			}
+			lastXPress=isXPressed;
+			if (isYPressed){
+				a=1; 
+				lastYPress=true;
+			}
+			lastYPress=isYPressed;
+			
+			x = a * (Math.pow(x, 3)) + x * (1 - a);
+			
+//			this is an example of coercion (motor will never go faster than x (.5))
+//			if (x>.5) x=.5;
+//			if (x<-.5) x=-.5;
+//			if (y>.5) y= .5;
+//			if (y<-.5) y=-.5;
+//			
+//			this is an example of coercion that doesn't limit the joystick's capabilities
+//			x*=.5;
+//			y*=.5;
+			//y = a(x^3) + (1-a)x  0<=a<=1
+
+			
+//			if close, make them the same, otherwise add/subtract .1 (stepX)  
+//			if (Math.abs(x - lastMotor) < stepX) {
+//				lastMotor = x;
+//			}
+//			else if (lastX < x) {
+//				lastMotor += stepX;
+//			}
+//			else if (lastX > x) {
+//				lastMotor -= stepX;
+//			}
+//			x=lastMotor;
+//			lastX = x;
+//			
+			lastBPress=isBPressed;
+			if (fieldOfViewToggle) {
+				myRobot.mecanumDrive_Cartesian(x, y, rotation, angle);
+			}
+
+			
 			myRobot.mecanumDrive_Cartesian(x, y, rotation, 0);
 			//          myRobot.arcadeDrive(y, 0, false);
-			SmartDashboard.putNumber("gyro", g);
+			SmartDashboard.putNumber("Gyro Rate", gyro.getRate());
+			SmartDashboard.putNumber("Gyro pidGet", gyro.pidGet());
+			SmartDashboard.putNumber("Gyro Angle", angle);
+			SmartDashboard.putBoolean("FOV On", fieldOfViewToggle);
 			SmartDashboard.putNumber("Left Stick X", x);
 			SmartDashboard.putNumber("Left Stick Y", y);
 			SmartDashboard.putNumber("Right Stick X", rotation);
+			SmartDashboard.putNumber("Motor Speed", lastMotor);
+			SmartDashboard.putNumber("Value of A", a); //0<=a<=1 (0=linear speed slope & 1=cubed speed slope)
 			Timer.delay(0.005);		// wait for a motor update time
 
 		}
