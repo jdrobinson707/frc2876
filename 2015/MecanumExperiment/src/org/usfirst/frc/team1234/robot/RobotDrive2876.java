@@ -148,12 +148,14 @@ public class RobotDrive2876 implements MotorSafety {
 	 * @param rotation The rate of rotation for the robot that is completely independent of
 	 * the translation. [-1.0..1.0]
 	 * @param gyroAngle The current angle reading from the gyro.  Use this to implement field-oriented controls.
+	 * @param fovtoggle The current reading of whether or not we are using field of view.
 	 */
-	public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {
+	public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle, boolean fovToggle) {
 		if(!kMecanumCartesian_Reported) {
 			UsageReporting.report(tResourceType.kResourceType_RobotDrive, getNumMotors(), tInstances.kRobotDrive_MecanumCartesian);
 			kMecanumCartesian_Reported = true;
 		}
+		int fovMult = fovToggle ? 1 : -1;
 		double xIn = x;
 		double yIn = y;
 		// Negate y for the joystick.
@@ -162,14 +164,16 @@ public class RobotDrive2876 implements MotorSafety {
 		double rotated[] = rotateVector(xIn, yIn, gyroAngle);
 		xIn = rotated[0];
 		yIn = rotated[1];
-
+		
 		double wheelSpeeds[] = new double[kMaxNumberOfMotors];
 //		wheelSpeeds[MotorType.kFrontLeft_val] = xIn + yIn + rotation;		
-		wheelSpeeds[MotorType.kFrontLeft_val] = xIn + yIn - rotation;
-		wheelSpeeds[MotorType.kFrontRight_val] = -xIn + yIn - rotation;
-		wheelSpeeds[MotorType.kRearLeft_val] = -xIn + yIn + rotation;
+		wheelSpeeds[MotorType.kFrontLeft_val] = xIn + yIn + (fovMult * rotation);
+//		wheelSpeeds[MotorType.kFrontRight_val] = -xIn + yIn - rotation;
+		wheelSpeeds[MotorType.kFrontRight_val] = -xIn + yIn + (fovMult * rotation);
+//		wheelSpeeds[MotorType.kRearLeft_val] = -xIn + yIn + rotation;
+		wheelSpeeds[MotorType.kRearLeft_val] = -xIn + yIn - (fovMult * rotation);
 //		wheelSpeeds[MotorType.kRearRight_val] = xIn + yIn - rotation;
-		wheelSpeeds[MotorType.kRearRight_val] = xIn + yIn + rotation;
+		wheelSpeeds[MotorType.kRearRight_val] = xIn + yIn - (fovMult * rotation);
 		
 		normalize(wheelSpeeds);
 

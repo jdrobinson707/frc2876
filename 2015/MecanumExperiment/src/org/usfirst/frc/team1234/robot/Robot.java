@@ -149,7 +149,8 @@ public class Robot extends SampleRobot {
 			//angle is the gyro reading if FOVToggle otherwise 0
 			angle = fieldOfViewToggle ? gyro.getAngle() : 0;
 			
-			myRobot.mecanumDrive_Cartesian(x, y, rotation, angle);
+			
+			myRobot.mecanumDrive_Cartesian(x, y, rotation, angle, fieldOfViewToggle);
 			//          myRobot.arcadeDrive(y, 0, false);
 			SmartDashboard.putNumber("Gyro Rate", gyro.getRate());
 			SmartDashboard.putNumber("Gyro pidGet", gyro.pidGet());
