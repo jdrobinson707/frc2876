@@ -146,6 +146,7 @@ public class Robot extends SampleRobot {
 //			x=lastMotor;
 //			lastX = x;
 
+			//angle is the gyro reading if FOVToggle otherwise 0
 			angle = fieldOfViewToggle ? gyro.getAngle() : 0;
 			
 			myRobot.mecanumDrive_Cartesian(x, y, rotation, angle);
