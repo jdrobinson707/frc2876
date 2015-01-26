@@ -82,13 +82,12 @@ public class Robot extends SampleRobot {
 		boolean lastYPress=false;
 		boolean lastAPress=false;
 		boolean lastXPress=false;
-		double a = .75;
+		double a = .75, angle = 0;
 		double lastMotor = stick.getLeftX(), lastX = 0, stepX = .01;
 		while (isOperatorControl() && isEnabled()){
 			double x = stick.getLeftX();
 			double y = stick.getLeftY();
 			double rotation = stick.getRightX();
-			double angle = gyro.getAngle();
 			boolean isBPressed = stick.getButton(XboxController.BUTTON_B);
 			boolean isStartPressed = stick.getButton(XboxController.BUTTON_START);
 			boolean isAPressed = stick.getButton(XboxController.BUTTON_A);
@@ -146,14 +145,10 @@ public class Robot extends SampleRobot {
 //			}
 //			x=lastMotor;
 //			lastX = x;
-//			
-			lastBPress=isBPressed;
-			if (fieldOfViewToggle) {
-				myRobot.mecanumDrive_Cartesian(x, y, rotation, angle);
-			}
 
+			angle = fieldOfViewToggle ? gyro.getAngle() : 0;
 			
-			myRobot.mecanumDrive_Cartesian(x, y, rotation, 0);
+			myRobot.mecanumDrive_Cartesian(x, y, rotation, angle);
 			//          myRobot.arcadeDrive(y, 0, false);
 			SmartDashboard.putNumber("Gyro Rate", gyro.getRate());
 			SmartDashboard.putNumber("Gyro pidGet", gyro.pidGet());
