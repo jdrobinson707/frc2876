@@ -165,15 +165,41 @@ public class RobotDrive2876 implements MotorSafety {
 		xIn = rotated[0];
 		yIn = rotated[1];
 		
+		
+		double angleLimit = 0 ;
+		if (gyroAngle > 360 || gyroAngle < -360){
+			angleLimit = gyroAngle/360;
+			angleLimit = Math.floor(angleLimit);
+			
+			if(gyroAngle<0){
+				gyroAngle = gyroAngle - (360 * (angleLimit + 1));
+				}
+			else{
+				gyroAngle = gyroAngle - (360 * angleLimit);
+				}
+			
+			 
+		}
+		if ((gyroAngle >= 45 && gyroAngle <= 135) || (gyroAngle >= -315 && gyroAngle <= -225)){
+			fovMult = -1;
+		}
+		else if ((gyroAngle <= -45 && gyroAngle >= -135) || (gyroAngle <= 315 && gyroAngle >= 225)){
+			fovMult = -1;
+		}
+		else{
+			fovMult = 1;
+		}
+		
 		double wheelSpeeds[] = new double[kMaxNumberOfMotors];
+		
 //		wheelSpeeds[MotorType.kFrontLeft_val] = xIn + yIn + rotation;		
-		wheelSpeeds[MotorType.kFrontLeft_val] = xIn + yIn + (fovMult * rotation);
+		wheelSpeeds[MotorType.kFrontLeft_val] = fovMult * (xIn + yIn) + (-1 * rotation);
 //		wheelSpeeds[MotorType.kFrontRight_val] = -xIn + yIn - rotation;
-		wheelSpeeds[MotorType.kFrontRight_val] = -xIn + yIn + (fovMult * rotation);
+		wheelSpeeds[MotorType.kFrontRight_val] = fovMult * (-xIn + yIn) + (-1 * rotation);
 //		wheelSpeeds[MotorType.kRearLeft_val] = -xIn + yIn + rotation;
-		wheelSpeeds[MotorType.kRearLeft_val] = -xIn + yIn - (fovMult * rotation);
+		wheelSpeeds[MotorType.kRearLeft_val] = fovMult* (-xIn + yIn) - (-1 * rotation);
 //		wheelSpeeds[MotorType.kRearRight_val] = xIn + yIn - rotation;
-		wheelSpeeds[MotorType.kRearRight_val] = xIn + yIn - (fovMult * rotation);
+		wheelSpeeds[MotorType.kRearRight_val] = fovMult * (xIn + yIn) - (-1 * rotation);
 		
 		normalize(wheelSpeeds);
 
