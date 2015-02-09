@@ -4,6 +4,10 @@
 
 This page covers anything to do with drive train. That means speed controllers(victor,jaguar,talon), joysticks(tank drive, arcade drive), etc.
 
+= Adjust joystick inputs using piece wise linear function =
+
+Say you want to apply dead-band, prevent back-lash, and ramp speed slowly when robot is barely moving(fine grain control).  This will do it all... 
+http://www.chiefdelphi.com/forums/showpost.php?p=1438321&postcount=15
 
 
 = Adjust Joystick reading before sending to Speed Controller =
