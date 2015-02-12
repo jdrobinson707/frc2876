@@ -123,8 +123,8 @@ public class OI {
     
     
     
-    public static final int LEFT_X_AXIS = 1,
-            LEFT_Y_AXIS = 0,
+    public static final int LEFT_X_AXIS = 0,
+            LEFT_Y_AXIS = 1,
             TRIGGERS = 3,
             RIGHT_X_AXIS = 4,
             RIGHT_Y_AXIS = 5,

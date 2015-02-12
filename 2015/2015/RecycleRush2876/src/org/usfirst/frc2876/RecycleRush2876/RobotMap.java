@@ -10,7 +10,7 @@
 
 
 package org.usfirst.frc2876.RecycleRush2876;
-    
+
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.CANTalon;
@@ -67,12 +67,13 @@ public class RobotMap {
         driveTrainRobotDrive = new RobotDrive(driveTrainLeftFrontMotor, driveTrainLeftRearMotor,
               driveTrainRightFrontMotor, driveTrainRightRearMotor);
         
-        driveTrainRobotDrive.setSafetyEnabled(true);
+        driveTrainRobotDrive.setSafetyEnabled(false);
         driveTrainRobotDrive.setExpiration(0.1);
         driveTrainRobotDrive.setSensitivity(0.5);
         driveTrainRobotDrive.setMaxOutput(1.0);
-        driveTrainRobotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
-        driveTrainRobotDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
+
+        driveTrainRobotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+        driveTrainRobotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
         driveTrainGyro = new Gyro(1);
         LiveWindow.addSensor("DriveTrain", "Gyro", driveTrainGyro);
         driveTrainGyro.setSensitivity(0.007);
@@ -92,11 +93,11 @@ public class RobotMap {
         LiveWindow.addSensor("DriveTrain", "LeftRear Encoder", driveTrainLeftRearEncoder);
         driveTrainLeftRearEncoder.setDistancePerPulse(1.0);
         driveTrainLeftRearEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
-        elevatorPotentiometer = new AnalogPotentiometer(0, 10.0, 0.0);
+        elevatorPotentiometer = new AnalogPotentiometer(0, 360.0, 0.0);
         LiveWindow.addSensor("Elevator", " Potentiometer", elevatorPotentiometer);
         
-//        elevatorElevatorMotor = new TalonSRX(4);
-//        LiveWindow.addActuator("Elevator", "Elevator Motor", (TalonSRX) elevatorElevatorMotor);
+        elevatorElevatorMotor = new TalonSRX(7);
+        LiveWindow.addActuator("Elevator", "Elevator Motor", (TalonSRX) elevatorElevatorMotor);
         
         elevatorTopLimit = new DigitalInput(8);
         LiveWindow.addSensor("Elevator", "TopLimit", elevatorTopLimit);
