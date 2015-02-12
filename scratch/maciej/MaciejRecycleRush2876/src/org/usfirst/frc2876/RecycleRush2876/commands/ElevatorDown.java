@@ -33,7 +33,12 @@ public class  ElevatorDown extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.elevator.motorDown();
+    	// Turn off pid before we try to move elevator manually.
+    	Robot.elevator.disable();
+    	
+		if (isFinished() == false){
+			Robot.elevator.motorDown();
+		}
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -43,12 +48,20 @@ public class  ElevatorDown extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return Robot.elevator.bottomMax();
     }
 
     // Called once after isFinished returns true
     protected void end() {
     	Robot.elevator.motorOff();
+
+    	// This will turn PID back on.. and elevator will move back
+    	// to whatever spot it was in before we tried to move it manually.
+    	// Is that what we want? 
+    	// If not, we need to read the pot and set elevator PID to new setpoint
+    	// before enabling again.
+    	Robot.elevator.enable();
+    	
     }
 
     // Called when another command which requires one or more of the same

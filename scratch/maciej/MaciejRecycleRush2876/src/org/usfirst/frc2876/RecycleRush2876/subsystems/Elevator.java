@@ -72,10 +72,23 @@ public class Elevator extends PIDSubsystem {
 	}
 
 	// ===============================================================
-	// STUFF I ADDED DO NOT CHECKIN
-	public enum Position {
+	// STUFF I ADDED. I made up the numbers for positions.  They should
+	// pot values once we figure out what position elevator should be 
+	// in to perform actions we want.
+	public static enum Position {
 		TOP    (10),
+		// The STACK_ON_X positions are where elevator should be set so that tote
+		// can be stacked on top of other totes.  In other words, we are stacking
+		// totes on top of existing ones on ground. So STACK_ON_ONE will raise elevator
+		// high enough so tote can be placed on top of one tote on ground (not on bump).
+		STACK_ON_THREE(4),
+		STACK_ON_TWO(3),
+		STACK_ON_ONE(2),
+		// This is the position of elevator when we want to pick up a tote off ground.
+		// Elevator will be above a single tote when at this position
 		PICKUP (1),
+		// This is elevator at lowest position possible.  Could be when we hit limit
+		// switch or maybe a little higher.  This is also where we can release a tote.
 		BOTTOM (0),
 		MOVING (-1);
 		
@@ -114,6 +127,9 @@ public class Elevator extends PIDSubsystem {
 	}
 	public void moveBottom() {
 		setPosition(Position.BOTTOM);
+	}
+	public void moveToPickup() {
+		setPosition(Position.PICKUP);
 	}
     
     public void motorUp() {
