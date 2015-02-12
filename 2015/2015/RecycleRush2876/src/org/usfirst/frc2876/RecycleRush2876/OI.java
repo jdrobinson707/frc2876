@@ -72,15 +72,15 @@ public class OI {
 
         xboxController = new Joystick(0);
         
-        leftBumper = new JoystickButton(xboxController, 1);
+        leftBumper = new JoystickButton(xboxController, 5);
         leftBumper.whileHeld(new ElevatorDown());
-        rightBumper = new JoystickButton(xboxController, 1);
+        rightBumper = new JoystickButton(xboxController, 6);
         rightBumper.whileHeld(new ElevatorUp());
-        buttonY = new JoystickButton(xboxController, 1);
+        buttonY = new JoystickButton(xboxController, 4);
         buttonY.whileHeld(new ElevatorIdle());
-        buttonX = new JoystickButton(xboxController, 1);
+        buttonX = new JoystickButton(xboxController, 3);
         buttonX.whileHeld(new ElevatorIdle());
-        buttonB = new JoystickButton(xboxController, 1);
+        buttonB = new JoystickButton(xboxController, 2);
         buttonB.whileHeld(new ElevatorIdle());
         buttonA = new JoystickButton(xboxController, 1);
         buttonA.whileHeld(new ElevatorIdle());
