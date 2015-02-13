@@ -39,9 +39,15 @@ public class  DriveWithJoystick extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	double x = Robot.oi.getLeftX();
-    	double y = Robot.oi.getLeftY();
-    	double rotation = Robot.oi.getRightX();
-    	Robot.driveTrain.drive(x, y, rotation);
+	    double y = Robot.oi.getLeftY() > 0 ? Math.pow(Robot.oi.getLeftY(), 2) : 0 - Math.pow(Robot.oi.getLeftY(), 2);
+	    double rotation = Robot.oi.getRightX() > 0 ? Math.pow(Robot.oi.getRightX(), 2) : 0 - Math.pow(Robot.oi.getRightX(), 2); 
+    	
+	    if (!Robot.driveTrain.getIsFOV()){
+	        Robot.driveTrain.drive(x, y, rotation);
+	    } else {
+	    	double gyroAngle = Robot.driveTrain.getGyroAngle();
+	    	Robot.driveTrain.fovDrive(x, y, rotation, gyroAngle);
+	    }
     }
 
     // Make this return true when this Command no longer needs to run execute()

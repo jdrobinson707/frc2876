@@ -12,6 +12,8 @@
 package org.usfirst.frc2876.RecycleRush2876.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc2876.RecycleRush2876.Robot;
 
 /**
@@ -36,6 +38,7 @@ public class  ElevatorIdle extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+		SmartDashboard.putNumber("Potentiometer", Robot.elevator.getPosition());
     }
 
     // Make this return true when this Command no longer needs to run execute()

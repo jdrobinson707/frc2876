@@ -19,9 +19,9 @@ import org.usfirst.frc2876.RecycleRush2876.Robot;
 /**
  *
  */
-public class  ElevatorDown extends Command {
+public class  ElevatorDownWithTrigger extends Command {
 
-    public ElevatorDown() {
+    public ElevatorDownWithTrigger() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
 
@@ -33,20 +33,18 @@ public class  ElevatorDown extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	if (isFinished() == false){
-			Robot.elevator.motorDown();
-		} 
+
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-
-		SmartDashboard.putNumber("Potentiometer", Robot.elevator.getPosition());
+    	Robot.elevator.motorTrigger();
+    	SmartDashboard.putNumber("Potentiometer", Robot.elevator.getPosition());
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.elevator.bottomMax();
+    	return Robot.elevator.bottomMax();
     }
 
     // Called once after isFinished returns true
@@ -57,5 +55,6 @@ public class  ElevatorDown extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 }

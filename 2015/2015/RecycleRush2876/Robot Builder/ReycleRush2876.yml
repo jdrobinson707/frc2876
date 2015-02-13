@@ -272,11 +272,11 @@ Children:
           validators: [AnalogInput]
           value: '0'
         Full Range: !!robotbuilder.data.properties.DoubleProperty {default: 1, name: Full Range,
-          validators: null, value: 360.0}
+          validators: null, value: 3600.0}
         Offset: !!robotbuilder.data.properties.DoubleProperty {default: 0, name: Offset,
           validators: null, value: 0.0}
       Base: Analog Potentiometer
-      Name: ' Potentiometer'
+      Name: potentiometer
     - Children: []
       Properties:
         Type: !!robotbuilder.data.properties.ChoicesProperty
@@ -341,7 +341,7 @@ Children:
         name: Input
         type: PIDSource
         validators: [ChildDropdownSelected]
-        value: Elevator  Potentiometer
+        value: Elevator potentiometer
       Maximum Output: !!robotbuilder.data.properties.DoubleProperty {default: 1, name: Maximum Output,
         validators: null, value: 1.0}
       Output: !!robotbuilder.data.properties.ChildSelectionProperty
@@ -377,7 +377,7 @@ Children:
           name: Command
           type: Command
           validators: &id013 [TypeDropdownSelected]
-          value: ElevatorIdle
+          value: FieldOfView
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: &id014 [whileHeld, whenPressed, whenReleased]
           default: whileHeld
@@ -583,6 +583,30 @@ Children:
         name: Button on SmartDashboard, validators: null, value: true}
     Base: Command
     Name: ElevatorDown
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Elevator}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: ElevatorUpWithTrigger
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Elevator}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: ElevatorDownWithTrigger
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: DriveTrain}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: FieldOfView
   Properties: {}
   Base: Commands
   Name: Commands
