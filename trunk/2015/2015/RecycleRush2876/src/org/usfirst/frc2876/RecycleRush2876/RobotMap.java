@@ -43,7 +43,7 @@ public class RobotMap {
     public static Encoder driveTrainRightRearEncoder;
     public static Encoder driveTrainLeftFrontEncoder;
     public static Encoder driveTrainLeftRearEncoder;
-    public static AnalogPotentiometer elevatorPotentiometer;
+    public static AnalogPotentiometer elevatorpotentiometer;
     public static SpeedController elevatorElevatorMotor;
     public static DigitalInput elevatorTopLimit;
     public static DigitalInput elevatorBottomLimit;
@@ -75,6 +75,7 @@ public class RobotMap {
         driveTrainRobotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
         driveTrainRobotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
         driveTrainGyro = new Gyro(1);
+        driveTrainGyro.initGyro();
         LiveWindow.addSensor("DriveTrain", "Gyro", driveTrainGyro);
         driveTrainGyro.setSensitivity(0.007);
         driveTrainRightFrontEncoder = new Encoder(2, 3, false, EncodingType.k2X);
@@ -93,8 +94,8 @@ public class RobotMap {
         LiveWindow.addSensor("DriveTrain", "LeftRear Encoder", driveTrainLeftRearEncoder);
         driveTrainLeftRearEncoder.setDistancePerPulse(1.0);
         driveTrainLeftRearEncoder.setPIDSourceParameter(PIDSourceParameter.kRate);
-        elevatorPotentiometer = new AnalogPotentiometer(0, 360.0, 0.0);
-        LiveWindow.addSensor("Elevator", " Potentiometer", elevatorPotentiometer);
+        elevatorpotentiometer = new AnalogPotentiometer(0, 3600.0, 0.0);
+        LiveWindow.addSensor("Elevator", "potentiometer", elevatorpotentiometer);
         
         elevatorElevatorMotor = new TalonSRX(7);
         LiveWindow.addActuator("Elevator", "Elevator Motor", (TalonSRX) elevatorElevatorMotor);

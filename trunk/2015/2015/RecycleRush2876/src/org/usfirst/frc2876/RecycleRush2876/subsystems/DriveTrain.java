@@ -50,9 +50,31 @@ public class DriveTrain extends Subsystem {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
+    
     public void drive(double x, double y, double rotation){
     	robotDrive.mecanumDrive_Cartesian(x, y, rotation, 0);
     	
     }
+    
+    public void fovDrive(double x, double y, double rotation, double gyroAngle){
+    	robotDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
+    }
+    
+    public double getGyroAngle(){
+    	return gyro.getAngle();
+    }
+    
+    public void resetGyro(){
+    	gyro.reset();
+    }
+    
+    private boolean isFOV = false;
+    public void toggleIsFOV() {
+    	this.isFOV = !this.isFOV;
+    }
+    public boolean getIsFOV() {
+    	return isFOV;
+    }
+    
 }
 
