@@ -11,6 +11,7 @@
 
 package org.usfirst.frc2876.RecycleRush2876.commands;
 
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -34,11 +35,23 @@ public class  ElevatorIdle extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.elevator.motorOff();
+ 	
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
 		SmartDashboard.putNumber("Potentiometer", Robot.elevator.getPosition());
+
+		// This command will execute the trigger elevator commands if any of those controls are pressed
+    	double leftTrigger = Robot.oi.getLeftTrigger();
+    	double rightTrigger = Robot.oi.getRightTrigger();
+		if ((leftTrigger > 0) && (!Robot.elevator.bottomMax())) {
+			Robot.elevator.motorLeftTrigger();
+		}
+		if ((rightTrigger > 0) && (!Robot.elevator.topMax())) {
+			Robot.elevator.motorRightTrigger();
+		}    	
+
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -48,10 +61,12 @@ public class  ElevatorIdle extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
+  
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+  
     }
 }

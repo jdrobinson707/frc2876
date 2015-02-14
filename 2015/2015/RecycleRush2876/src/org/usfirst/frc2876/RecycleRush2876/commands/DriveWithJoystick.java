@@ -12,6 +12,7 @@
 package org.usfirst.frc2876.RecycleRush2876.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc2876.RecycleRush2876.Robot;
 import org.usfirst.frc2876.RecycleRush2876.subsystems.DriveTrain;
