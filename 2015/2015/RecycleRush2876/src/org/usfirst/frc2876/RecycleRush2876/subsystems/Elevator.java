@@ -90,10 +90,13 @@ public class Elevator extends PIDSubsystem {
     	elevatorMotor.set(-.3);
     }
     
-    public void motorTrigger() {
-    	elevatorMotor.set(Robot.oi.getTrigger());
+    public void motorRightTrigger() {
+    	elevatorMotor.set(Robot.oi.getRightTrigger());
     }
   
+    public void motorLeftTrigger() {
+    	elevatorMotor.set(Robot.oi.getLeftTrigger());
+    }
     
   public boolean topMax() {
 	return !topLimit.get();  
