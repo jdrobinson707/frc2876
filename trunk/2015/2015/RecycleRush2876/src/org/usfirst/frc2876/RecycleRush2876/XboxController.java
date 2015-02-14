@@ -25,6 +25,8 @@ public class XboxController {
         back = new JoystickButton(m_pad, BUTTON_BACK);
         lStick = new JoystickButton(m_pad, LEFT_STICK_PRESS);
         rStick = new JoystickButton(m_pad, RIGHT_STICK_PRESS);
+        lTrigger = new JoystickButton(m_pad, LEFT_TRIGGER);
+        rTrigger = new JoystickButton(m_pad, RIGHT_TRIGGER);
     }
   
 
@@ -44,8 +46,12 @@ public class XboxController {
         return m_pad.getRawAxis(RIGHT_Y_AXIS);
     }
 
-    public double getTriggers() {
-        return m_pad.getRawAxis(TRIGGERS);
+    public double getLeftTrigger() {
+        return m_pad.getRawAxis(LEFT_TRIGGER);
+    }
+    
+    public double getRightTrigger() {
+        return m_pad.getRawAxis(RIGHT_TRIGGER);
     }
 
     public double getDpadX() {
@@ -71,6 +77,8 @@ public class XboxController {
     public Button back;
     public Button lStick;
     public Button rStick;
+    public Button lTrigger;
+    public Button rTrigger;
 
     public boolean getButton(int btn) {
         return m_pad.getRawButton(btn);
@@ -82,7 +90,8 @@ public class XboxController {
     // Axis indexes:
     public static final int LEFT_X_AXIS = 1,
             LEFT_Y_AXIS = 0,
-            TRIGGERS = 3,
+            LEFT_TRIGGER = 2,
+            RIGHT_TRIGGER = 3,
             RIGHT_X_AXIS = 4,
             RIGHT_Y_AXIS = 5,
             DPAD_LR = 6;
