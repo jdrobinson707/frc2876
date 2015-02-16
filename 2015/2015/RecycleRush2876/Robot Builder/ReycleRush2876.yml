@@ -497,13 +497,13 @@ Children:
           name: Command
           type: Command
           validators: *id013
-          value: ElevatorUp
+          value: ElevatorNextSetpoint
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: *id014
           default: whileHeld
           name: When to Run
           validators: null
-          value: whileHeld
+          value: whenPressed
       Base: Joystick Button
       Name: RightBumper
     - Children: []
@@ -521,13 +521,13 @@ Children:
           name: Command
           type: Command
           validators: *id013
-          value: ElevatorDown
+          value: ElevatorPrevSetpoint
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: *id014
           default: whileHeld
           name: When to Run
           validators: null
-          value: whileHeld
+          value: whenPressed
       Base: Joystick Button
       Name: LeftBumper
     Properties:
@@ -657,6 +657,30 @@ Children:
         name: Button on SmartDashboard, validators: null, value: true}
     Base: Command Group
     Name: toteSetDriveForwardHook
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Elevator}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: ElevatorNextSetpoint
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Elevator}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: ElevatorPrevSetpoint
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Elevator}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: ElevatorSetSetpoint
   Properties: {}
   Base: Commands
   Name: Commands
