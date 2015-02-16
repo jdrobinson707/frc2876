@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc2876.RecycleRush2876.Robot;
+import org.usfirst.frc2876.RecycleRush2876.RobotMap;
 
 /**
  *
@@ -34,7 +35,8 @@ public class  ElevatorPosition extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.elevator.enablePID();
-    	Robot.elevator.setSetpoint(788);
+    	Robot.elevator.setSetpoint(RobotMap.elevatorpotentiometer.get());
+    	
     }
 
     // Called repeatedly when this Command is scheduled to run

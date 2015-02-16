@@ -16,12 +16,13 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc2876.RecycleRush2876.Robot;
+import org.usfirst.frc2876.RecycleRush2876.RobotMap;
 
 /**
  *
  */
 public class  ElevatorIdle extends Command {
-
+	
 	public ElevatorIdle() {
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
@@ -34,7 +35,8 @@ public class  ElevatorIdle extends Command {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.elevator.motorOff();
+		Robot.elevator.setSetpoint(RobotMap.elevatorpotentiometer.get());
+		Robot.elevator.enablePID();
 
 	}
 
@@ -43,7 +45,19 @@ public class  ElevatorIdle extends Command {
 		SmartDashboard.putNumber("Potentiometer", Robot.elevator.getPosition());
 		double leftTrigger = Robot.oi.getLeftTrigger();
 		double rightTrigger = Robot.oi.getRightTrigger();
-		Robot.elevator.motorTrigger(rightTrigger, leftTrigger);
+		Robot.elevator.updateDashboard();
+		SmartDashboard.putNumber("Left Trigger", leftTrigger);
+		SmartDashboard.putNumber("Right Trigger", rightTrigger);
+		if (leftTrigger > .1 || rightTrigger > .1){
+			Robot.elevator.disablePID();
+//			Robot.elevator.getPIDController().reset();
+			Robot.elevator.motorTrigger(rightTrigger, leftTrigger);
+		}
+		else if (!Robot.elevator.getPIDController().isEnable()){
+			Robot.elevator.setSetpoint(RobotMap.elevatorpotentiometer.get());
+//			Robot.elevator.setSetpoint(1500);
+			Robot.elevator.enablePID();
+		}
 		// This command will execute the trigger elevator commands if any of those controls are pressed
 //		double leftTrigger = Robot.oi.getLeftTrigger();
 //		double rightTrigger = Robot.oi.getRightTrigger();
@@ -62,12 +76,13 @@ public class  ElevatorIdle extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
+	
 		return false;
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
-
+		
 	}
 
 	// Called when another command which requires one or more of the same
