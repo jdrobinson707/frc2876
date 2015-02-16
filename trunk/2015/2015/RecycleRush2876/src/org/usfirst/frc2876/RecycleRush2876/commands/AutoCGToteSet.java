@@ -10,6 +10,8 @@
 
 
 package org.usfirst.frc2876.RecycleRush2876.commands;
+import org.usfirst.frc2876.RecycleRush2876.subsystems.Elevator;
+
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
@@ -35,7 +37,8 @@ public class AutoCGToteSet extends CommandGroup {
         // a CommandGroup containing them would require both the chassis and the
         // arm.
     	addSequential(new ElevatorBottom());
-    	addSequential(new ElevatorUp(), 2);
+//    	addSequential(new ElevatorUp(), 2);
+    	addSequential(new ElevatorSetSetpoint(Elevator.ONE_TOTE_HIGH));
     	addSequential(new AutoDrive(.5, 0), 4);
     }
 }

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc2876.RecycleRush2876.Robot;
 import org.usfirst.frc2876.RecycleRush2876.RobotMap;
+import org.usfirst.frc2876.RecycleRush2876.subsystems.Elevator;
 
 /**
  *
@@ -35,7 +36,8 @@ public class  ElevatorIdle extends Command {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.elevator.setSetpoint(RobotMap.elevatorpotentiometer.get());
+//		Robot.elevator.setSetpoint(RobotMap.elevatorpotentiometer.get());
+//		Robot.elevator.setSetpoint(Elevator.BOTTOM);
 		Robot.elevator.enablePID();
 
 	}
