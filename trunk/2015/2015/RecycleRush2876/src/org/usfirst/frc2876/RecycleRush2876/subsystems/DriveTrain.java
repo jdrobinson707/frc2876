@@ -74,5 +74,13 @@ public class DriveTrain extends Subsystem {
     	return isFOV;
     }
     
+    private boolean isSensitive = false;
+    public void toggleIsSensitive() {
+    	this.isSensitive = !this.isSensitive;
+    }
+    public boolean getIsSensitive() {
+    	return isSensitive;
+    }
+    
 }
 

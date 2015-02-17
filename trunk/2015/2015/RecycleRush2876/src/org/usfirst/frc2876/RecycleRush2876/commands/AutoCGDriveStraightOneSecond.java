@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 /**
  *
  */
-public class toteSetDriveForwardHook extends CommandGroup {
+public class AutoCGDriveStraightOneSecond extends CommandGroup {
     
-    public  toteSetDriveForwardHook() {
+    public  AutoCGDriveStraightOneSecond() {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -34,7 +34,6 @@ public class toteSetDriveForwardHook extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-    	addSequential(new ElevatorUp(), 2);
-    	addSequential(new AutoDrive(0, -.5), 1);
+    	addSequential(new AutoDrive(0, -.5), 1.5);
     }
 }

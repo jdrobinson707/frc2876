@@ -122,9 +122,10 @@ public class Robot extends IterativeRobot {
 
 	public void setupAutonomous() {
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Default: Robot Set", new AutoCGRobotSet());
-		autoChooser.addObject("Tote Set", new AutoCGToteSet());
-		autoChooser.addObject("Forward Tote Hook", new toteSetDriveForwardHook());
+		autoChooser.addDefault("Default: Drive Into Auto Zone", new AutoCGDriveStraightOneSecond());
+		autoChooser.addObject("Pick Up Tote & Strafe", new AutoCGToteSet());
+		autoChooser.addObject("Pick Up Tote & Drive Forward (Hook)", new AutoCGToteSetDriveForwardHook());
+		autoChooser.addObject("Push Tote Into Auto Zone", new AutoCGRobotSet());
 		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
 	}
 }
