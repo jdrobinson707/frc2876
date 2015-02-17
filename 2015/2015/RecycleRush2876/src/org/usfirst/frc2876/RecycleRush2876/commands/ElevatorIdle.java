@@ -59,7 +59,8 @@ public class  ElevatorIdle extends Command {
 			Robot.elevator.setSetpoint(RobotMap.elevatorpotentiometer.get());
 //			Robot.elevator.setSetpoint(1500);
 			Robot.elevator.enablePID();
-		}
+		} 
+		
 		// This command will execute the trigger elevator commands if any of those controls are pressed
 //		double leftTrigger = Robot.oi.getLeftTrigger();
 //		double rightTrigger = Robot.oi.getRightTrigger();

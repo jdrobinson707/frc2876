@@ -35,7 +35,7 @@ public class AutoCGRobotSet extends CommandGroup {
         // a CommandGroup containing them would require both the chassis and the
         // arm.
     	
-    	addSequential(new AutoDrive(0, -.5), 2);
+    	addSequential(new AutoDrive(0, -.5), 3.3);
     	
     }
 }

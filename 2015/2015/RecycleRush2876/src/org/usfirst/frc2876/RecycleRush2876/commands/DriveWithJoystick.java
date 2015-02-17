@@ -21,7 +21,7 @@ import org.usfirst.frc2876.RecycleRush2876.subsystems.DriveTrain;
  *
  */
 public class  DriveWithJoystick extends Command {
-
+	private static final double SENSITIVE_DRIVE = 0.3;
     public DriveWithJoystick() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -43,6 +43,14 @@ public class  DriveWithJoystick extends Command {
 	    double y = Robot.oi.getLeftY() > 0 ? Math.pow(Robot.oi.getLeftY(), 2) : 0 - Math.pow(Robot.oi.getLeftY(), 2);
 	    double rotation = Robot.oi.getRightX() > 0 ? Math.pow(Robot.oi.getRightX(), 2) : 0 - Math.pow(Robot.oi.getRightX(), 2); 
     	
+	    if (Robot.driveTrain.getIsSensitive() == true){
+	    	x = x > 0 ? Math.min(x, SENSITIVE_DRIVE) : Math.max(x, 0-SENSITIVE_DRIVE);
+	    	y = y > 0 ? Math.min(y, SENSITIVE_DRIVE) : Math.max(y, 0-SENSITIVE_DRIVE);
+	    	rotation = rotation > 0 ? Math.min(rotation, SENSITIVE_DRIVE) : Math.max(rotation, 0-SENSITIVE_DRIVE);
+    	
+	    }
+	    
+	    
 	    if (!Robot.driveTrain.getIsFOV()){
 	        Robot.driveTrain.drive(x, y, rotation);
 	    } else {

@@ -377,7 +377,7 @@ Children:
           name: Command
           type: Command
           validators: &id013 [TypeDropdownSelected]
-          value: FieldOfView
+          value: DriveToggleFieldOfView
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: &id014 [whileHeld, whenPressed, whenReleased]
           default: whileHeld
@@ -401,13 +401,13 @@ Children:
           name: Command
           type: Command
           validators: *id013
-          value: ElevatorIdle
+          value: DriveToggleSensitivity
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: *id014
           default: whileHeld
           name: When to Run
           validators: null
-          value: whileHeld
+          value: whenPressed
       Base: Joystick Button
       Name: ButtonA
     - Children: []
@@ -606,7 +606,7 @@ Children:
       Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
         name: Button on SmartDashboard, validators: null, value: true}
     Base: Command
-    Name: FieldOfView
+    Name: DriveToggleFieldOfView
   - Children: []
     Properties:
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
@@ -656,7 +656,7 @@ Children:
       Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
         name: Button on SmartDashboard, validators: null, value: true}
     Base: Command Group
-    Name: toteSetDriveForwardHook
+    Name: AutoCGToteSetDriveForwardHook
   - Children: []
     Properties:
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
@@ -681,6 +681,20 @@ Children:
         name: Button on SmartDashboard, validators: null, value: true}
     Base: Command
     Name: ElevatorSetSetpoint
+  - Children: []
+    Properties:
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command Group
+    Name: AutoCGDriveStraightOneSecond
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: DriveTrain}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: DriveToggleSensitivity
   Properties: {}
   Base: Commands
   Name: Commands
