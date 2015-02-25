@@ -182,7 +182,7 @@ public class Elevator extends PIDSubsystem {
 		SmartDashboard.putNumber("Current Setpoint Index", currentSetpointIndex);
 	}
 	
-	public static final int POTENTIOMETER_NOISE = 3;
+	public static final int POTENTIOMETER_NOISE = 30;
 
 	public void incrementSetpoint() {
 //		int loop = currentSetpointIndex;
@@ -197,17 +197,24 @@ public class Elevator extends PIDSubsystem {
 //		for (int i = setpointArray.length - 1; i >= 0; i--) {
 		
 		for (int i = 0; i < setpointArray.length; i++) {
-			if (setpointArray[i] >= potentiometer.get() - POTENTIOMETER_NOISE) {
-				setSetpoint(setpointArray[Math.max(0, i)]);
+			if (setpointArray[i] >= potentiometer.get() + POTENTIOMETER_NOISE) {
+				setSetpoint(setpointArray[i]);
 				break;
 			}
 		}
 	}
 
 	public void decrementSetpoint() {
-		for (int i = 0; i < setpointArray.length; i++) {
-			if (setpointArray[i] >= potentiometer.get() - POTENTIOMETER_NOISE) {
-				setSetpoint(setpointArray[Math.max(0, i-1)]);
+//		for (int i = 0; i < setpointArray.length; i++) {
+//			if (setpointArray[i] >= potentiometer.get() - POTENTIOMETER_NOISE) {
+//				setSetpoint(setpointArray[Math.max(0, i-1)]);
+//				break;
+//			}
+//		}
+		
+		for (int i = setpointArray.length - 1; i > 0; i--){
+			if (setpointArray[i] < potentiometer.get() - POTENTIOMETER_NOISE){
+				setSetpoint(setpointArray[i]);
 				break;
 			}
 		}

@@ -126,6 +126,7 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Pick Up Tote & Strafe", new AutoCGToteSet());
 		autoChooser.addObject("Pick Up Tote & Drive Forward (Hook)", new AutoCGToteSetDriveForwardHook());
 		autoChooser.addObject("Push Tote Into Auto Zone", new AutoCGRobotSet());
+		autoChooser.addObject("Pick Up Container & Drive Backwards", new AutoCGContainerSetDriveBackwards());
 		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
 	}
 }
