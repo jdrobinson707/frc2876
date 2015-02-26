@@ -39,7 +39,7 @@ public class  ElevatorDownWithTrigger extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		SmartDashboard.putNumber("Potentiometer", Robot.elevator.getPosition());
+		
 		Robot.elevator.motorLeftTrigger();
 	}
 

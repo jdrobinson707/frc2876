@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 /**
  *
  */
-public class AutoCGDriveStraightOneSecond extends CommandGroup {
+public class AutoCGStrafeLeft extends CommandGroup {
     
-    public  AutoCGDriveStraightOneSecond() {
+    public  AutoCGStrafeLeft() {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
