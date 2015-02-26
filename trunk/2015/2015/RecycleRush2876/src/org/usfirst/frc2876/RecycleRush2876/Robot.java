@@ -109,8 +109,10 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		SmartDashboard.putData("Drive Train", driveTrain);
-		SmartDashboard.putData("Elevator", elevator);
+		if (RobotMap.debugMode) {
+			SmartDashboard.putData("Drive Train", driveTrain);
+			SmartDashboard.putData("Elevator", elevator);
+		}
 	}
 
 	/**
@@ -123,10 +125,8 @@ public class Robot extends IterativeRobot {
 	public void setupAutonomous() {
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Default: Drive Into Auto Zone", new AutoCGDriveStraightOneSecond());
-		autoChooser.addObject("Pick Up Tote & Strafe", new AutoCGToteSet());
-		autoChooser.addObject("Pick Up Tote & Drive Forward (Hook)", new AutoCGToteSetDriveForwardHook());
-		autoChooser.addObject("Push Tote Into Auto Zone", new AutoCGRobotSet());
-		autoChooser.addObject("Pick Up Container & Drive Backwards", new AutoCGContainerSetDriveBackwards());
+		autoChooser.addObject("Strafe Right Into Auto Zone", new AutoCGStrafeRight());
+		autoChooser.addObject("Strafe Left Into Auto Zone", new AutoCGStrafeLeft());
 		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
 	}
 }
