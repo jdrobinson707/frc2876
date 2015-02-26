@@ -34,22 +34,19 @@ public class Elevator extends PIDSubsystem {
 
 	private final double ELEVATOR_MAX_SPEED_UP = 0.8;
 	private final double ELEVATOR_MAX_SPEED_DOWN = 0.4;
-	public static final int STAGING_DIFF_FROM_BOTTOM = 436;
-	public static final int BARREL_DIFF_FROM_BOTTOM = 706;
-	public static final int ONE_TOTE_DIFF_FROM_BOTTOM = 868;
-	public static final int TWO_TOTE_DIFF_FROM_BOTTOM = 1391;
-	public static final int TOP_DIFF_FROM_BOTTOM = 1691;
+	public static final int STAGING_DIFF_FROM_BOTTOM = 422;
+	public static final int ONE_TOTE_DIFF_FROM_STAGING = 486;
+	public static final int TWO_TOTE_DIFF_FROM_ONE_TOTE = 641;
+	public static final int TOP_DIFF_FROM_TWO_TOTE = 379;
 
-	public static double BOTTOM = 634;
+	public static double BOTTOM = 885;
 	public static double STAGING_HEIGHT = BOTTOM + STAGING_DIFF_FROM_BOTTOM;
-	public static double BARREL_PICK_UP = BOTTOM + BARREL_DIFF_FROM_BOTTOM;
-	public static double ONE_TOTE_HIGH = BOTTOM + ONE_TOTE_DIFF_FROM_BOTTOM;
-	public static double TWO_TOTE_HIGH = BOTTOM + TWO_TOTE_DIFF_FROM_BOTTOM;
-	public static double TOP = BOTTOM + TOP_DIFF_FROM_BOTTOM;
+	public static double ONE_TOTE_HIGH = STAGING_HEIGHT + ONE_TOTE_DIFF_FROM_STAGING;
+	public static double TWO_TOTE_HIGH = ONE_TOTE_HIGH + TWO_TOTE_DIFF_FROM_ONE_TOTE;
+	public static double TOP = TWO_TOTE_HIGH + TOP_DIFF_FROM_TWO_TOTE;
 	private double setpointArray[] = {
 			BOTTOM, 
 			STAGING_HEIGHT,
-			BARREL_PICK_UP,
 			ONE_TOTE_HIGH,
 			TWO_TOTE_HIGH,
 			TOP
@@ -223,10 +220,9 @@ public class Elevator extends PIDSubsystem {
 	public void resetPotentiometerValues(){
 		BOTTOM = returnPIDInput();
 		STAGING_HEIGHT = BOTTOM + STAGING_DIFF_FROM_BOTTOM;
-		BARREL_PICK_UP = BOTTOM + BARREL_DIFF_FROM_BOTTOM;
-		ONE_TOTE_HIGH = BOTTOM + ONE_TOTE_DIFF_FROM_BOTTOM;
-		TWO_TOTE_HIGH = BOTTOM + TWO_TOTE_DIFF_FROM_BOTTOM;
-		TOP = BOTTOM + TOP_DIFF_FROM_BOTTOM;
+		ONE_TOTE_HIGH = STAGING_HEIGHT + ONE_TOTE_DIFF_FROM_STAGING;
+		TWO_TOTE_HIGH = ONE_TOTE_HIGH + TWO_TOTE_DIFF_FROM_ONE_TOTE;
+		TOP = TWO_TOTE_HIGH + TOP_DIFF_FROM_TWO_TOTE;
 	}
 }
 
