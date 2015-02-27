@@ -34,6 +34,5 @@ public class AutoCGDriveStraightOneSecond extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-    	addSequential(new AutoDrive(-.5, 0), 2);
-    }
+    	addSequential(new AutoDrive(0, -.5), 1.5);    }
 }
