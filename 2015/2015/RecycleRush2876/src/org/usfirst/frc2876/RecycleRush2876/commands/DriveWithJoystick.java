@@ -41,7 +41,12 @@ public class  DriveWithJoystick extends Command {
     protected void execute() {
     	double x = Robot.oi.getLeftX();
 	    double y = Robot.oi.getLeftY() > 0 ? Math.pow(Robot.oi.getLeftY(), 2) : 0 - Math.pow(Robot.oi.getLeftY(), 2);
-	    double rotation = Robot.oi.getRightX() > 0 ? Math.pow(Robot.oi.getRightX(), 2) : 0 - Math.pow(Robot.oi.getRightX(), 2); 
+	    double rotation = Robot.oi.getRightX() > 0 ? Math.pow(Robot.oi.getRightX(), 2) : 0 - Math.pow(Robot.oi.getRightX(), 2);
+	    
+	    x = x > 0 ? Math.min(x, 0.8) : Math.max(x, 0-0.8);
+    	y = y > 0 ? Math.min(y, 0.8) : Math.max(y, 0-0.8);
+    	rotation = rotation > 0 ? Math.min(rotation, 0.8) : Math.max(rotation, 0-0.8);
+	    
     	
 	    if (Robot.driveTrain.getIsSensitive() == true){
 	    	x = x > 0 ? Math.min(x, SENSITIVE_DRIVE) : Math.max(x, 0-SENSITIVE_DRIVE);

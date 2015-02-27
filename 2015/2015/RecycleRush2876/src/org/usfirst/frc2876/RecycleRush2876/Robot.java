@@ -127,6 +127,7 @@ public class Robot extends IterativeRobot {
 		autoChooser.addDefault("Default: Drive Into Auto Zone", new AutoCGDriveStraightOneSecond());
 		autoChooser.addObject("Strafe Right Into Auto Zone", new AutoCGStrafeRight());
 		autoChooser.addObject("Strafe Left Into Auto Zone", new AutoCGStrafeLeft());
+		autoChooser.addObject("Push Tote Forward", new AutoCGToteSetDriveForwardHook());
 		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
 	}
 }
