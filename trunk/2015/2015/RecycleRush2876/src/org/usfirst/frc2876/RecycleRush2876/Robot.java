@@ -124,10 +124,12 @@ public class Robot extends IterativeRobot {
 
 	public void setupAutonomous() {
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("Default: Drive Into Auto Zone", new AutoCGDriveStraightOneSecond());
+		//autoChooser.addDefault("Default: Drive Into Auto Zone", new AutoCGDriveStraightOneSecond());
+		
 		autoChooser.addObject("Strafe Right Into Auto Zone", new AutoCGStrafeRight());
 		autoChooser.addObject("Strafe Left Into Auto Zone", new AutoCGStrafeLeft());
-		autoChooser.addObject("Push Tote Forward", new AutoCGToteSetDriveForwardHook());
+		autoChooser.addDefault("Push Tote Forward", new AutoCGToteSetDriveForwardHook());
+		autoChooser.addObject("Lowers Arm - Does NOT move", new AutoCGDoNothing());
 		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
 	}
 }
