@@ -10,16 +10,14 @@
 
 
 package org.usfirst.frc2876.RecycleRush2876.commands;
-import org.usfirst.frc2876.RecycleRush2876.subsystems.Elevator;
-
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
  *
  */
-public class AutoCGToteSetDriveForwardHook extends CommandGroup {
+public class AutoCGDoNothing extends CommandGroup {
     
-    public  AutoCGToteSetDriveForwardHook() {
+    public  AutoCGDoNothing() {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -36,8 +34,6 @@ public class AutoCGToteSetDriveForwardHook extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-    	
-    	addSequential(new ElevatorSetSetpoint(Elevator.TOP));
-    	addSequential(new AutoDrive(0, -.5), 3.2);
+    	addSequential(new AutoDrive(0, 0), 1);
     }
 }
