@@ -130,6 +130,8 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Strafe Left Into Auto Zone", new AutoCGStrafeLeft());
 		autoChooser.addDefault("Push Tote Forward", new AutoCGToteSetDriveForwardHook());
 		autoChooser.addObject("Lowers Arm - Does NOT move", new AutoCGDoNothing());
+		autoChooser.addObject("Picks Up Container And Drives Backwards", new AutoCGContainerPickup());
+		autoChooser.addObject("Picks Up Container And Does Not Drive", new AutoCGPickUpContainer());
 		SmartDashboard.putData("Autonomous Mode Chooser", autoChooser);
 	}
 }

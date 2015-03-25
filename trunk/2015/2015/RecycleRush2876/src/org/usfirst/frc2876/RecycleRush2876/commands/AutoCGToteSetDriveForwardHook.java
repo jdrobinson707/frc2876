@@ -38,6 +38,6 @@ public class AutoCGToteSetDriveForwardHook extends CommandGroup {
         // arm.
     	
     	addSequential(new ElevatorSetSetpoint(Elevator.TOP));
-    	addSequential(new AutoDrive(0, -.5), 3.2);
+    	addSequential(new AutoDrive(0, -.5), 3.3); //13' 6"
     }
 }

@@ -34,6 +34,6 @@ public class AutoCGStrafeLeft extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-    	addSequential(new AutoDrive(-.5, 0), 2);
+    	addSequential(new AutoDrive(-.5, 0), 2); //about 4' 7" (Varies with the curve caused by improper strafing.)
     }
 }
