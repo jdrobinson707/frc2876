@@ -1,0 +1,1 @@
+FIRST is a non profit organization founded by Dean Kamen to promote science, math, engineering, communication, self-confidence, and leadership.  FIRST holds robot competitions for high school students call FIRST Robotics Competitions (FRC).  This project is one implementation of a robot for the FRC competition by Team 2876 from Burlington, MA.
